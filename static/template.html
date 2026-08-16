@@ -8,16 +8,25 @@
   </head>
   <body>
     <button><a href="./index.html"> Main Page</a></button>
-    <h1>My Notes</h1>
+    <h1>My Notes by <strong style="color: aquamarine;"> Sitendra </strong> </h1>
     <hr />
     <h2 id="note_title_display"></h2>
     <p id="get_note">This is a list of my notes.</p>
+    <textarea id="edit_note_textarea" style="display: none; width: 100%;" rows="10"></textarea>
     <hr />
+
+    <button id="edit_note" style="background-color: rgb(84, 239, 84);"> Edit </button>
+    <button id="save_note" style="background-color: rgb(84, 239, 84); display: none;"> Save </button>
+    <button id="delete_note" style="background-color: red;"> Delete </button>
 
     <script>
       document.addEventListener("DOMContentLoaded", async () => {
         const getNoteEl = document.getElementById("get_note");
         const titleDisplayEl = document.getElementById("note_title_display");
+        const deleteBtn = document.getElementById("delete_note");
+        const editBtn = document.getElementById("edit_note");
+        const saveBtn = document.getElementById("save_note");
+        const editTextarea = document.getElementById("edit_note_textarea");
 
         const params = new URLSearchParams(window.location.search);
         const title = params.get("title");
@@ -45,6 +54,82 @@
           getNoteEl.textContent = "Failed to load note.";
           console.error(error);
         }
+
+        editBtn.addEventListener("click", () => {
+          // Switch into edit mode: swap <p> for a <textarea> pre-filled with current content
+          editTextarea.value = getNoteEl.textContent;
+          getNoteEl.style.display = "none";
+          editTextarea.style.display = "block";
+          editBtn.style.display = "none";
+          saveBtn.style.display = "inline-block";
+          editTextarea.focus();
+        });
+
+        saveBtn.addEventListener("click", async () => {
+          const updatedContent = editTextarea.value.trim();
+
+          if (!updatedContent) {
+            alert("Note content can't be empty.");
+            return;
+          }
+
+          saveBtn.disabled = true;
+          saveBtn.textContent = "Saving...";
+
+          try {
+            const params = new URLSearchParams({
+              note_title: title,
+              note_content: updatedContent,
+            });
+            const response = await fetch(`/note?${params.toString()}`, {
+              method: "PUT",
+            });
+
+            if (!response.ok) {
+              throw new Error(`Server responded with ${response.status}`);
+            }
+
+            // Switch back to view mode with the updated content
+            getNoteEl.textContent = updatedContent;
+            getNoteEl.style.display = "block";
+            editTextarea.style.display = "none";
+            saveBtn.style.display = "none";
+            editBtn.style.display = "inline-block";
+          } catch (error) {
+            console.error(error);
+            alert("Failed to save note.");
+          } finally {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "Save";
+          }
+        });
+
+        deleteBtn.addEventListener("click", async () => {
+          const confirmed = confirm(`Delete "${title}"? This cannot be undone.`);
+          if (!confirmed) return;
+
+          deleteBtn.disabled = true;
+          deleteBtn.textContent = "Deleting...";
+
+          try {
+            const params = new URLSearchParams({ note_title: title });
+            const response = await fetch(`/note?${params.toString()}`, {
+              method: "DELETE",
+            });
+
+            if (!response.ok) {
+              throw new Error(`Server responded with ${response.status}`);
+            }
+
+            // Deleted successfully — go back to the main page
+            window.location.href = "./index.html";
+          } catch (error) {
+            console.error(error);
+            alert("Failed to delete note.");
+            deleteBtn.disabled = false;
+            deleteBtn.textContent = "Delete";
+          }
+        });
       });
     </script>
   </body>
