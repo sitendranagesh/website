@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Notes</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <button><a href="./index.html"> Main Page</a></button>
+    <h1>My Notes</h1>
+    <hr />
+    <h2 id="note_title_display"></h2>
+    <p id="get_note">This is a list of my notes.</p>
+    <hr />
+
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        const getNoteEl = document.getElementById("get_note");
+        const titleDisplayEl = document.getElementById("note_title_display");
+
+        const params = new URLSearchParams(window.location.search);
+        const title = params.get("title");
+
+        if (!title) {
+          return; // no title in URL, leave default placeholder text
+        }
+
+        titleDisplayEl.textContent = title;
+        getNoteEl.textContent = "Loading...";
+
+        try {
+          const response = await fetch(`/note?title=${encodeURIComponent(title)}`);
+          const data = await response.json();
+
+          if (!data || data.length === 0) {
+            getNoteEl.textContent = "Note not found.";
+            return;
+          }
+
+          // Assumes the API returns an array; using the first match
+          const note = data[0];
+          getNoteEl.textContent = note.notecontent;
+        } catch (error) {
+          getNoteEl.textContent = "Failed to load note.";
+          console.error(error);
+        }
+      });
+    </script>
+  </body>
+</html>

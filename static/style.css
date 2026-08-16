@@ -1,0 +1,142 @@
+/* ===== Base ===== */
+
+* {
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #F2F2ED;
+    background-color: #464B71;
+    margin: 0;
+    padding: 2rem;
+    line-height: 1.5;
+  }
+  
+  h1, h2 {
+    color: #F2F2ED;
+    font-weight: 600;
+  }
+  
+  h1 {
+    margin: 0 0 1.5rem 0;
+    border-bottom: 2px solid #118AB2;
+    padding-bottom: 0.5rem;
+  }
+  
+  hr {
+    border: none;
+    border-top: 1px solid rgba(242, 242, 237, 0.2);
+    margin: 1.5rem 0;
+  }
+  
+  a {
+    color: #F2F2ED;
+    text-decoration: none;
+  }
+  
+  /* ===== Form elements ===== */
+  
+  textarea {
+    background-color: #F2F2ED;
+    color: #464B71;
+    border: 2px solid #7CD5C7;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-family: inherit;
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    transition: border-color 0.2s ease;
+  }
+  
+  textarea:focus {
+    outline: none;
+    border-color: #118AB2;
+  }
+  
+  input {
+    border: 2px solid #7CD5C7;
+    border-radius: 6px;
+    color: #464B71;
+    background-color: #F2F2ED;
+    padding: 0.6rem 0.75rem;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    transition: border-color 0.2s ease;
+  }
+  
+  input::placeholder {
+    color: #7a7f9e;
+  }
+  
+  input:focus {
+    outline: none;
+    border-color: #118AB2;
+  }
+  
+  button {
+    background-color: #118AB2;
+    color: #F2F2ED;
+    border: none;
+    border-radius: 6px;
+    padding: 0.6rem 1.1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+  }
+  
+  button:hover {
+    background-color: #0d6d8c;
+  }
+  
+  button:active {
+    transform: scale(0.98);
+  }
+  
+  /* ===== Layout ===== */
+  
+  .box-flex {
+    display: flex;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+  
+  .divider {
+    border-left: 2px solid rgba(242, 242, 237, 0.25);
+    align-self: stretch;
+  }
+  
+  .left-box {
+    width: 22%;
+    flex-shrink: 0;
+  }
+  
+  .right-box {
+    flex: 1 1 auto;
+  }
+  
+  /* ===== Notes list ===== */
+  
+  .all-notes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .all-notes-list > * {
+    border: 2px solid transparent;
+    border-radius: 6px;
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    color: #464B71;
+    background-color: #7CD5C7;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+  
+  .all-notes-list > *:hover {
+    background-color: #118AB2;
+    color: #F2F2ED;
+    border-color: #F2F2ED;
+  }

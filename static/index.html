@@ -1,47 +1,34 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <title> Simple Notes </title>
-    <style type="text/css" media="all">
-
-    body {
-      color: #F2F2ED;
-      background-color: #118AB2;
-    }
-
-    h1 {
-      background-color: #118AB2;
-    }
-
-    textarea {
-      background-color: #F2F2ED;
-      color: #464B71;
-      border: 2px solid black;
-      border-radius: 5px;
-      font-size: 1.5rem;
-      box-sizing: 100%;
-    }
-
-    button {
-      background-color: #464B71;
-      color: #F2F2ED;
-      border: 2px solid #F2F2ED;
-      border-radius: 5px;
-    }
-
-    button:hover {
-      background-color: #118AB2;
-      color: #464B71;
-      border: 2px solid #464B71;
-    }
-      
-    </style>
+    <title>Simple Notes</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1> My Notes </h1>
-    <textarea name="notes" id=notes rows="10"> </textarea>
-    <br />
-    <button type="submit"> add notes </button>
-    <!-- https://colorhunt.co/palette/464b71118ab27cd5c7f2f2ed$0 -->
+    <h1>My Notes</h1>
+    <div class="box-flex">
+      <div class="left-box">
+        <h2>History:</h2>
+
+        <div class="all-notes-list" id="all-notes-list"></div>
+      </div>
+      <div class="divider"></div>
+      <div class="right-box">
+        <button><a href="./template.html"> all notes </a></button>
+        <br />
+        <textarea name="notes" id="note_textarea" rows="10"> </textarea>
+        <br />
+        <input
+          type="text"
+          name="note_title"
+          id="note_title"
+          placeholder="Note Title"
+        />
+        <button type="button" id="note_submit">add notes</button>
+        <p id="myOutput"></p>
+      </div>
+    </div>
+    <script src="script.js"></script>
   </body>
 </html>
+<!-- https://colorhunt.co/palette/464b71118ab27cd5c7f2f2ed$0 -->
