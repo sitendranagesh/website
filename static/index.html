@@ -1,34 +1,45 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <title>Simple Notes</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - My Notes</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>My Notes by <strong style="color: aquamarine;"> Sitendra </strong> </h1>
-    <div class="box-flex">
-      <div class="left-box">
-        <h2>History:</h2>
+    <header class="site-header">
+      <div class="brand">
+        <!-- SVG Logo -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
+          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+        </svg>
+        <h1>My Notes <span class="author">by <strong>Sitendra</strong></span></h1>
+      </div>
+      <button id="logout_btn" class="secondary">Logout</button>
+    </header>
 
-        <div class="all-notes-list" id="all-notes-list"></div>
+    <main class="main-content">
+      <div class="box-grid">
+        <aside class="left-box">
+          <h2>Note History</h2>
+          <div class="all-notes-list" id="all-notes-list"></div>
+        </aside>
+        
+        <section class="right-box">
+          <input type="text" name="note_title" id="note_title" placeholder="Enter Note Title..." autocomplete="off" />
+          <textarea name="notes" id="note_textarea" rows="18" placeholder="Start typing your note here..."></textarea>
+          <div>
+            <button type="button" id="note_submit" class="success">Save Note</button>
+          </div>
+          <p id="myOutput" style="margin-top: 1rem; color: var(--success); font-weight: 500;"></p>
+        </section>
       </div>
-      <div class="divider"></div>
-      <div class="right-box">
-        <button><a href="./template.html"> all notes </a></button>
-        <br />
-        <textarea name="notes" id="note_textarea" rows="10"> </textarea>
-        <br />
-        <input
-          type="text"
-          name="note_title"
-          id="note_title"
-          placeholder="Note Title"
-        />
-        <button type="button" id="note_submit">add notes</button>
-        <p id="myOutput"></p>
-      </div>
-    </div>
+    </main>
+
+    <footer class="site-footer">
+      <p>&copy; 2026 Sitendra Kumar Nagesh. All rights reserved.</p>
+    </footer>
+
     <script src="script.js"></script>
   </body>
 </html>
-<!-- https://colorhunt.co/palette/464b71118ab27cd5c7f2f2ed$0 -->

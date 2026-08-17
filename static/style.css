@@ -1,142 +1,302 @@
-/* ===== Base ===== */
+/* ===== Base & Typography ===== */
+:root {
+  --bg-main: #0F172A; /* Deep Slate Background */
+  --bg-surface: #1E293B; /* Card/Surface Background */
+  --bg-surface-hover: #334155;
+  --text-main: #F8FAFC; /* Crisp White Text */
+  --text-muted: #94A3B8; /* Muted Gray Text */
+  --primary: #3B82F6; /* Vibrant Blue */
+  --primary-hover: #2563EB;
+  --danger: #EF4444; /* Soft Red */
+  --danger-hover: #DC2626;
+  --success: #10B981; /* Emerald Green */
+  --success-hover: #059669;
+  --border: #334155;
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
 
 * {
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    color: #F2F2ED;
-    background-color: #464B71;
-    margin: 0;
-    padding: 2rem;
-    line-height: 1.5;
-  }
-  
-  h1, h2 {
-    color: #F2F2ED;
-    font-weight: 600;
-  }
-  
-  h1 {
-    margin: 0 0 1.5rem 0;
-    border-bottom: 2px solid #118AB2;
-    padding-bottom: 0.5rem;
-  }
-  
-  hr {
-    border: none;
-    border-top: 1px solid rgba(242, 242, 237, 0.2);
-    margin: 1.5rem 0;
-  }
-  
-  a {
-    color: #F2F2ED;
-    text-decoration: none;
-  }
-  
-  /* ===== Form elements ===== */
-  
-  textarea {
-    background-color: #F2F2ED;
-    color: #464B71;
-    border: 2px solid #7CD5C7;
-    border-radius: 6px;
-    font-size: 1.1rem;
-    font-family: inherit;
-    width: 100%;
-    padding: 0.75rem;
-    margin-bottom: 0.75rem;
-    transition: border-color 0.2s ease;
-  }
-  
-  textarea:focus {
-    outline: none;
-    border-color: #118AB2;
-  }
-  
-  input {
-    border: 2px solid #7CD5C7;
-    border-radius: 6px;
-    color: #464B71;
-    background-color: #F2F2ED;
-    padding: 0.6rem 0.75rem;
-    font-size: 1rem;
-    margin-bottom: 0.75rem;
-    transition: border-color 0.2s ease;
-  }
-  
-  input::placeholder {
-    color: #7a7f9e;
-  }
-  
-  input:focus {
-    outline: none;
-    border-color: #118AB2;
-  }
-  
-  button {
-    background-color: #118AB2;
-    color: #F2F2ED;
-    border: none;
-    border-radius: 6px;
-    padding: 0.6rem 1.1rem;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-  }
-  
-  button:hover {
-    background-color: #0d6d8c;
-  }
-  
-  button:active {
-    transform: scale(0.98);
-  }
-  
-  /* ===== Layout ===== */
-  
-  .box-flex {
-    display: flex;
-    align-items: stretch;
-    gap: 1.5rem;
-  }
-  
-  .divider {
-    border-left: 2px solid rgba(242, 242, 237, 0.25);
-    align-self: stretch;
-  }
-  
-  .left-box {
-    width: 22%;
-    flex-shrink: 0;
-  }
-  
-  .right-box {
-    flex: 1 1 auto;
-  }
-  
-  /* ===== Notes list ===== */
-  
-  .all-notes-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .all-notes-list > * {
-    border: 2px solid transparent;
-    border-radius: 6px;
-    width: 100%;
-    padding: 0.6rem 0.75rem;
-    color: #464B71;
-    background-color: #7CD5C7;
-    cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
-  }
-  
-  .all-notes-list > *:hover {
-    background-color: #118AB2;
-    color: #F2F2ED;
-    border-color: #F2F2ED;
-  }
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  color: var(--text-main);
+  background-color: var(--bg-main);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-top: 76px; 
+  line-height: 1.6;
+}
+
+h1, h2, h3 {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+a {
+  color: var(--text-main);
+  text-decoration: none;
+}
+
+/* ===== Fixed Top Navbar & Logo ===== */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: var(--bg-surface);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-icon {
+  color: var(--primary);
+}
+
+.brand h1 {
+  font-size: 1.4rem;
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.brand .author {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.brand .author strong {
+  color: var(--success);
+  font-weight: 600;
+}
+
+/* ===== Main Content Area ===== */
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ===== Form Elements ===== */
+textarea {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 1.05rem;
+  font-family: var(--font-family);
+  width: 100%;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.2s ease;
+  resize: vertical;
+}
+
+textarea:focus, input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+input {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-main);
+  background-color: var(--bg-main);
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+input::placeholder {
+  color: var(--text-muted);
+}
+
+button {
+  background-color: var(--primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button:hover {
+  background-color: var(--primary-hover);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+button.danger {
+  background-color: var(--danger);
+}
+
+button.danger:hover {
+  background-color: var(--danger-hover);
+}
+
+button.success {
+  background-color: var(--success);
+}
+
+button.success:hover {
+  background-color: var(--success-hover);
+}
+
+button.secondary {
+  background-color: var(--bg-surface-hover);
+  color: var(--text-main);
+}
+
+button.secondary:hover {
+  background-color: var(--border);
+}
+
+/* ===== Layout: Login Card ===== */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.login-card {
+  background-color: var(--bg-surface);
+  padding: 3rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+
+.login-card h2 {
+  margin-bottom: 2rem;
+  font-size: 1.5rem;
+}
+
+.login-card button {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.85rem;
+}
+
+/* ===== Layout: CSS Grid Note Interface ===== */
+.box-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 2rem;
+  height: 100%;
+}
+
+.left-box {
+  background-color: var(--bg-surface);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+
+.left-box h2 {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.75rem;
+}
+
+.right-box {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Notes List ===== */
+.all-notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.all-notes-list > * {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  color: var(--text-main);
+  background-color: var(--bg-main);
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.all-notes-list > *:hover {
+  background-color: var(--bg-surface-hover);
+  border-color: var(--border);
+  transform: translateX(4px);
+}
+
+/* ===== Note Reading/Editing Interface ===== */
+.note-display-card {
+  background-color: var(--bg-surface);
+  padding: 3rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.note-display-card h2 {
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1rem;
+  font-size: 1.8rem;
+}
+
+.note-actions {
+  margin-top: 2.5rem;
+  display: flex;
+  gap: 1rem;
+}
+
+/* ===== Footer ===== */
+.site-footer {
+  text-align: center;
+  padding: 2rem;
+  margin-top: auto;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
