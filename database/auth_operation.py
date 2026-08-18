@@ -44,16 +44,19 @@ def add_user(username: str, password: str) -> str:
         conn.close()
 
 
-def verify_user(username: str, password: str) -> bool:
+def verify_user(username: str, password: str):
+    """Returns the user's id if credentials are valid, otherwise None."""
     p = placeholder()
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute(f"SELECT password_hash FROM users WHERE username = {p}", (username,))
+    cur.execute(f"SELECT id, password_hash FROM users WHERE username = {p}", (username,))
     row = cur.fetchone()
     conn.close()
 
     if not row:
-        return False
+        return None
 
     stored_hash = row["password_hash"].encode("utf-8")
-    return bcrypt.checkpw(password.encode("utf-8"), stored_hash)
+    if bcrypt.checkpw(password.encode("utf-8"), stored_hash):
+        return row["id"]
+    return None

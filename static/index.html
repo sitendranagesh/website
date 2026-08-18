@@ -7,16 +7,19 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <header class="site-header">
-      <div class="brand">
-        <!-- SVG Logo -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
-          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
-        </svg>
-        <h1>My Notes <span class="author">by <strong>Sitendra</strong></span></h1>
-      </div>
+    
+  <header class="site-header">
+    <div class="brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
+        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+      </svg>
+      <h1>My Notes <span class="author">by <strong>Sitendra</strong></span></h1>
+    </div>
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <span id="current_user" class="user-badge"></span>
       <button id="logout_btn" class="secondary">Logout</button>
-    </header>
+    </div>
+  </header>
 
     <main class="main-content">
       <div class="box-grid">

@@ -42,6 +42,7 @@ a {
   text-decoration: none;
 }
 
+
 /* ===== Fixed Top Navbar & Logo ===== */
 .site-header {
   position: fixed;
@@ -85,6 +86,12 @@ a {
 .brand .author strong {
   color: var(--success);
   font-weight: 600;
+}
+
+.user-badge {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 500;
 }
 
 /* ===== Main Content Area ===== */

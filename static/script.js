@@ -7,12 +7,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+  const currentUserEl = document.getElementById("current_user");
+  if (currentUserEl && authData.username) {
+    currentUserEl.textContent = `Hi, ${authData.username}`;
+  }
+
   const textarea = document.getElementById("note_textarea");
   const titleInput = document.getElementById("note_title");
   const button = document.getElementById("note_submit");
   const output = document.getElementById("myOutput");
   const notesList = document.getElementById("all-notes-list");
   const logoutBtn = document.getElementById("logout_btn");
+
+  // ...rest stays exactly the same
 
   if (!textarea || !titleInput || !button || !output) {
     return;

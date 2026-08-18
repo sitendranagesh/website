@@ -7,20 +7,19 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <header class="site-header">
-      <div class="brand">
-        <!-- SVG Logo -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
-          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
-        </svg>
-        <h1>My Notes <span class="author">by <strong>Sitendra</strong></span></h1>
-      </div>
-      <div style="display: flex; gap: 1rem;">
-        <a href="./index.html"><button class="secondary">← Dashboard</button></a>
-        <button id="logout_btn" class="danger">Logout</button>
-      </div>
-    </header>
-
+  <header class="site-header">
+    <div class="brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
+        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+      </svg>
+      <h1>My Notes <span class="author">by <strong>Sitendra</strong></span></h1>
+    </div>
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <span id="current_user" class="user-badge"></span>
+      <a href="./index.html"><button class="secondary">← Dashboard</button></a>
+      <button id="logout_btn" class="danger">Logout</button>
+    </div>
+  </header>
     <main class="main-content">
       <div class="note-display-card">
         <h2 id="note_title_display">Loading Title...</h2>
@@ -40,16 +39,22 @@
     </footer>
 
     <script>
-      document.addEventListener("DOMContentLoaded", async () => {
-        // Auth guard
-        const authCheck = await fetch("/me");
-        const authData = await authCheck.json();
-        if (!authData.logged_in) {
-          window.location.href = "./login.html";
-          return;
-        }
+  document.addEventListener("DOMContentLoaded", async () => {
+    // Auth guard
+    const authCheck = await fetch("/me");
+    const authData = await authCheck.json();
+    if (!authData.logged_in) {
+      window.location.href = "./login.html";
+      return;
+    }
 
-        const logoutBtn = document.getElementById("logout_btn");
+    const currentUserEl = document.getElementById("current_user");
+    if (currentUserEl && authData.username) {
+      currentUserEl.textContent = `Hi, ${authData.username}`;
+    }
+
+    const logoutBtn = document.getElementById("logout_btn");
+
         if (logoutBtn) {
           logoutBtn.addEventListener("click", async () => {
             try {
