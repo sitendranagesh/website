@@ -2,40 +2,310 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Me</title>
-    <link rel="stylesheet" href="../static/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Sitendra</title>
+  <style>
+    :root {
+      --bg-main: #0F172A;
+      --bg-surface: #1E293B;
+      --bg-surface-hover: #334155;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --primary: #3B82F6;
+      --primary-hover: #2563EB;
+      --success: #10B981;
+      --border: #334155;
+      --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      color: var(--text-main);
+      background-color: var(--bg-main);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: var(--primary-hover);
+    }
+
+    .site-header {
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      background-color: var(--bg-surface);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-icon {
+      color: var(--primary);
+    }
+
+    .brand h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+    }
+
+    .brand .author {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    .brand .author strong {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .hero {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 4.5rem 2rem 3rem;
+      text-align: center;
+    }
+
+    .hero .eyebrow {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--success);
+      margin-bottom: 1rem;
+    }
+
+    .hero h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero h2 span {
+      color: var(--primary);
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 3rem;
+    }
+
+    .card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem 1.5rem;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+    }
+
+    .card .icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background-color: rgba(59, 130, 246, 0.15);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .card h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .card p {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+    }
+
+    .cta {
+      text-align: center;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+    }
+
+    .cta h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .cta p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .cta .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background-color: var(--primary);
+      color: #ffffff;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    .cta .btn:hover {
+      background-color: var(--primary-hover);
+      transform: scale(1.02);
+    }
+
+    .site-footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 600px) {
+      .hero h2 {
+        font-size: 1.9rem;
+      }
+
+      .hero {
+        padding: 3rem 1.5rem 2rem;
+      }
+
+      main {
+        padding: 0 1.5rem 3rem;
+      }
+    }
+  </style>
 </head>
 
 <body>
-    <header class="site-header">
-        <div class="brand">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
-                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
-            </svg>
-            <h1>My Notes <span class="author">by <strong>Sitendra</strong></span></h1>
+  <header class="site-header">
+    <div class="brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
+        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+      </svg>
+      <h1>My Notes <span class="author">by <strong>Sitendra</strong></span></h1>
+    </div>
+  </header>
+
+  <section class="hero">
+    <span class="eyebrow">About Me</span>
+    <h2>Hi, I'm <span>Sitendra</span> — I build things I care about.</h2>
+    <p>
+      Mechanical engineer by training, software engineer by trade, and a
+      builder at heart. This site started as a simple notes app and became
+      a small proving ground for ideas.
+    </p>
+  </section>
+
+  <main>
+    <div class="cards">
+      <div class="card">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2 2 7l10 5 10-5-10-5Z" />
+            <path d="m2 17 10 5 10-5" />
+            <path d="m2 12 10 5 10-5" />
+          </svg>
         </div>
+        <h3>Mechanical Engineer</h3>
+        <p>Trained to think in systems, tolerances, and how things actually work under load.</p>
+      </div>
 
-    </header>
-    <hr>
+      <div class="card">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6" />
+            <polyline points="8 6 2 12 8 18" />
+          </svg>
+        </div>
+        <h3>Software Engineer</h3>
+        <p>Seasoned in shipping real products — from backend logic to the pixels people click.</p>
+      </div>
 
-    <ul style="list-style-type: square;">
-        <li>
-            mechanical engineer by educational training.
-        </li>
-        <li> A seasoned software engineer.
-        </li>
-        <li> I create stuff that I love.</li>
-    </ul>
+      <div class="card">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a5 5 0 0 0-5 5c0 3 2 4 2 7h6c0-3 2-4 2-7a5 5 0 0 0-5-5Z" />
+            <path d="M9 18h6" />
+            <path d="M10 21h4" />
+          </svg>
+        </div>
+        <h3>Maker</h3>
+        <p>I build things I genuinely love — this notes app included — just to see them come alive.</p>
+      </div>
+    </div>
 
+    <div class="cta">
+      <h3>Curious what I've been building?</h3>
+      <p>Check out My Notes — a small, personal app I designed and shipped end to end.</p>
+      <a class="btn" href="https://sitendra.store">
+        Visit My Notes
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg>
+      </a>
+    </div>
+  </main>
 
-
-
-    <footer class="site-footer">
-        <p>&copy; 2026 Sitendra Kumar Nagesh. All rights reserved.</p>
-    </footer>
+  <footer class="site-footer">
+    <p>&copy; 2026 Sitendra Kumar Nagesh. All rights reserved.</p>
+  </footer>
 </body>
 
 </html>
