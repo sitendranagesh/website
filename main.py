@@ -7,7 +7,15 @@ import os
 import re
 
 from database.database_operation import add_note, get_all_notes, update_note, get_notes_by_title, delete_note
-from database.auth_operation import create_users_table, verify_user, add_user
+from database.auth_operation import (
+    create_users_table,
+    verify_user,
+    add_user,
+    get_user_id_by_email,
+    create_reset_token,
+    consume_reset_token_and_set_password,
+)
+from database.email_service import send_password_reset_email
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 
@@ -19,6 +27,7 @@ app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 create_users_table()
 
 USERNAME_PATTERN = re.compile(r"^[a-zA-Z0-9_]{3,20}$")
+EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
 def require_login(request: Request) -> int:
@@ -36,22 +45,21 @@ def root(request: Request):
 
 
 @app.post("/signup")
-def signup(request: Request, username: str, password: str):
+def signup(request: Request, username: str, password: str, email: str):
     username = username.strip()
+    email = email.strip().lower()
 
     if not USERNAME_PATTERN.match(username):
-        raise HTTPException(
-            status_code=400,
-            detail="Username must be 3-20 characters: letters, numbers, underscores only.",
-        )
+        raise HTTPException(status_code=400, detail="Username must be 3-20 characters: letters, numbers, underscores only.")
+    if not EMAIL_PATTERN.match(email):
+        raise HTTPException(status_code=400, detail="Please enter a valid email address.")
     if len(password) < 8:
         raise HTTPException(status_code=400, detail="Password must be at least 8 characters.")
 
-    status = add_user(username, password)
+    status = add_user(username, password, email)
     if status != "User created successfully":
         raise HTTPException(status_code=400, detail=status)
 
-    # Log the new user in immediately
     user_id = verify_user(username, password)
     request.session["user_id"] = user_id
     request.session["username"] = username
@@ -81,6 +89,32 @@ def get_current_user(request: Request):
     return {"logged_in": bool(user_id), "username": username}
 
 
+@app.post("/forgot-password")
+def forgot_password(email: str):
+    email = email.strip().lower()
+    user_id = get_user_id_by_email(email)
+
+    # Always return the same response whether or not the email exists,
+    # so this endpoint can't be used to check which emails have accounts
+    if user_id:
+        token = create_reset_token(user_id)
+        send_password_reset_email(email, token)
+
+    return {"status": "If that email is registered, a reset link has been sent."}
+
+
+@app.post("/reset-password")
+def reset_password(token: str, new_password: str):
+    if len(new_password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters.")
+
+    success = consume_reset_token_and_set_password(token, new_password)
+    if not success:
+        raise HTTPException(status_code=400, detail="This reset link is invalid or has expired.")
+
+    return {"status": "Password updated successfully"}
+
+
 @app.post("/note")
 def add_notes(note_title: str, note_content: str, user_id: int = Depends(require_login)):
     status = add_note(user_id, note_title, note_content)
@@ -105,10 +139,7 @@ def delete_notes(note_title: str, user_id: int = Depends(require_login)):
 
 @app.get("/titles")
 def list_notes(user_id: int = Depends(require_login)):
-    titles = []
-    for note in get_all_notes(user_id):
-        titles.append(note["note"])
-    return titles
+    return [note["note"] for note in get_all_notes(user_id)]
 
 
 app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")

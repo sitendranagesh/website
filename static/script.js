@@ -95,4 +95,36 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.error(error);
     }
   });
+  document.getElementById("signup_form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const username = document.getElementById("username").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const confirmPassword = document.getElementById("confirm_password").value;
+  const errorEl = document.getElementById("signup_error");
+
+  errorEl.textContent = "";
+
+  if (password !== confirmPassword) {
+    errorEl.textContent = "Passwords don't match.";
+    return;
+  }
+
+  try {
+    const params = new URLSearchParams({ username, email, password });
+    const response = await fetch(`/signup?${params.toString()}`, { method: "POST" });
+    const data = await response.json();
+
+    if (!response.ok) {
+      errorEl.textContent = data.detail || "Something went wrong.";
+      return;
+    }
+
+    window.location.href = "./index.html";
+  } catch (error) {
+    errorEl.textContent = "Something went wrong. Try again.";
+    console.error(error);
+  }
+});
 });
