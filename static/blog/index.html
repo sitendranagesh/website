@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sitendra's Blog | Engineering, Systems & Building</title>
+  <meta name="description" content="Technical thoughts, engineering notes, and lessons learned building software by Sitendra Kumar Nagesh.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="/blog/blog.css">
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header class="blog-header">
+    <div class="brand-wrapper">
+      <a href="/blog" id="brand-link" style="display: flex; align-items: center; gap: 0.85rem; color: inherit;">
+        <div class="brand-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+            <path d="M9 7h6"/>
+            <path d="M9 11h6"/>
+          </svg>
+        </div>
+        <div class="brand-title">
+          Sitendra <span class="brand-badge">Blog</span>
+        </div>
+      </a>
+    </div>
+
+    <nav class="nav-links">
+      <a href="/blog" class="nav-item active" id="nav-blog">Blog Feed</a>
+      <a href="/about" class="nav-item" id="nav-about">About Me</a>
+      <a href="/" class="nav-item" id="nav-notes">My Notes App</a>
+      <a href="/blog/write" class="btn btn-primary btn-sm" id="write-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20h9"/>
+          <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+        </svg>
+        Write Post
+      </a>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="blog-container">
+    <section class="hero-section">
+      <div class="hero-eyebrow">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+        Engineering & Systems Blog
+      </div>
+      <h1 class="hero-title">
+        Ideas, Code & <span class="gradient-text">Building in Public</span>
+      </h1>
+      <p class="hero-desc">
+        Deep dives into software engineering, mechanical design, backend architecture, and lessons learned shipping real products.
+      </p>
+
+      <!-- Search & Filters -->
+      <div class="filter-bar">
+        <div class="search-input-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.3-4.3"/>
+          </svg>
+          <input type="text" id="search-input" class="search-input" placeholder="Search articles by title, topic, or keyword..." autocomplete="off">
+        </div>
+
+        <div class="tags-scroller" id="tags-container">
+          <button class="tag-pill active" data-tag="all">All Topics</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Blog Posts Container -->
+    <div id="posts-loading" style="text-align: center; padding: 4rem; color: var(--text-muted);">
+      <div style="font-size: 1.1rem; margin-bottom: 0.5rem;">Loading articles...</div>
+    </div>
+
+    <div class="posts-grid" id="posts-grid" style="display: none;"></div>
+
+    <div id="posts-empty" style="display: none; text-align: center; padding: 5rem 2rem; background: var(--bg-surface); border: 1px dashed var(--border); border-radius: var(--radius-lg);">
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-subtle); margin-bottom: 1rem;">
+        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+        <polyline points="14 2 14 8 20 8"/>
+      </svg>
+      <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem;">No posts found</h3>
+      <p style="color: var(--text-muted); max-width: 420px; margin: 0 auto 1.5rem;" id="empty-message">
+        No articles match your criteria yet. Be the first to publish one!
+      </p>
+      <a href="/blog/write" class="btn btn-primary">
+        Write First Article
+      </a>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="blog-footer">
+    <p>&copy; 2026 Sitendra Kumar Nagesh &bull; <a href="/about" style="color: var(--text-muted);">About</a> &bull; <a href="/" style="color: var(--text-muted);">My Notes App</a> &bull; <a href="https://sitendra.store" style="color: var(--text-muted);">sitendra.store</a></p>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Subdomain-aware link normalizer
+      const isSubdomain = window.location.hostname.startsWith("blog.");
+      const basePath = isSubdomain ? "" : "/blog";
+      
+      const brandLink = document.getElementById("brand-link");
+      const writeBtn = document.getElementById("write-btn");
+      const navBlog = document.getElementById("nav-blog");
+      
+      if (brandLink) brandLink.href = isSubdomain ? "/" : "/blog";
+      if (navBlog) navBlog.href = isSubdomain ? "/" : "/blog";
+      if (writeBtn) writeBtn.href = isSubdomain ? "/write" : "/blog/write";
+
+      let allPosts = [];
+      let currentTag = "all";
+      let searchQuery = "";
+
+      const postsLoading = document.getElementById("posts-loading");
+      const postsGrid = document.getElementById("posts-grid");
+      const postsEmpty = document.getElementById("posts-empty");
+      const tagsContainer = document.getElementById("tags-container");
+      const searchInput = document.getElementById("search-input");
+      const emptyMessage = document.getElementById("empty-message");
+
+      // Fetch Tags
+      async function loadTags() {
+        try {
+          const res = await fetch("/api/blogs/tags");
+          const tags = await res.json();
+          if (tags && tags.length > 0) {
+            tags.forEach(t => {
+              const pill = document.createElement("button");
+              pill.className = "tag-pill";
+              pill.dataset.tag = t.tag;
+              pill.textContent = `#${t.tag} (${t.count})`;
+              pill.addEventListener("click", () => {
+                document.querySelectorAll(".tag-pill").forEach(p => p.classList.remove("active"));
+                pill.classList.add("active");
+                currentTag = t.tag;
+                renderPosts();
+              });
+              tagsContainer.appendChild(pill);
+            });
+          }
+        } catch (e) {
+          console.error("Error loading tags:", e);
+        }
+      }
+
+      // Fetch Blogs
+      async function loadBlogs() {
+        try {
+          postsLoading.style.display = "block";
+          postsGrid.style.display = "none";
+          postsEmpty.style.display = "none";
+
+          const res = await fetch("/api/blogs");
+          allPosts = await res.json();
+          renderPosts();
+        } catch (e) {
+          postsLoading.innerHTML = `<p style="color: var(--danger);">Failed to load posts. Please try again later.</p>`;
+          console.error("Error loading posts:", e);
+        }
+      }
+
+      function renderPosts() {
+        postsLoading.style.display = "none";
+
+        let filtered = allPosts.filter(post => {
+          const matchesSearch = searchQuery === "" || 
+            post.title.toLowerCase().includes(searchQuery) ||
+            (post.summary && post.summary.toLowerCase().includes(searchQuery)) ||
+            (post.tags && post.tags.toLowerCase().includes(searchQuery));
+          
+          const matchesTag = currentTag === "all" || 
+            (post.tags && post.tags.toLowerCase().split(",").map(t => t.trim()).includes(currentTag.toLowerCase()));
+
+          return matchesSearch && matchesTag;
+        });
+
+        if (filtered.length === 0) {
+          postsGrid.style.display = "none";
+          postsEmpty.style.display = "block";
+          if (searchQuery || currentTag !== "all") {
+            emptyMessage.textContent = `No articles found matching "${searchQuery || '#' + currentTag}".`;
+          } else {
+            emptyMessage.textContent = "No published articles yet. Start by writing your first post!";
+          }
+          return;
+        }
+
+        postsEmpty.style.display = "none";
+        postsGrid.style.display = "grid";
+        postsGrid.innerHTML = "";
+
+        filtered.forEach((post, index) => {
+          const postUrl = isSubdomain ? `/post/${post.slug}` : `/blog/post/${post.slug}`;
+          const formattedDate = post.created_at ? new Date(post.created_at).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric"
+          }) : "Recently";
+
+          const tagsArray = post.tags ? post.tags.split(",").map(t => t.trim()).filter(Boolean) : [];
+          const defaultCover = "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop";
+          const coverImg = post.cover_image || defaultCover;
+
+          // If first item and no search/tag filter is active, highlight as Featured Post
+          if (index === 0 && currentTag === "all" && searchQuery === "") {
+            const featuredCard = document.createElement("article");
+            featuredCard.className = "featured-card";
+            featuredCard.innerHTML = `
+              <div class="featured-img-wrap">
+                <a href="${postUrl}">
+                  <img src="${coverImg}" alt="${post.title}" class="featured-img" loading="lazy" onerror="this.src='${defaultCover}'">
+                </a>
+              </div>
+              <div class="featured-content">
+                <div>
+                  <div class="post-meta">
+                    <span style="color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem;">Featured Story</span>
+                    <span>&bull;</span>
+                    <time>${formattedDate}</time>
+                    <span>&bull;</span>
+                    <span>${post.reading_time || 2} min read</span>
+                  </div>
+                  <h2 class="post-title" style="font-size: 1.85rem; margin-bottom: 0.85rem;">
+                    <a href="${postUrl}">${post.title}</a>
+                  </h2>
+                  <p class="post-summary" style="-webkit-line-clamp: 4; font-size: 1rem;">
+                    ${post.summary || "Click to read this full in-depth article."}
+                  </p>
+                  <div class="post-tags" style="margin-top: 1rem;">
+                    ${tagsArray.map(t => `<span class="post-tag">#${t}</span>`).join("")}
+                  </div>
+                </div>
+                <div class="post-footer" style="margin-top: 1.5rem;">
+                  <div class="author-info">
+                    <div class="author-avatar">${(post.author || "S")[0].toUpperCase()}</div>
+                    <span>By <strong>${post.author || "Sitendra"}</strong></span>
+                  </div>
+                  <a href="${postUrl}" class="btn btn-primary btn-sm">Read Story &rarr;</a>
+                </div>
+              </div>
+            `;
+            postsGrid.appendChild(featuredCard);
+          } else {
+            const card = document.createElement("article");
+            card.className = "post-card";
+            card.innerHTML = `
+              <div class="post-card-img-wrap">
+                <a href="${postUrl}">
+                  <img src="${coverImg}" alt="${post.title}" class="post-card-img" loading="lazy" onerror="this.src='${defaultCover}'">
+                </a>
+              </div>
+              <div class="post-card-body">
+                <div class="post-meta">
+                  <time>${formattedDate}</time>
+                  <span>&bull;</span>
+                  <span>${post.reading_time || 2} min read</span>
+                  <span>&bull;</span>
+                  <span>${post.views || 0} views</span>
+                </div>
+                <div class="post-tags">
+                  ${tagsArray.slice(0, 3).map(t => `<span class="post-tag">#${t}</span>`).join("")}
+                </div>
+                <h3 class="post-title">
+                  <a href="${postUrl}">${post.title}</a>
+                </h3>
+                <p class="post-summary">${post.summary || "Click to explore the complete post."}</p>
+                <div class="post-footer">
+                  <div class="author-info">
+                    <div class="author-avatar">${(post.author || "S")[0].toUpperCase()}</div>
+                    <span>${post.author || "Sitendra"}</span>
+                  </div>
+                  <a href="${postUrl}" style="font-weight: 600; font-size: 0.88rem; color: var(--primary);">Read &rarr;</a>
+                </div>
+              </div>
+            `;
+            postsGrid.appendChild(card);
+          }
+        });
+      }
+
+      // Search input handler with debounce
+      let searchTimeout;
+      searchInput.addEventListener("input", (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          searchQuery = e.target.value.trim().toLowerCase();
+          renderPosts();
+        }, 200);
+      });
+
+      // "All Topics" tag button click
+      const allTagBtn = document.querySelector('[data-tag="all"]');
+      if (allTagBtn) {
+        allTagBtn.addEventListener("click", () => {
+          document.querySelectorAll(".tag-pill").forEach(p => p.classList.remove("active"));
+          allTagBtn.classList.add("active");
+          currentTag = "all";
+          renderPosts();
+        });
+      }
+
+      loadTags();
+      loadBlogs();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Loading Article | Sitendra's Blog</title>
+  <meta name="description" id="meta-description" content="Technical article on Sitendra's Blog.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Markdown & Code Highlight CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  
+  <!-- Blog CSS -->
+  <link rel="stylesheet" href="/blog/blog.css">
+
+  <!-- Markdown & Code Highlight Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+
+  <!-- Reading Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar-fill" id="progress-bar"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="blog-header">
+    <div class="brand-wrapper">
+      <a href="/blog" id="brand-link" style="display: flex; align-items: center; gap: 0.85rem; color: inherit;">
+        <div class="brand-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+            <path d="M9 7h6"/>
+            <path d="M9 11h6"/>
+          </svg>
+        </div>
+        <div class="brand-title">
+          Sitendra <span class="brand-badge">Blog</span>
+        </div>
+      </a>
+    </div>
+
+    <nav class="nav-links">
+      <a href="/blog" class="nav-item" id="nav-blog">All Articles</a>
+      <a href="/about" class="nav-item" id="nav-about">About Me</a>
+      <a href="/" class="nav-item" id="nav-notes">My Notes App</a>
+      <a href="/blog/write" class="btn btn-secondary btn-sm" id="edit-current-post-btn" style="display: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20h9"/>
+          <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+        </svg>
+        Edit Article
+      </a>
+    </nav>
+  </header>
+
+  <!-- Article View -->
+  <main class="blog-container">
+    <div id="article-loading" style="text-align: center; padding: 5rem 1rem; color: var(--text-muted);">
+      <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">Loading article content...</div>
+    </div>
+
+    <div id="article-error" style="display: none; text-align: center; padding: 6rem 2rem; background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px solid var(--border);">
+      <h2 style="font-size: 2rem; margin-bottom: 1rem;">Article Not Found</h2>
+      <p style="color: var(--text-muted); margin-bottom: 2rem;">The requested blog post doesn't exist or may have been moved.</p>
+      <a href="/blog" class="btn btn-primary" id="error-back-btn">Back to All Articles</a>
+    </div>
+
+    <article id="article-wrapper" style="display: none;">
+      <!-- Breadcrumb & Header -->
+      <div class="article-header">
+        <div class="article-breadcrumbs">
+          <a href="/blog" id="breadcrumb-blog">Blog</a>
+          <span>&rsaquo;</span>
+          <span id="breadcrumb-current" style="color: var(--text-muted);">Article</span>
+        </div>
+
+        <h1 class="article-title" id="post-title">Article Title</h1>
+
+        <div class="article-meta-row">
+          <div class="article-meta-item">
+            <div class="author-avatar" id="author-avatar">S</div>
+            <span>By <strong id="post-author">Sitendra</strong></span>
+          </div>
+          <span>&bull;</span>
+          <div class="article-meta-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+              <line x1="16" x2="16" y1="2" y2="6"/>
+              <line x1="8" x2="8" y1="2" y2="6"/>
+              <line x1="3" x2="3" y1="10" y2="10"/>
+            </svg>
+            <time id="post-date">Jan 1, 2026</time>
+          </div>
+          <span>&bull;</span>
+          <div class="article-meta-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span id="post-reading-time">3 min read</span>
+          </div>
+          <span>&bull;</span>
+          <div class="article-meta-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <span id="post-views">0 views</span>
+          </div>
+        </div>
+
+        <div class="post-tags" id="post-tags-container" style="justify-content: center; margin-bottom: 2rem;"></div>
+      </div>
+
+      <!-- Cover Image -->
+      <img id="post-cover" class="article-cover" style="display: none;" alt="Cover image">
+
+      <!-- Layout: Body + Sticky TOC Sidebar -->
+      <div class="article-layout" id="article-layout">
+        <div class="article-body" id="article-content"></div>
+
+        <!-- Sticky Table of Contents -->
+        <aside class="article-sidebar" id="article-sidebar">
+          <div class="toc-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="21" x2="3" y1="6" y2="6"/>
+              <line x1="15" x2="3" y1="12" y2="12"/>
+              <line x1="17" x2="3" y1="18" y2="18"/>
+            </svg>
+            Table of Contents
+          </div>
+          <ul class="toc-list" id="toc-list"></ul>
+        </aside>
+      </div>
+
+      <!-- Footer & Share & Author Box -->
+      <div class="article-footer-box">
+        <div class="share-section">
+          <div style="font-weight: 600; font-size: 1rem; color: var(--text-main);">
+            Enjoyed this article? Share it:
+          </div>
+          <div class="share-buttons">
+            <button class="btn btn-secondary btn-sm" id="share-twitter">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+              X / Twitter
+            </button>
+            <button class="btn btn-secondary btn-sm" id="share-linkedin">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+              </svg>
+              LinkedIn
+            </button>
+            <button class="btn btn-secondary btn-sm" id="share-copy">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+              </svg>
+              Copy Link
+            </button>
+          </div>
+        </div>
+
+        <div class="author-bio-card">
+          <div class="author-bio-avatar" id="bio-avatar">S</div>
+          <div class="author-bio-info">
+            <h4>Written by Sitendra Kumar Nagesh</h4>
+            <p>Mechanical Engineer, Software Developer, and Maker. Writing about systems, backend architectures, fullstack apps, and real-world software engineering.</p>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+              <a href="/about" style="font-size: 0.9rem; font-weight: 600;">Learn More About Me &rarr;</a>
+              <a href="https://sitendra.store" style="font-size: 0.9rem; color: var(--text-muted);">sitendra.store</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <!-- Toast Notification -->
+  <div class="toast-msg" id="toast">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--success);">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
+    <span id="toast-text">Link copied to clipboard!</span>
+  </div>
+
+  <!-- Footer -->
+  <footer class="blog-footer">
+    <p>&copy; 2026 Sitendra Kumar Nagesh &bull; <a href="/about" style="color: var(--text-muted);">About</a> &bull; <a href="/" style="color: var(--text-muted);">My Notes App</a> &bull; <a href="https://sitendra.store" style="color: var(--text-muted);">sitendra.store</a></p>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      // Subdomain link normalizer
+      const isSubdomain = window.location.hostname.startsWith("blog.");
+      const brandLink = document.getElementById("brand-link");
+      const navBlog = document.getElementById("nav-blog");
+      const breadcrumbBlog = document.getElementById("breadcrumb-blog");
+      const errorBackBtn = document.getElementById("error-back-btn");
+
+      if (brandLink) brandLink.href = isSubdomain ? "/" : "/blog";
+      if (navBlog) navBlog.href = isSubdomain ? "/" : "/blog";
+      if (breadcrumbBlog) breadcrumbBlog.href = isSubdomain ? "/" : "/blog";
+      if (errorBackBtn) errorBackBtn.href = isSubdomain ? "/" : "/blog";
+
+      // Reading Progress Handler
+      const progressBar = document.getElementById("progress-bar");
+      window.addEventListener("scroll", () => {
+        const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+        if (totalHeight > 0) {
+          const progress = (window.scrollY / totalHeight) * 100;
+          progressBar.style.width = `${Math.min(100, Math.max(0, progress))}%`;
+        }
+      });
+
+      // Extract slug from URL path or search query parameter
+      let slug = "";
+      const pathParts = window.location.pathname.split("/").filter(Boolean);
+      // Handles /post/:slug or /blog/post/:slug or ?slug=:slug
+      if (pathParts.includes("post")) {
+        const postIdx = pathParts.indexOf("post");
+        if (pathParts[postIdx + 1]) {
+          slug = decodeURIComponent(pathParts[postIdx + 1]);
+        }
+      }
+      if (!slug) {
+        const params = new URLSearchParams(window.location.search);
+        slug = params.get("slug") || "";
+      }
+
+      if (!slug) {
+        showError();
+        return;
+      }
+
+      const articleLoading = document.getElementById("article-loading");
+      const articleError = document.getElementById("article-error");
+      const articleWrapper = document.getElementById("article-wrapper");
+
+      function showError() {
+        articleLoading.style.display = "none";
+        articleWrapper.style.display = "none";
+        articleError.style.display = "block";
+      }
+
+      function showToast(text) {
+        const toast = document.getElementById("toast");
+        const toastText = document.getElementById("toast-text");
+        toastText.textContent = text;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 3000);
+      }
+
+      // Check current user to show "Edit Post" button if logged in author
+      try {
+        const authRes = await fetch("/me");
+        const authData = await authRes.json();
+        if (authData && authData.logged_in) {
+          const editBtn = document.getElementById("edit-current-post-btn");
+          if (editBtn) {
+            editBtn.style.display = "inline-flex";
+            editBtn.href = isSubdomain ? `/write?slug=${encodeURIComponent(slug)}` : `/blog/write?slug=${encodeURIComponent(slug)}`;
+          }
+        }
+      } catch (e) {
+        console.error("Auth check error:", e);
+      }
+
+      // Load Article Data
+      try {
+        const res = await fetch(`/api/blogs/post/${encodeURIComponent(slug)}`);
+        if (!res.ok) {
+          showError();
+          return;
+        }
+        const post = await res.json();
+        if (!post || !post.title) {
+          showError();
+          return;
+        }
+
+        // Set document metadata
+        document.title = `${post.title} | Sitendra's Blog`;
+        const metaDesc = document.getElementById("meta-description");
+        if (metaDesc && post.summary) metaDesc.content = post.summary;
+
+        document.getElementById("post-title").textContent = post.title;
+        document.getElementById("breadcrumb-current").textContent = post.title;
+        document.getElementById("post-author").textContent = post.author || "Sitendra";
+        document.getElementById("author-avatar").textContent = (post.author || "S")[0].toUpperCase();
+        document.getElementById("bio-avatar").textContent = (post.author || "S")[0].toUpperCase();
+        document.getElementById("post-reading-time").textContent = `${post.reading_time || 2} min read`;
+        document.getElementById("post-views").textContent = `${post.views || 1} views`;
+
+        if (post.created_at) {
+          document.getElementById("post-date").textContent = new Date(post.created_at).toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric"
+          });
+        }
+
+        // Tags
+        const tagsContainer = document.getElementById("post-tags-container");
+        if (post.tags) {
+          const tags = post.tags.split(",").map(t => t.trim()).filter(Boolean);
+          tagsContainer.innerHTML = tags.map(t => `<span class="post-tag">#${t}</span>`).join("");
+        }
+
+        // Cover Image
+        if (post.cover_image) {
+          const coverEl = document.getElementById("post-cover");
+          coverEl.src = post.cover_image;
+          coverEl.style.display = "block";
+        }
+
+        // Render Markdown content
+        const contentEl = document.getElementById("article-content");
+        
+        // Configure marked options
+        marked.setOptions({
+          highlight: function(code, lang) {
+            if (lang && hljs.getLanguage(lang)) {
+              try {
+                return hljs.highlight(code, { language: lang }).value;
+              } catch (__) {}
+            }
+            return hljs.highlightAuto(code).value;
+          },
+          breaks: true,
+          gfm: true
+        });
+
+        contentEl.innerHTML = marked.parse(post.content || "");
+
+        // Enhance Code Blocks with header & 1-click copy button
+        const pres = contentEl.querySelectorAll("pre");
+        pres.forEach((pre) => {
+          const codeEl = pre.querySelector("code");
+          const langClass = Array.from(codeEl.classList).find(c => c.startsWith("language-"));
+          const lang = langClass ? langClass.replace("language-", "") : "code";
+
+          const wrapper = document.createElement("div");
+          wrapper.className = "code-block-wrapper";
+
+          const header = document.createElement("div");
+          header.className = "code-header";
+          header.innerHTML = `
+            <span>${lang.toUpperCase()}</span>
+            <button class="copy-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+              </svg>
+              Copy
+            </button>
+          `;
+
+          const copyBtn = header.querySelector(".copy-btn");
+          copyBtn.addEventListener("click", () => {
+            navigator.clipboard.writeText(codeEl.innerText);
+            copyBtn.innerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--success);">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Copied!
+            `;
+            setTimeout(() => {
+              copyBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                  <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                </svg>
+                Copy
+              `;
+            }, 2000);
+          });
+
+          pre.parentNode.insertBefore(wrapper, pre);
+          wrapper.appendChild(header);
+          wrapper.appendChild(pre);
+        });
+
+        // Build Table of Contents
+        const headings = contentEl.querySelectorAll("h2, h3");
+        const tocList = document.getElementById("toc-list");
+        const sidebar = document.getElementById("article-sidebar");
+        const articleLayout = document.getElementById("article-layout");
+
+        if (headings.length >= 2) {
+          tocList.innerHTML = "";
+          headings.forEach((h, idx) => {
+            const headingId = `section-${idx + 1}`;
+            h.id = headingId;
+            const li = document.createElement("li");
+            li.style.paddingLeft = h.tagName.toLowerCase() === "h3" ? "1rem" : "0";
+            li.innerHTML = `<a href="#${headingId}" class="toc-link">${h.textContent}</a>`;
+            tocList.appendChild(li);
+          });
+        } else {
+          if (sidebar) sidebar.style.display = "none";
+          if (articleLayout) articleLayout.classList.add("no-sidebar");
+        }
+
+        // Share Handlers
+        const shareUrl = window.location.href;
+        const shareTitle = encodeURIComponent(post.title);
+        
+        document.getElementById("share-twitter").addEventListener("click", () => {
+          window.open(`https://twitter.com/intent/tweet?text=${shareTitle}&url=${encodeURIComponent(shareUrl)}`, "_blank");
+        });
+
+        document.getElementById("share-linkedin").addEventListener("click", () => {
+          window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, "_blank");
+        });
+
+        document.getElementById("share-copy").addEventListener("click", () => {
+          navigator.clipboard.writeText(shareUrl);
+          showToast("Article link copied to clipboard!");
+        });
+
+        // Display Article
+        articleLoading.style.display = "none";
+        articleWrapper.style.display = "block";
+
+      } catch (e) {
+        console.error("Error loading article:", e);
+        showError();
+      }
+    });
+  </script>
+</body>
+</html>

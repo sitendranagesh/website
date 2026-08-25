@@ -57,7 +57,13 @@
             return;
           }
 
-          window.location.href = "./index.html";
+          const urlParams = new URLSearchParams(window.location.search);
+          const nextUrl = urlParams.get("next");
+          if (nextUrl) {
+            window.location.href = nextUrl;
+          } else {
+            window.location.href = "./index.html";
+          }
         } catch (error) {
           errorEl.textContent = "Something went wrong. Try again.";
           console.error(error);

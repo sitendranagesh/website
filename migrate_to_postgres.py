@@ -44,8 +44,50 @@ def migrate():
                 "INSERT INTO users (username, password_hash) VALUES (%s, %s) ON CONFLICT (username) DO NOTHING",
                 (row["username"], row["password_hash"]),
             )
+    pg_cur.execute("""
+        CREATE TABLE IF NOT EXISTS blogs (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER NOT NULL,
+            title TEXT NOT NULL,
+            slug TEXT UNIQUE NOT NULL,
+            summary TEXT,
+            content TEXT NOT NULL,
+            cover_image TEXT,
+            tags TEXT,
+            is_published BOOLEAN DEFAULT TRUE,
+            views INTEGER DEFAULT 0,
+            reading_time INTEGER DEFAULT 1,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    pg_conn.commit()
+
+    try:
+        blogs = sqlite_conn.execute("SELECT * FROM blogs").fetchall()
+        for row in blogs:
+            pg_cur.execute(
+                """
+                INSERT INTO blogs (id, user_id, title, slug, summary, content, cover_image, tags, is_published, views, reading_time)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (slug) DO NOTHING
+                """,
+                (
+                    row["id"],
+                    row["user_id"],
+                    row["title"],
+                    row["slug"],
+                    row["summary"],
+                    row["content"],
+                    row["cover_image"],
+                    row["tags"],
+                    bool(row["is_published"]),
+                    row["views"],
+                    row["reading_time"],
+                ),
+            )
     except sqlite3.OperationalError:
-        print("No users table in SQLite — skipping user migration.")
+        print("No blogs table in SQLite — skipping blogs migration.")
 
     pg_conn.commit()
     sqlite_conn.close()
