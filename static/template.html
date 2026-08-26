@@ -4,7 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>View Note - My Notes</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="/cmd_k.css" />
   </head>
   <body>
   <header class="site-header">
@@ -15,9 +17,11 @@
       <h1>My Notes <span class="author">by <strong>Sitendra</strong></span></h1>
     </div>
     <div class="header-actions">
+      <span class="user-greeting" id="current_user"></span>
       <a href="/blog" class="btn secondary">Blog</a>
-      <span id="current_user" class="user-badge"></span>
+      <a href="/tools" class="btn secondary">Tools</a>
       <a href="./index.html" class="btn secondary">← Dashboard</a>
+      <button type="button" class="btn secondary" id="cmdk-btn" style="padding: 0.35rem 0.6rem; font-family: monospace;">⌘K</button>
       <button id="logout_btn" class="danger">Logout</button>
     </div>
   </header>
@@ -27,9 +31,11 @@
         <p id="get_note" style="white-space: pre-wrap; font-size: 1.1rem; color: var(--text-muted);">Loading note content...</p>
         <textarea id="edit_note_textarea" style="display: none;" rows="15"></textarea>
         
-        <div class="note-actions">
+        <div class="note-actions" style="flex-wrap: wrap; gap: 0.5rem;">
           <button id="edit_note" class="primary"> Edit Note </button>
           <button id="save_note" class="success" style="display: none;"> Save Changes </button>
+          <button id="share_note_btn" class="secondary"> 🔗 Share Link </button>
+          <button id="export_note_btn" class="secondary"> 📥 Export .md </button>
           <button id="delete_note" class="danger"> Delete Note </button>
         </div>
       </div>
@@ -174,7 +180,48 @@
             deleteBtn.textContent = "Delete Note";
           }
         });
+
+        // Share Public Link Handler
+        const shareBtn = document.getElementById("share_note_btn");
+        shareBtn.addEventListener("click", async () => {
+          shareBtn.disabled = true;
+          shareBtn.textContent = "Generating...";
+          try {
+            const res = await fetch("/api/note/share", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ title: title, enable: true })
+            });
+            const data = await res.json();
+            if (res.ok && data.share_id) {
+              const publicUrl = `${window.location.origin}/share/${data.share_id}`;
+              navigator.clipboard.writeText(publicUrl);
+              alert(`Public Share Link copied to clipboard!\n\n${publicUrl}`);
+            } else {
+              alert("Failed to generate share link.");
+            }
+          } catch (e) {
+            alert("Error sharing note.");
+          } finally {
+            shareBtn.disabled = false;
+            shareBtn.textContent = "🔗 Share Link";
+          }
+        });
+
+        // Export Markdown Handler
+        const exportBtn = document.getElementById("export_note_btn");
+        exportBtn.addEventListener("click", () => {
+          const content = getNoteEl.textContent || "";
+          const blob = new Blob([content], { type: "text/markdown" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `${title.replace(/\s+/g, "_")}.md`;
+          a.click();
+          URL.revokeObjectURL(url);
+        });
       });
     </script>
+    <script src="/cmd_k.js"></script>
   </body>
 </html>

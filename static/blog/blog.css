@@ -1351,3 +1351,65 @@ a:hover {
     font-size: 1.65rem;
   }
 }
+
+/* Reactions & Claps Bar */
+.reactions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  margin: 2.5rem 0 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.reactions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.reaction-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 0.45rem 0.9rem;
+  font-size: 0.92rem;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  user-select: none;
+}
+
+.reaction-btn:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--primary);
+  transform: scale(1.08);
+}
+
+.reaction-btn:active {
+  transform: scale(0.92);
+}
+
+.reaction-btn.reacted {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.reaction-emoji {
+  font-size: 1.15rem;
+}
+
+.reaction-count {
+  font-weight: 700;
+  font-size: 0.88rem;
+  font-family: var(--font-mono);
+}

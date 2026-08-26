@@ -1,0 +1,23 @@
+{
+  "name": "Sitendra - Engineering & Notes Platform",
+  "short_name": "Sitendra",
+  "description": "Personal engineering workspace, technical blog, notes, and developer tools by Sitendra Kumar Nagesh.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B1120",
+  "theme_color": "#0F172A",
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=192&auto=format&fit=crop",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=512&auto=format&fit=crop",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

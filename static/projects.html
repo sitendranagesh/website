@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects & Engineering Portfolio | Sitendra</title>
+  <meta name="description" content="Mechanical systems, software architectures, and fullstack products built by Sitendra Kumar Nagesh.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/blog/blog.css">
+  <link rel="stylesheet" href="/cmd_k.css">
+
+  <style>
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      gap: 2rem;
+    }
+    .project-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.25s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    .project-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(56, 189, 248, 0.4);
+      box-shadow: var(--shadow-glow);
+    }
+    .project-img-wrap {
+      width: 100%;
+      height: 210px;
+      background: var(--bg-surface-elevated);
+      overflow: hidden;
+    }
+    .project-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .project-card:hover .project-img {
+      transform: scale(1.04);
+    }
+    .project-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .project-category {
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    .project-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+      color: var(--text-main);
+    }
+    .project-desc {
+      font-size: 0.93rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+      flex: 1;
+    }
+    .project-footer {
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header class="blog-header">
+    <div class="brand-wrapper">
+      <a href="/" id="brand-link" style="display: flex; align-items: center; gap: 0.85rem; color: inherit;">
+        <div class="brand-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+            <polyline points="2 17 12 22 22 17"/>
+            <polyline points="2 12 12 17 22 12"/>
+          </svg>
+        </div>
+        <div class="brand-title">
+          Sitendra <span class="brand-badge">Projects</span>
+        </div>
+      </a>
+    </div>
+
+    <nav class="nav-links">
+      <a href="/blog" class="nav-item">Blog</a>
+      <a href="/tools" class="nav-item">Tools</a>
+      <a href="/about" class="nav-item">About</a>
+      <a href="/" class="nav-item">Notes App</a>
+      <button type="button" class="btn btn-secondary btn-sm" id="cmdk-btn" title="Quick Search (Cmd+K)">
+        <span style="font-family: var(--font-mono); font-size: 0.75rem;">⌘K</span>
+      </button>
+    </nav>
+  </header>
+
+  <main class="blog-container">
+    <div class="hero-section" style="padding: 1.5rem 0 2.5rem;">
+      <div class="hero-eyebrow">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+        Engineering Portfolio
+      </div>
+      <h1 class="hero-title">
+        Featured <span class="gradient-text">Projects & Systems</span>
+      </h1>
+      <p class="hero-desc">
+        A curated look at mechanical mechanisms, backend platforms, web apps, and systems I have engineered and shipped.
+      </p>
+
+      <!-- Category Filter -->
+      <div class="tags-scroller" id="project-filters">
+        <button class="tag-pill active" data-filter="all">All Projects</button>
+        <button class="tag-pill" data-filter="software">Software Engineering</button>
+        <button class="tag-pill" data-filter="mechanical">Mechanical & Systems</button>
+      </div>
+    </div>
+
+    <!-- Projects Grid -->
+    <div class="projects-grid" id="projects-list">
+      <!-- Project 1: Multi-Subdomain Blog Platform -->
+      <div class="project-card" data-category="software">
+        <div class="project-img-wrap">
+          <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=800&auto=format&fit=crop" class="project-img" alt="Blog Platform">
+        </div>
+        <div class="project-body">
+          <span class="project-category">Software Platform</span>
+          <h3 class="project-title">Dynamic Multi-Subdomain Engine & Blog</h3>
+          <p class="project-desc">
+            A high-speed technical publishing platform and notes engine built with FastAPI, PostgreSQL, and custom Host-header subdomain dispatching. Features live markdown preview and claps.
+          </p>
+          <div class="post-tags" style="margin-bottom: 1rem;">
+            <span class="post-tag">#FastAPI</span>
+            <span class="post-tag">#PostgreSQL</span>
+            <span class="post-tag">#Python</span>
+            <span class="post-tag">#PWA</span>
+          </div>
+          <div class="project-footer">
+            <a href="/blog" class="btn btn-primary btn-sm">Explore Blog &rarr;</a>
+            <a href="https://github.com/sitendranagesh" target="_blank" class="btn btn-secondary btn-sm">GitHub</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project 2: My Notes App -->
+      <div class="project-card" data-category="software">
+        <div class="project-img-wrap">
+          <img src="https://images.unsplash.com/photo-1517842645767-c639042777db?q=80&w=800&auto=format&fit=crop" class="project-img" alt="Notes App">
+        </div>
+        <div class="project-body">
+          <span class="project-category">Fullstack Application</span>
+          <h3 class="project-title">My Notes - Encrypted Personal Workspace</h3>
+          <p class="project-desc">
+            A minimalist, focused cloud note-taking system with session authentication, bcrypt encryption, per-user uniqueness guarantees, and public link sharing capabilities.
+          </p>
+          <div class="post-tags" style="margin-bottom: 1rem;">
+            <span class="post-tag">#WebDev</span>
+            <span class="post-tag">#Bcrypt</span>
+            <span class="post-tag">#SQLite</span>
+            <span class="post-tag">#Render</span>
+          </div>
+          <div class="project-footer">
+            <a href="/" class="btn btn-primary btn-sm">Open App &rarr;</a>
+            <a href="https://sitendra.store" class="btn btn-secondary btn-sm">Demo</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project 3: Precision Mechanical Mechanism -->
+      <div class="project-card" data-category="mechanical">
+        <div class="project-img-wrap">
+          <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=800&auto=format&fit=crop" class="project-img" alt="Mechanical Engineering">
+        </div>
+        <div class="project-body">
+          <span class="project-category">Mechanical Engineering</span>
+          <h3 class="project-title">Precision Mechanical Load Distribution</h3>
+          <p class="project-desc">
+            System design, CAD modeling, and tolerance analysis for high-load mechanical linkage systems with minimized friction loss and thermal stress resilience.
+          </p>
+          <div class="post-tags" style="margin-bottom: 1rem;">
+            <span class="post-tag">#CAD</span>
+            <span class="post-tag">#FEA</span>
+            <span class="post-tag">#Tolerances</span>
+            <span class="post-tag">#Mechanisms</span>
+          </div>
+          <div class="project-footer">
+            <a href="/about" class="btn btn-secondary btn-sm">Read Story &rarr;</a>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Mechanical</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project 4: Developer & Engineering Tools Hub -->
+      <div class="project-card" data-category="software">
+        <div class="project-img-wrap">
+          <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=800&auto=format&fit=crop" class="project-img" alt="Tools">
+        </div>
+        <div class="project-body">
+          <span class="project-category">Developer Tooling</span>
+          <h3 class="project-title">Engineering Tools & Units Utility</h3>
+          <p class="project-desc">
+            An open-source suite of client-side utilities including JSON formatting, real-time Regex matching, Markdown previewing, and multi-unit engineering converters.
+          </p>
+          <div class="post-tags" style="margin-bottom: 1rem;">
+            <span class="post-tag">#JavaScript</span>
+            <span class="post-tag">#Utilities</span>
+            <span class="post-tag">#Tools</span>
+          </div>
+          <div class="project-footer">
+            <a href="/tools" class="btn btn-primary btn-sm">Launch Tools &rarr;</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="blog-footer">
+    <p>&copy; 2026 Sitendra Kumar Nagesh &bull; <a href="/blog">Blog</a> &bull; <a href="/tools">Tools</a> &bull; <a href="/about">About</a> &bull; <a href="/">Notes</a></p>
+  </footer>
+
+  <script src="/cmd_k.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const filterBtns = document.querySelectorAll("#project-filters .tag-pill");
+      const projectCards = document.querySelectorAll(".project-card");
+
+      filterBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          filterBtns.forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          const filter = btn.dataset.filter;
+
+          projectCards.forEach(card => {
+            if (filter === "all" || card.dataset.category === filter) {
+              card.style.display = "flex";
+            } else {
+              card.style.display = "none";
+            }
+          });
+        });
+      });
+    });
+  </script>
+</body>
+</html>

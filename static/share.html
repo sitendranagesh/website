@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Shared Note | Sitendra</title>
+  <meta name="description" content="View a shared note from Sitendra's workspace.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/blog/blog.css">
+
+  <!-- Markdown Parser -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header class="blog-header">
+    <div class="brand-wrapper">
+      <a href="/" id="brand-link" style="display: flex; align-items: center; gap: 0.85rem; color: inherit;">
+        <div class="brand-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+          </svg>
+        </div>
+        <div class="brand-title">
+          My Notes <span class="brand-badge">Public Share</span>
+        </div>
+      </a>
+    </div>
+
+    <nav class="nav-links">
+      <a href="/blog" class="nav-item">Blog</a>
+      <a href="/tools" class="nav-item">Tools</a>
+      <a href="/about" class="nav-item">About</a>
+      <a href="/" class="btn btn-primary btn-sm">Create Your Notes</a>
+    </nav>
+  </header>
+
+  <main class="blog-container" style="max-width: 860px;">
+    <div id="note-loading" style="text-align: center; padding: 5rem 1rem; color: var(--text-muted);">
+      Loading shared note...
+    </div>
+
+    <div id="note-error" style="display: none; text-align: center; padding: 6rem 2rem; background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px solid var(--border);">
+      <h2 style="font-size: 2rem; margin-bottom: 1rem;">Note Not Found</h2>
+      <p style="color: var(--text-muted); margin-bottom: 2rem;">This shared link may have expired or public sharing was disabled by the author.</p>
+      <a href="/" class="btn btn-primary">Go to Homepage</a>
+    </div>
+
+    <div id="note-card" style="display: none; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2.5rem 2rem; box-shadow: var(--shadow-md);">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <span style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--primary); letter-spacing: 0.06em;">Shared Document</span>
+          <h1 id="note-title" style="font-size: 2rem; font-weight: 700; margin-top: 0.2rem; color: var(--text-main);">Note Title</h1>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.35rem;">
+            Author: <strong id="note-author" style="color: var(--text-main);">Sitendra</strong>
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button type="button" id="copy-note-btn" class="btn btn-secondary btn-sm">Copy Content</button>
+          <button type="button" id="print-note-btn" class="btn btn-secondary btn-sm">Print / PDF</button>
+        </div>
+      </div>
+
+      <div id="note-content" class="article-body" style="font-size: 1.05rem; line-height: 1.8;"></div>
+    </div>
+  </main>
+
+  <footer class="blog-footer">
+    <p>&copy; 2026 Sitendra Kumar Nagesh &bull; <a href="/blog">Blog</a> &bull; <a href="/tools">Tools</a> &bull; <a href="/about">About</a> &bull; <a href="/">Notes</a></p>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const pathParts = window.location.pathname.split("/").filter(Boolean);
+      let shareId = "";
+      if (pathParts.includes("share")) {
+        const idx = pathParts.indexOf("share");
+        shareId = pathParts[idx + 1] || "";
+      }
+      if (!shareId) {
+        const params = new URLSearchParams(window.location.search);
+        shareId = params.get("id") || "";
+      }
+
+      const noteLoading = document.getElementById("note-loading");
+      const noteError = document.getElementById("note-error");
+      const noteCard = document.getElementById("note-card");
+
+      if (!shareId) {
+        noteLoading.style.display = "none";
+        noteError.style.display = "block";
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/note/shared/${encodeURIComponent(shareId)}`);
+        if (!res.ok) {
+          noteLoading.style.display = "none";
+          noteError.style.display = "block";
+          return;
+        }
+        const note = await res.json();
+        if (!note || !note.title) {
+          noteLoading.style.display = "none";
+          noteError.style.display = "block";
+          return;
+        }
+
+        document.title = `${note.title} | Shared Note - Sitendra`;
+        document.getElementById("note-title").textContent = note.title;
+        document.getElementById("note-author").textContent = note.author || "Sitendra";
+
+        marked.setOptions({ breaks: true, gfm: true });
+        document.getElementById("note-content").innerHTML = marked.parse(note.content || "");
+
+        document.getElementById("copy-note-btn").addEventListener("click", () => {
+          navigator.clipboard.writeText(note.content || "");
+          alert("Note content copied to clipboard!");
+        });
+
+        document.getElementById("print-note-btn").addEventListener("click", () => {
+          window.print();
+        });
+
+        noteLoading.style.display = "none";
+        noteCard.style.display = "block";
+      } catch (e) {
+        noteLoading.style.display = "none";
+        noteError.style.display = "block";
+      }
+    });
+  </script>
+</body>
+</html>

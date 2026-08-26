@@ -1,14 +1,24 @@
-from fastapi import FastAPI, Request, HTTPException, Depends, Query
+from fastapi import FastAPI, Request, HTTPException, Depends, Query, Response
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import RedirectResponse, FileResponse
+from fastapi.responses import RedirectResponse, FileResponse, PlainTextResponse
 from starlette.middleware.sessions import SessionMiddleware
 from pydantic import BaseModel
 from typing import Optional
 from pathlib import Path
+from datetime import datetime
 import os
 import re
+import html
 
-from database.database_operation import add_note, get_all_notes, update_note, get_notes_by_title, delete_note
+from database.database_operation import (
+    add_note,
+    get_all_notes,
+    update_note,
+    get_notes_by_title,
+    delete_note,
+    toggle_note_sharing,
+    get_shared_note,
+)
 from database.auth_operation import create_users_table, verify_user, add_user
 from database.blog_operation import (
     init_blog_db,
@@ -20,13 +30,16 @@ from database.blog_operation import (
     get_blog_by_id,
     get_all_blogs_for_user,
     get_all_tags,
+    get_reactions_for_blog,
+    add_reaction_to_blog,
+    add_newsletter_subscriber,
 )
 
 BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
 INTRO_DIR = BASE_DIR / "intro"
 
-app = FastAPI(title="Sitendra Multi-Subdomain Platform", version="2.5.0")
+app = FastAPI(title="Sitendra Multi-Subdomain Platform", version="3.0.0")
 
 SECRET_KEY = os.environ.get("SESSION_SECRET_KEY", "dev-secret-change-me")
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
@@ -51,6 +64,19 @@ class BlogPayload(BaseModel):
     is_published: Optional[bool] = True
 
 
+class NewsletterPayload(BaseModel):
+    email: str
+
+
+class ReactionPayload(BaseModel):
+    reaction: str
+
+
+class ShareNotePayload(BaseModel):
+    title: str
+    enable: Optional[bool] = True
+
+
 # =========================================================
 # Authentication Helpers
 # =========================================================
@@ -69,14 +95,14 @@ def extract_subdomain(request: Request) -> Optional[str]:
     Extracts the subdomain from the incoming Host header.
     Examples:
       - blog.sitendra.store -> 'blog'
+      - tools.sitendra.store -> 'tools'
+      - projects.sitendra.store -> 'projects'
       - app.sitendra.store  -> 'app'
-      - docs.sitendra.store -> 'docs'
       - about.sitendra.store -> 'about'
       - sitendra.store      -> None
       - www.sitendra.store  -> None
       - blog.localhost:8000 -> 'blog'
       - localhost:8000      -> None
-      - 127.0.0.1:8000      -> None
     """
     host = request.headers.get("host", "").lower().split(":")[0]
     if not host or re.match(r"^\d{1,3}(\.\d{1,3}){3}$", host):
@@ -84,11 +110,11 @@ def extract_subdomain(request: Request) -> Optional[str]:
 
     parts = host.split(".")
     
-    # Handle localhost development (e.g. blog.localhost)
+    # Localhost development (e.g. blog.localhost)
     if len(parts) == 2 and parts[1] == "localhost":
         return parts[0] if parts[0] != "www" else None
         
-    # Handle production domains (e.g. blog.sitendra.store)
+    # Production custom domain (e.g. blog.sitendra.store)
     if len(parts) > 2:
         sub = parts[0]
         if sub != "www":
@@ -98,7 +124,7 @@ def extract_subdomain(request: Request) -> Optional[str]:
 
 
 # =========================================================
-# Dynamic Host & Subdomain Dispatcher
+# Dynamic Host & Subdomain Root Dispatcher
 # =========================================================
 @app.get("/")
 def dynamic_root_dispatcher(request: Request):
@@ -108,19 +134,29 @@ def dynamic_root_dispatcher(request: Request):
     if subdomain == "blog":
         return FileResponse(STATIC_DIR / "blog" / "index.html")
 
-    # 2. About / Profile Subdomain (about.sitendra.store / me.sitendra.store)
+    # 2. Tools Subdomain (tools.sitendra.store)
+    if subdomain == "tools":
+        return FileResponse(STATIC_DIR / "tools.html")
+
+    # 3. Projects Subdomain (projects.sitendra.store)
+    if subdomain in ("projects", "portfolio"):
+        return FileResponse(STATIC_DIR / "projects.html")
+
+    # 4. About / Profile Subdomain (about.sitendra.store / me.sitendra.store)
     if subdomain in ("about", "me", "intro"):
         intro_file = INTRO_DIR / "index.html"
         if intro_file.exists():
             return FileResponse(intro_file)
 
-    # 3. Notes / App Subdomain (app.sitendra.store / notes.sitendra.store)
-    # or Main Root Domain (sitendra.store)
+    # 5. Notes App / Main Root Domain (sitendra.store or app.sitendra.store)
     if not request.session.get("user_id"):
         return RedirectResponse(url="/login.html")
     return RedirectResponse(url="/index.html")
 
 
+# =========================================================
+# Universal Navigation Pages
+# =========================================================
 @app.get("/about")
 def about_page():
     intro_file = INTRO_DIR / "index.html"
@@ -129,8 +165,23 @@ def about_page():
     return RedirectResponse(url="/")
 
 
+@app.get("/tools")
+def tools_page():
+    return FileResponse(STATIC_DIR / "tools.html")
+
+
+@app.get("/projects")
+def projects_page():
+    return FileResponse(STATIC_DIR / "projects.html")
+
+
+@app.get("/share/{share_id}")
+def view_shared_note_page(share_id: str):
+    return FileResponse(STATIC_DIR / "share.html")
+
+
 # =========================================================
-# Universal Blog Routes (Subdomain & Direct Path)
+# Universal Blog Routes
 # =========================================================
 @app.get("/blog")
 @app.get("/blog/")
@@ -152,6 +203,103 @@ def blog_write(request: Request):
 @app.get("/post/{slug}")
 def blog_single_post(slug: str):
     return FileResponse(STATIC_DIR / "blog" / "post.html")
+
+
+# =========================================================
+# SEO: Dynamic RSS 2.0 Feed & XML Sitemap & Robots.txt
+# =========================================================
+@app.get("/feed.xml")
+@app.get("/rss.xml")
+def rss_feed():
+    blogs = get_published_blogs(limit=50)
+    base_url = "https://blog.sitendra.store"
+
+    items_xml = []
+    for b in blogs:
+        title = html.escape(b["title"])
+        summary = html.escape(b["summary"] or "")
+        post_link = f"{base_url}/post/{b['slug']}"
+        date_str = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
+        if b.get("created_at"):
+            try:
+                dt = datetime.fromisoformat(str(b["created_at"]).replace("Z", "+00:00"))
+                date_str = dt.strftime("%a, %d %b %Y %H:%M:%S GMT")
+            except Exception:
+                pass
+
+        items_xml.append(f"""
+        <item>
+            <title>{title}</title>
+            <link>{post_link}</link>
+            <guid isPermaLink="true">{post_link}</guid>
+            <description>{summary}</description>
+            <pubDate>{date_str}</pubDate>
+            <author>sitendranagesh@gmail.com (Sitendra Kumar Nagesh)</author>
+        </item>""")
+
+    xml_content = f"""<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Sitendra's Engineering &amp; Systems Blog</title>
+        <link>https://blog.sitendra.store</link>
+        <description>Technical articles on software architecture, backend systems, and mechanical engineering by Sitendra Kumar Nagesh.</description>
+        <language>en-us</language>
+        <atom:link href="https://blog.sitendra.store/feed.xml" rel="self" type="application/rss+xml"/>
+        {"".join(items_xml)}
+    </channel>
+</rss>"""
+
+    return Response(content=xml_content.strip(), media_type="application/xml")
+
+
+@app.get("/sitemap.xml")
+def sitemap_xml():
+    blogs = get_published_blogs(limit=100)
+    today = datetime.utcnow().strftime("%Y-%m-%d")
+
+    urls = [
+        {"loc": "https://sitendra.store/", "priority": "1.0", "changefreq": "daily"},
+        {"loc": "https://sitendra.store/about", "priority": "0.9", "changefreq": "monthly"},
+        {"loc": "https://blog.sitendra.store/", "priority": "0.95", "changefreq": "daily"},
+        {"loc": "https://sitendra.store/tools", "priority": "0.85", "changefreq": "weekly"},
+        {"loc": "https://sitendra.store/projects", "priority": "0.85", "changefreq": "monthly"},
+    ]
+
+    for b in blogs:
+        urls.append({
+            "loc": f"https://blog.sitendra.store/post/{b['slug']}",
+            "priority": "0.8",
+            "changefreq": "weekly"
+        })
+
+    urls_xml = []
+    for u in urls:
+        urls_xml.append(f"""
+    <url>
+        <loc>{u['loc']}</loc>
+        <lastmod>{today}</lastmod>
+        <changefreq>{u['changefreq']}</changefreq>
+        <priority>{u['priority']}</priority>
+    </url>""")
+
+    sitemap_content = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    {"".join(urls_xml)}
+</urlset>"""
+
+    return Response(content=sitemap_content.strip(), media_type="application/xml")
+
+
+@app.get("/robots.txt")
+def robots_txt():
+    content = """User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /write
+
+Sitemap: https://sitendra.store/sitemap.xml
+"""
+    return PlainTextResponse(content=content)
 
 
 # =========================================================
@@ -203,7 +351,7 @@ def get_current_user(request: Request):
 
 
 # =========================================================
-# Notes Endpoints (Existing App)
+# Notes Endpoints & Public Note Sharing
 # =========================================================
 @app.post("/note")
 def add_notes(note_title: str, note_content: str, user_id: int = Depends(require_login)):
@@ -241,8 +389,26 @@ def list_notes(user_id: int = Depends(require_login)):
     return titles
 
 
+@app.post("/api/note/share")
+def share_note_endpoint(payload: ShareNotePayload, user_id: int = Depends(require_login)):
+    """Generates or toggles a public sharing link for a note."""
+    try:
+        return toggle_note_sharing(user_id, payload.title, payload.enable)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@app.get("/api/note/shared/{share_id}")
+def fetch_public_shared_note(share_id: str):
+    """Public read-only endpoint for viewing a shared note."""
+    note = get_shared_note(share_id)
+    if not note:
+        raise HTTPException(status_code=404, detail="Shared note not found or link expired.")
+    return note
+
+
 # =========================================================
-# Blog REST API Endpoints
+# Blog REST API & Reactions Endpoints
 # =========================================================
 @app.get("/api/blogs")
 def list_published_blogs(
@@ -268,6 +434,30 @@ def fetch_single_blog(slug: str, increment: bool = True):
     if not post:
         raise HTTPException(status_code=404, detail="Blog post not found")
     return post
+
+
+@app.get("/api/blogs/{slug}/reactions")
+def get_reactions(slug: str):
+    """Public: Get claps/reaction counts for an article."""
+    return get_reactions_for_blog(slug)
+
+
+@app.post("/api/blogs/{slug}/react")
+def post_reaction(slug: str, payload: ReactionPayload):
+    """Public: Add a clap/reaction to an article."""
+    try:
+        return add_reaction_to_blog(slug, payload.reaction)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post("/api/newsletter/subscribe")
+def subscribe_newsletter(payload: NewsletterPayload):
+    """Public: Subscribe email to newsletter dispatch."""
+    try:
+        return add_newsletter_subscriber(payload.email)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @app.get("/api/blogs/admin/my-posts")

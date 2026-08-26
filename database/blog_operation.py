@@ -26,6 +26,23 @@ def init_blog_db():
                 updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
             )
         """)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS blog_reactions (
+                id SERIAL PRIMARY KEY,
+                blog_id INTEGER NOT NULL,
+                reaction_type TEXT NOT NULL,
+                count INTEGER DEFAULT 0,
+                CONSTRAINT unique_blog_reaction UNIQUE (blog_id, reaction_type)
+            )
+        """)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+                id SERIAL PRIMARY KEY,
+                email TEXT UNIQUE NOT NULL,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                is_active BOOLEAN DEFAULT TRUE
+            )
+        """)
     else:
         cur.execute("""
             CREATE TABLE IF NOT EXISTS blogs (
@@ -42,6 +59,23 @@ def init_blog_db():
                 reading_time INTEGER DEFAULT 1,
                 created_at TEXT DEFAULT (datetime('now')),
                 updated_at TEXT DEFAULT (datetime('now'))
+            )
+        """)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS blog_reactions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                blog_id INTEGER NOT NULL,
+                reaction_type TEXT NOT NULL,
+                count INTEGER DEFAULT 0,
+                UNIQUE(blog_id, reaction_type)
+            )
+        """)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                email TEXT UNIQUE NOT NULL,
+                created_at TEXT DEFAULT (datetime('now')),
+                is_active INTEGER DEFAULT 1
             )
         """)
 
@@ -341,6 +375,117 @@ def get_all_tags() -> list:
 
     sorted_tags = sorted([{"tag": k, "count": v} for k, v in tag_counts.items()], key=lambda x: x["count"], reverse=True)
     return sorted_tags
+
+
+# =========================================================
+# Reactions / Claps Engine
+# =========================================================
+VALID_REACTIONS = {"clap", "idea", "heart", "rocket"}
+
+
+def get_reactions_for_blog(slug: str) -> dict:
+    """Returns counts for all reaction types for a given blog post."""
+    p = placeholder()
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute(f"SELECT id FROM blogs WHERE slug = {p}", (slug,))
+    blog_row = cur.fetchone()
+    if not blog_row:
+        conn.close()
+        return {r: 0 for r in VALID_REACTIONS}
+
+    blog_id = blog_row["id"] if hasattr(blog_row, "keys") else blog_row[0]
+    cur.execute(f"SELECT reaction_type, count FROM blog_reactions WHERE blog_id = {p}", (blog_id,))
+    rows = cur.fetchall()
+    conn.close()
+
+    counts = {r: 0 for r in VALID_REACTIONS}
+    for row in rows:
+        r_type = row["reaction_type"] if hasattr(row, "keys") else row[0]
+        r_count = row["count"] if hasattr(row, "keys") else row[1]
+        if r_type in counts:
+            counts[r_type] = r_count
+    return counts
+
+
+def add_reaction_to_blog(slug: str, reaction_type: str) -> dict:
+    """Increments a reaction count (clap, idea, heart, rocket)."""
+    reaction_type = reaction_type.lower().strip()
+    if reaction_type not in VALID_REACTIONS:
+        raise ValueError(f"Invalid reaction type. Must be one of: {', '.join(VALID_REACTIONS)}")
+
+    p = placeholder()
+    conn = get_connection()
+    cur = conn.cursor()
+
+    try:
+        cur.execute(f"SELECT id FROM blogs WHERE slug = {p}", (slug,))
+        blog_row = cur.fetchone()
+        if not blog_row:
+            raise ValueError("Blog post not found")
+
+        blog_id = blog_row["id"] if hasattr(blog_row, "keys") else blog_row[0]
+
+        if is_postgres():
+            cur.execute(
+                f"""
+                INSERT INTO blog_reactions (blog_id, reaction_type, count)
+                VALUES ({p}, {p}, 1)
+                ON CONFLICT (blog_id, reaction_type)
+                DO UPDATE SET count = blog_reactions.count + 1
+                """,
+                (blog_id, reaction_type),
+            )
+        else:
+            cur.execute(
+                f"""
+                INSERT INTO blog_reactions (blog_id, reaction_type, count)
+                VALUES ({p}, {p}, 1)
+                ON CONFLICT(blog_id, reaction_type)
+                DO UPDATE SET count = count + 1
+                """,
+                (blog_id, reaction_type),
+            )
+
+        conn.commit()
+    finally:
+        conn.close()
+
+    return get_reactions_for_blog(slug)
+
+
+# =========================================================
+# Newsletter Subscription Engine
+# =========================================================
+EMAIL_REGEX = re.compile(r"^[\w\.-]+@[\w\.-]+\.\w+$")
+
+
+def add_newsletter_subscriber(email: str) -> dict:
+    """Adds a subscriber email address."""
+    email = email.lower().strip()
+    if not EMAIL_REGEX.match(email):
+        raise ValueError("Please provide a valid email address.")
+
+    p = placeholder()
+    conn = get_connection()
+    cur = conn.cursor()
+
+    try:
+        if is_postgres():
+            cur.execute(
+                f"INSERT INTO newsletter_subscribers (email) VALUES ({p}) ON CONFLICT (email) DO NOTHING",
+                (email,),
+            )
+        else:
+            cur.execute(
+                f"INSERT OR IGNORE INTO newsletter_subscribers (email) VALUES ({p})",
+                (email,),
+            )
+        conn.commit()
+        return {"status": "Subscribed successfully", "email": email}
+    finally:
+        conn.close()
 
 
 init_blog_db()

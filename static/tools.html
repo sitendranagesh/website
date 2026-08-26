@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developer & Engineering Tools | Sitendra</title>
+  <meta name="description" content="Free, fast, privacy-friendly online developer and engineering tools built by Sitendra. JSON Formatter, Unit Converter, Markdown Converter, and Regex Tester.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/blog/blog.css">
+  <link rel="stylesheet" href="/cmd_k.css">
+
+  <style>
+    .tools-nav {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .tool-tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.25rem;
+      background: var(--bg-surface);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .tool-tab-btn:hover {
+      background: var(--bg-surface-hover);
+      color: var(--text-main);
+    }
+    .tool-tab-btn.active {
+      background: var(--primary-gradient);
+      color: #0B1120;
+      border-color: transparent;
+      font-weight: 700;
+      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+    }
+    .tool-pane {
+      display: none;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+    }
+    .tool-pane.active {
+      display: block;
+    }
+    .converter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      align-items: end;
+    }
+    .output-box {
+      background: #090D16;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      color: var(--primary);
+      min-height: 120px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header class="blog-header">
+    <div class="brand-wrapper">
+      <a href="/" id="brand-link" style="display: flex; align-items: center; gap: 0.85rem; color: inherit;">
+        <div class="brand-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+          </svg>
+        </div>
+        <div class="brand-title">
+          Sitendra <span class="brand-badge">Tools</span>
+        </div>
+      </a>
+    </div>
+
+    <nav class="nav-links">
+      <a href="/blog" class="nav-item">Blog</a>
+      <a href="/projects" class="nav-item">Projects</a>
+      <a href="/about" class="nav-item">About</a>
+      <a href="/" class="nav-item">Notes App</a>
+      <button type="button" class="btn btn-secondary btn-sm" id="cmdk-btn" title="Quick Search (Cmd+K)">
+        <span style="font-family: var(--font-mono); font-size: 0.75rem;">⌘K</span>
+      </button>
+    </nav>
+  </header>
+
+  <main class="blog-container">
+    <div class="hero-section" style="padding: 1.5rem 0 2rem;">
+      <div class="hero-eyebrow">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/>
+          <polyline points="8 6 2 12 8 18"/>
+        </svg>
+        Free Engineering & Dev Utilities
+      </div>
+      <h1 class="hero-title" style="font-size: 2.4rem;">
+        Developer & <span class="gradient-text">Engineering Tools</span>
+      </h1>
+      <p class="hero-desc">
+        Fast, lightweight, client-side tools with zero trackers. Built for daily engineering workflows.
+      </p>
+    </div>
+
+    <!-- Tool Switcher Tabs -->
+    <div class="tools-nav">
+      <button class="tool-tab-btn active" data-tool="json">
+        <span>{ }</span> JSON Formatter
+      </button>
+      <button class="tool-tab-btn" data-tool="units">
+        <span>⚙️</span> Engineering Unit Converter
+      </button>
+      <button class="tool-tab-btn" data-tool="markdown">
+        <span>📝</span> Markdown Live Preview
+      </button>
+      <button class="tool-tab-btn" data-tool="regex">
+        <span>.*</span> Regex Tester
+      </button>
+    </div>
+
+    <!-- 1. JSON Formatter & Validator -->
+    <div class="tool-pane active" id="pane-json">
+      <h2 style="font-size: 1.35rem; margin-bottom: 1rem;">JSON Formatter & Validator</h2>
+      <div style="margin-bottom: 1rem; display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        <button type="button" class="btn btn-primary btn-sm" id="json-format-2">Beautify (2 Spaces)</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="json-format-4">Beautify (4 Spaces)</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="json-minify">Minify</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="json-copy">Copy Result</button>
+        <button type="button" class="btn btn-danger btn-sm" id="json-clear">Clear</button>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+        <div>
+          <label class="form-label">Input JSON</label>
+          <textarea id="json-input" class="editor-textarea" style="background: #090D16; border: 1px solid var(--border); border-radius: var(--radius-md); min-height: 280px;" placeholder='{"project": "sitendra.store", "tags": ["python", "fastapi"]}'></textarea>
+        </div>
+        <div>
+          <label class="form-label">Formatted Output</label>
+          <div id="json-output" class="output-box" style="min-height: 280px; max-height: 450px; overflow-y: auto;">Your formatted JSON will appear here...</div>
+        </div>
+      </div>
+      <p id="json-status" style="margin-top: 0.75rem; font-size: 0.9rem;"></p>
+    </div>
+
+    <!-- 2. Engineering Unit Converter -->
+    <div class="tool-pane" id="pane-units">
+      <h2 style="font-size: 1.35rem; margin-bottom: 1rem;">Engineering Unit Converter</h2>
+      
+      <div class="form-group" style="max-width: 320px; margin-bottom: 1.5rem;">
+        <label class="form-label">Measurement Category</label>
+        <select id="unit-category" class="form-control">
+          <option value="pressure">Pressure (Bar, PSI, Pascal, MPa)</option>
+          <option value="torque">Torque (N·m, lb-ft, kg·m)</option>
+          <option value="power">Power (kW, HP, Watts, BTU/hr)</option>
+          <option value="force">Force (Newton, kN, lbf, kgf)</option>
+          <option value="temperature">Temperature (°C, °F, Kelvin)</option>
+          <option value="speed">Velocity / Speed (m/s, km/h, mph, knots)</option>
+        </select>
+      </div>
+
+      <div class="converter-grid">
+        <div class="form-group">
+          <label class="form-label">From Value</label>
+          <input type="number" id="unit-input-val" class="form-control" value="1" step="any">
+        </div>
+        <div class="form-group">
+          <label class="form-label">From Unit</label>
+          <select id="unit-from-select" class="form-control"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">To Unit</label>
+          <select id="unit-to-select" class="form-control"></select>
+        </div>
+      </div>
+
+      <div style="margin-top: 1.5rem; padding: 1.5rem; background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-md);">
+        <span style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Converted Result</span>
+        <div id="unit-result" style="font-size: 1.8rem; font-weight: 700; color: var(--primary); margin-top: 0.4rem;">...</div>
+      </div>
+    </div>
+
+    <!-- 3. Markdown Live Converter -->
+    <div class="tool-pane" id="pane-markdown">
+      <h2 style="font-size: 1.35rem; margin-bottom: 1rem;">Markdown Live Converter</h2>
+      <div style="margin-bottom: 1rem; display: flex; gap: 0.75rem;">
+        <button type="button" class="btn btn-primary btn-sm" id="md-copy-html">Copy Clean HTML</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="md-sample">Load Sample</button>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+        <div>
+          <label class="form-label">Markdown Input</label>
+          <textarea id="md-input" class="editor-textarea" style="background: #090D16; border: 1px solid var(--border); border-radius: var(--radius-md); min-height: 300px;" placeholder="# Heading&#10;&#10;Write **markdown** here..."></textarea>
+        </div>
+        <div>
+          <label class="form-label">Live HTML Preview</label>
+          <div id="md-output" class="article-body output-box" style="min-height: 300px; max-height: 450px; overflow-y: auto; color: var(--text-main); background: var(--bg-surface-elevated);"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Regex Tester -->
+    <div class="tool-pane" id="pane-regex">
+      <h2 style="font-size: 1.35rem; margin-bottom: 1rem;">Regex Tester & Matcher</h2>
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Regular Expression</label>
+          <input type="text" id="regex-pattern" class="form-control" placeholder="e.g. ([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})" value="\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Flags</label>
+          <input type="text" id="regex-flags" class="form-control" placeholder="g, i, m" value="gi">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Test String</label>
+        <textarea id="regex-test-str" class="editor-textarea" style="background: #090D16; border: 1px solid var(--border); border-radius: var(--radius-md); min-height: 140px;" placeholder="Enter sample text to test regex matches...">Contact Sitendra at sitendra@example.com or support@sitendra.store for engineering inquiries.</textarea>
+      </div>
+
+      <div>
+        <label class="form-label">Matches Result</label>
+        <div id="regex-result" class="output-box" style="min-height: 100px;">Matches will appear here...</div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="blog-footer">
+    <p>&copy; 2026 Sitendra Kumar Nagesh &bull; <a href="/blog">Blog</a> &bull; <a href="/projects">Projects</a> &bull; <a href="/about">About</a> &bull; <a href="/">Notes</a></p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="/cmd_k.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Tab Switching
+      const tabs = document.querySelectorAll(".tool-tab-btn");
+      const panes = document.querySelectorAll(".tool-pane");
+
+      tabs.forEach(t => {
+        t.addEventListener("click", () => {
+          tabs.forEach(tab => tab.classList.remove("active"));
+          panes.forEach(pane => pane.classList.remove("active"));
+          t.classList.add("active");
+          const target = document.getElementById(`pane-${t.dataset.tool}`);
+          if (target) target.classList.add("active");
+        });
+      });
+
+      // 1. JSON Formatter
+      const jsonInput = document.getElementById("json-input");
+      const jsonOutput = document.getElementById("json-output");
+      const jsonStatus = document.getElementById("json-status");
+
+      function formatJSON(space) {
+        try {
+          const val = jsonInput.value.trim();
+          if (!val) {
+            jsonOutput.textContent = "Please enter JSON above.";
+            jsonStatus.textContent = "";
+            return;
+          }
+          const parsed = JSON.parse(val);
+          const formatted = JSON.stringify(parsed, null, space);
+          jsonOutput.textContent = formatted;
+          jsonStatus.style.color = "var(--success)";
+          jsonStatus.textContent = "✅ Valid JSON syntax";
+        } catch (e) {
+          jsonOutput.textContent = e.message;
+          jsonStatus.style.color = "var(--danger)";
+          jsonStatus.textContent = "❌ Invalid JSON: " + e.message;
+        }
+      }
+
+      document.getElementById("json-format-2").addEventListener("click", () => formatJSON(2));
+      document.getElementById("json-format-4").addEventListener("click", () => formatJSON(4));
+      document.getElementById("json-minify").addEventListener("click", () => formatJSON(0));
+      document.getElementById("json-copy").addEventListener("click", () => {
+        navigator.clipboard.writeText(jsonOutput.textContent);
+        alert("JSON copied to clipboard!");
+      });
+      document.getElementById("json-clear").addEventListener("click", () => {
+        jsonInput.value = "";
+        jsonOutput.textContent = "";
+        jsonStatus.textContent = "";
+      });
+
+      // 2. Unit Converter
+      const unitsDB = {
+        pressure: {
+          units: ["bar", "psi", "Pa", "kPa", "MPa", "atm", "torr"],
+          toBase: { bar: 1e5, psi: 6894.76, Pa: 1, kPa: 1000, MPa: 1e6, atm: 101325, torr: 133.322 }
+        },
+        torque: {
+          units: ["N·m", "lb-ft", "lb-in", "kg·m"],
+          toBase: { "N·m": 1, "lb-ft": 1.35582, "lb-in": 0.112985, "kg·m": 9.80665 }
+        },
+        power: {
+          units: ["kW", "HP", "Watts", "BTU/hr"],
+          toBase: { kW: 1000, HP: 745.7, Watts: 1, "BTU/hr": 0.293071 }
+        },
+        force: {
+          units: ["N", "kN", "lbf", "kgf"],
+          toBase: { N: 1, kN: 1000, lbf: 4.44822, kgf: 9.80665 }
+        },
+        speed: {
+          units: ["m/s", "km/h", "mph", "knots"],
+          toBase: { "m/s": 1, "km/h": 0.277778, mph: 0.44704, knots: 0.514444 }
+        },
+        temperature: {
+          units: ["°C", "°F", "Kelvin"]
+        }
+      };
+
+      const categorySelect = document.getElementById("unit-category");
+      const fromSelect = document.getElementById("unit-from-select");
+      const toSelect = document.getElementById("unit-to-select");
+      const inputVal = document.getElementById("unit-input-val");
+      const resultEl = document.getElementById("unit-result");
+
+      function populateUnits() {
+        const cat = categorySelect.value;
+        const list = unitsDB[cat].units;
+        fromSelect.innerHTML = "";
+        toSelect.innerHTML = "";
+        list.forEach((u, i) => {
+          fromSelect.add(new Option(u, u));
+          toSelect.add(new Option(u, u, false, i === 1));
+        });
+        convertUnits();
+      }
+
+      function convertUnits() {
+        const val = parseFloat(inputVal.value);
+        if (isNaN(val)) {
+          resultEl.textContent = "...";
+          return;
+        }
+        const cat = categorySelect.value;
+        const from = fromSelect.value;
+        const to = toSelect.value;
+
+        if (cat === "temperature") {
+          let c;
+          if (from === "°C") c = val;
+          else if (from === "°F") c = (val - 32) * 5/9;
+          else if (from === "Kelvin") c = val - 273.15;
+
+          let res;
+          if (to === "°C") res = c;
+          else if (to === "°F") res = (c * 9/5) + 32;
+          else if (to === "Kelvin") res = c + 273.15;
+          resultEl.textContent = `${res.toFixed(4).replace(/\.?0+$/, '')} ${to}`;
+          return;
+        }
+
+        const toBase = unitsDB[cat].toBase;
+        const baseVal = val * toBase[from];
+        const res = baseVal / toBase[to];
+        resultEl.textContent = `${res.toFixed(6).replace(/\.?0+$/, '')} ${to}`;
+      }
+
+      categorySelect.addEventListener("change", populateUnits);
+      fromSelect.addEventListener("change", convertUnits);
+      toSelect.addEventListener("change", convertUnits);
+      inputVal.addEventListener("input", convertUnits);
+      populateUnits();
+
+      // 3. Markdown Converter
+      const mdInput = document.getElementById("md-input");
+      const mdOutput = document.getElementById("md-output");
+      function updateMarkdown() {
+        mdOutput.innerHTML = marked.parse(mdInput.value || "");
+      }
+      mdInput.addEventListener("input", updateMarkdown);
+      document.getElementById("md-copy-html").addEventListener("click", () => {
+        navigator.clipboard.writeText(marked.parse(mdInput.value || ""));
+        alert("Clean HTML copied to clipboard!");
+      });
+      document.getElementById("md-sample").addEventListener("click", () => {
+        mdInput.value = "# High-Performance Engineering\n\n- **Tolerances**: Precision mechanical design\n- **Architecture**: Modular Python backends\n\n```python\nprint('Engineered for Scale')\n```";
+        updateMarkdown();
+      });
+      updateMarkdown();
+
+      // 4. Regex Tester
+      const regexPattern = document.getElementById("regex-pattern");
+      const regexFlags = document.getElementById("regex-flags");
+      const regexTestStr = document.getElementById("regex-test-str");
+      const regexResult = document.getElementById("regex-result");
+
+      function testRegex() {
+        try {
+          const re = new RegExp(regexPattern.value, regexFlags.value);
+          const text = regexTestStr.value;
+          const matches = text.match(re);
+
+          if (!matches || matches.length === 0) {
+            regexResult.textContent = "No matches found.";
+            regexResult.style.color = "var(--text-muted)";
+            return;
+          }
+
+          regexResult.style.color = "var(--primary)";
+          regexResult.textContent = `Found ${matches.length} match(es):\n\n` + matches.map((m, i) => `[${i + 1}] ${m}`).join("\n");
+        } catch (e) {
+          regexResult.style.color = "var(--danger)";
+          regexResult.textContent = `Regex Error: ${e.message}`;
+        }
+      }
+
+      regexPattern.addEventListener("input", testRegex);
+      regexFlags.addEventListener("input", testRegex);
+      regexTestStr.addEventListener("input", testRegex);
+      testRegex();
+    });
+  </script>
+</body>
+</html>

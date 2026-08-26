@@ -6,6 +6,10 @@
   <title id="page-title">Loading Article | Sitendra's Blog</title>
   <meta name="description" id="meta-description" content="Technical article on Sitendra's Blog.">
   
+  <!-- PWA & Feeds -->
+  <link rel="manifest" href="/manifest.json">
+  <link rel="alternate" type="application/rss+xml" title="Sitendra's Engineering Blog RSS" href="/feed.xml">
+
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,8 +18,9 @@
   <!-- Markdown & Code Highlight CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
   
-  <!-- Blog CSS -->
+  <!-- Blog & Command Palette CSS -->
   <link rel="stylesheet" href="/blog/blog.css">
+  <link rel="stylesheet" href="/cmd_k.css">
 
   <!-- Markdown & Code Highlight Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -46,46 +51,58 @@
     </div>
 
     <nav class="nav-links">
-      <a href="/blog" class="nav-item" id="nav-blog">All Articles</a>
-      <a href="/about" class="nav-item" id="nav-about">About Me</a>
-      <a href="/" class="nav-item" id="nav-notes">My Notes App</a>
+      <a href="/blog" class="nav-item" id="nav-blog">Blog</a>
+      <a href="/tools" class="nav-item">Tools</a>
+      <a href="/projects" class="nav-item">Projects</a>
+      <a href="/about" class="nav-item" id="nav-about">About</a>
+      <a href="/" class="nav-item" id="nav-notes">Notes</a>
+      <button type="button" class="btn btn-secondary btn-sm" id="cmdk-btn" title="Quick Search (Cmd+K)">
+        <span style="font-family: var(--font-mono); font-size: 0.75rem;">⌘K</span>
+      </button>
       <a href="/blog/write" class="btn btn-secondary btn-sm" id="edit-current-post-btn" style="display: none;">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 20h9"/>
           <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
         </svg>
-        Edit Article
+        Edit
       </a>
     </nav>
   </header>
 
-  <!-- Article View -->
-  <main class="blog-container">
-    <div id="article-loading" style="text-align: center; padding: 5rem 1rem; color: var(--text-muted);">
-      <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">Loading article content...</div>
+  <!-- Main Article Container -->
+  <main class="blog-container" style="max-width: 1000px;">
+    <!-- Loading State -->
+    <div id="article-loading" style="text-align: center; padding: 6rem 1rem; color: var(--text-muted);">
+      <svg class="hero-eyebrow" style="animation: spin 1.5s linear infinite; width: 28px; height: 28px; margin: 0 auto 1rem; color: var(--primary);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-linecap="round"/>
+      </svg>
+      <p style="font-size: 1.1rem;">Loading article...</p>
     </div>
 
+    <!-- Error State -->
     <div id="article-error" style="display: none; text-align: center; padding: 6rem 2rem; background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px solid var(--border);">
       <h2 style="font-size: 2rem; margin-bottom: 1rem;">Article Not Found</h2>
-      <p style="color: var(--text-muted); margin-bottom: 2rem;">The requested blog post doesn't exist or may have been moved.</p>
-      <a href="/blog" class="btn btn-primary" id="error-back-btn">Back to All Articles</a>
+      <p style="color: var(--text-muted); margin-bottom: 2rem;">The story you're looking for doesn't exist, was deleted, or the link is incorrect.</p>
+      <a href="/blog" class="btn btn-primary" id="error-back-btn">&larr; Back to Blog Feed</a>
     </div>
 
+    <!-- Article Wrapper -->
     <article id="article-wrapper" style="display: none;">
-      <!-- Breadcrumb & Header -->
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb">
+        <a href="/blog" id="breadcrumb-blog">Blog</a>
+        <span>/</span>
+        <span id="breadcrumb-title" style="color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 300px;">Article</span>
+      </nav>
+
+      <!-- Article Header -->
       <div class="article-header">
-        <div class="article-breadcrumbs">
-          <a href="/blog" id="breadcrumb-blog">Blog</a>
-          <span>&rsaquo;</span>
-          <span id="breadcrumb-current" style="color: var(--text-muted);">Article</span>
-        </div>
-
         <h1 class="article-title" id="post-title">Article Title</h1>
-
+        
         <div class="article-meta-row">
           <div class="article-meta-item">
-            <div class="author-avatar" id="author-avatar">S</div>
-            <span>By <strong id="post-author">Sitendra</strong></span>
+            <span class="author-avatar" id="post-author-avatar">S</span>
+            <span id="post-author">Sitendra</span>
           </div>
           <span>&bull;</span>
           <div class="article-meta-item">
@@ -93,9 +110,9 @@
               <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
               <line x1="16" x2="16" y1="2" y2="6"/>
               <line x1="8" x2="8" y1="2" y2="6"/>
-              <line x1="3" x2="3" y1="10" y2="10"/>
+              <line x1="3" x2="21" y1="10" y2="10"/>
             </svg>
-            <time id="post-date">Jan 1, 2026</time>
+            <span id="post-date">Jan 1, 2026</span>
           </div>
           <span>&bull;</span>
           <div class="article-meta-item">
@@ -139,6 +156,32 @@
         </aside>
       </div>
 
+      <!-- Interactive Claps & Reactions Bar -->
+      <div class="reactions-bar" id="reactions-bar">
+        <div class="reactions-group">
+          <button type="button" class="reaction-btn" data-reaction="clap" title="Clap for this article">
+            <span class="reaction-emoji">👏</span>
+            <span class="reaction-count" id="count-clap">0</span>
+          </button>
+          <button type="button" class="reaction-btn" data-reaction="idea" title="Insightful analysis">
+            <span class="reaction-emoji">💡</span>
+            <span class="reaction-count" id="count-idea">0</span>
+          </button>
+          <button type="button" class="reaction-btn" data-reaction="heart" title="Love this story">
+            <span class="reaction-emoji">❤️</span>
+            <span class="reaction-count" id="count-heart">0</span>
+          </button>
+          <button type="button" class="reaction-btn" data-reaction="rocket" title="Awesome engineering">
+            <span class="reaction-emoji">🚀</span>
+            <span class="reaction-count" id="count-rocket">0</span>
+          </button>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button type="button" class="btn btn-secondary btn-sm" id="export-md-btn">📥 Export .md</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="print-pdf-btn">🖨️ PDF / Print</button>
+        </div>
+      </div>
+
       <!-- Footer & Share & Author Box -->
       <div class="article-footer-box">
         <div class="share-section">
@@ -168,6 +211,20 @@
           </div>
         </div>
 
+        <!-- Newsletter Subscription Box -->
+        <div style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9)); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; margin-top: 1.5rem; text-align: center;">
+          <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">📬</div>
+          <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 0.4rem;">Subscribe to Sitendra's Engineering Dispatch</h3>
+          <p style="color: var(--text-muted); font-size: 0.92rem; max-width: 480px; margin: 0 auto 1.25rem;">
+            Get practical deep-dives on systems engineering, software design patterns, and maker projects delivered straight to your inbox.
+          </p>
+          <form id="newsletter-form" style="display: flex; gap: 0.5rem; max-width: 440px; margin: 0 auto; flex-wrap: wrap;">
+            <input type="email" id="newsletter-email" class="form-control" placeholder="your.email@example.com" required style="flex: 1; min-width: 220px;">
+            <button type="submit" class="btn btn-primary" id="newsletter-btn">Subscribe</button>
+          </form>
+          <div id="newsletter-msg" style="font-size: 0.88rem; margin-top: 0.75rem; display: none;"></div>
+        </div>
+
         <div class="author-bio-card">
           <div class="author-bio-avatar" id="bio-avatar">S</div>
           <div class="author-bio-info">
@@ -175,7 +232,7 @@
             <p>Mechanical Engineer, Software Developer, and Maker. Writing about systems, backend architectures, fullstack apps, and real-world software engineering.</p>
             <div style="display: flex; gap: 1rem; align-items: center;">
               <a href="/about" style="font-size: 0.9rem; font-weight: 600;">Learn More About Me &rarr;</a>
-              <a href="https://sitendra.store" style="font-size: 0.9rem; color: var(--text-muted);">sitendra.store</a>
+              <a href="/projects" style="font-size: 0.9rem; color: var(--primary);">View Projects</a>
             </div>
           </div>
         </div>
@@ -193,12 +250,13 @@
 
   <!-- Footer -->
   <footer class="blog-footer">
-    <p>&copy; 2026 Sitendra Kumar Nagesh &bull; <a href="/about" style="color: var(--text-muted);">About</a> &bull; <a href="/" style="color: var(--text-muted);">My Notes App</a> &bull; <a href="https://sitendra.store" style="color: var(--text-muted);">sitendra.store</a></p>
+    <p>&copy; 2026 Sitendra Kumar Nagesh &bull; <a href="/blog">Blog</a> &bull; <a href="/tools">Tools</a> &bull; <a href="/projects">Projects</a> &bull; <a href="/about">About</a> &bull; <a href="/">Notes</a></p>
   </footer>
+
+  <script src="/cmd_k.js"></script>
 
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
-      // Subdomain link normalizer
       const isSubdomain = window.location.hostname.startsWith("blog.");
       const brandLink = document.getElementById("brand-link");
       const navBlog = document.getElementById("nav-blog");
@@ -220,10 +278,9 @@
         }
       });
 
-      // Extract slug from URL path or search query parameter
+      // Extract slug
       let slug = "";
       const pathParts = window.location.pathname.split("/").filter(Boolean);
-      // Handles /post/:slug or /blog/post/:slug or ?slug=:slug
       if (pathParts.includes("post")) {
         const postIdx = pathParts.indexOf("post");
         if (pathParts[postIdx + 1]) {
@@ -258,7 +315,7 @@
         setTimeout(() => toast.classList.remove("show"), 3000);
       }
 
-      // Check current user to show "Edit Post" button if logged in author
+      // Check current user for Edit Article button
       try {
         const authRes = await fetch("/me");
         const authData = await authRes.json();
@@ -269,11 +326,10 @@
             editBtn.href = isSubdomain ? `/write?slug=${encodeURIComponent(slug)}` : `/blog/write?slug=${encodeURIComponent(slug)}`;
           }
         }
-      } catch (e) {
-        console.error("Auth check error:", e);
-      }
+      } catch (e) {}
 
       // Load Article Data
+      let currentArticle = null;
       try {
         const res = await fetch(`/api/blogs/post/${encodeURIComponent(slug)}`);
         if (!res.ok) {
@@ -285,46 +341,52 @@
           showError();
           return;
         }
+        currentArticle = post;
 
-        // Set document metadata
         document.title = `${post.title} | Sitendra's Blog`;
-        const metaDesc = document.getElementById("meta-description");
-        if (metaDesc && post.summary) metaDesc.content = post.summary;
-
+        document.getElementById("meta-description").content = post.summary || post.title;
+        document.getElementById("breadcrumb-title").textContent = post.title;
         document.getElementById("post-title").textContent = post.title;
-        document.getElementById("breadcrumb-current").textContent = post.title;
         document.getElementById("post-author").textContent = post.author || "Sitendra";
-        document.getElementById("author-avatar").textContent = (post.author || "S")[0].toUpperCase();
+        document.getElementById("post-author-avatar").textContent = (post.author || "S")[0].toUpperCase();
         document.getElementById("bio-avatar").textContent = (post.author || "S")[0].toUpperCase();
-        document.getElementById("post-reading-time").textContent = `${post.reading_time || 2} min read`;
-        document.getElementById("post-views").textContent = `${post.views || 1} views`;
 
         if (post.created_at) {
-          document.getElementById("post-date").textContent = new Date(post.created_at).toLocaleDateString("en-US", {
-            month: "long",
+          const d = new Date(post.created_at);
+          document.getElementById("post-date").textContent = d.toLocaleDateString("en-US", {
+            month: "short",
             day: "numeric",
             year: "numeric"
           });
         }
 
+        document.getElementById("post-reading-time").textContent = `${post.reading_time || 1} min read`;
+        document.getElementById("post-views").textContent = `${post.views || 1} views`;
+
         // Tags
         const tagsContainer = document.getElementById("post-tags-container");
+        tagsContainer.innerHTML = "";
         if (post.tags) {
-          const tags = post.tags.split(",").map(t => t.trim()).filter(Boolean);
-          tagsContainer.innerHTML = tags.map(t => `<span class="post-tag">#${t}</span>`).join("");
+          const tagList = post.tags.split(",").map(t => t.strip ? t.strip() : t.trim()).filter(Boolean);
+          tagList.forEach(t => {
+            const tagEl = document.createElement("a");
+            tagEl.href = isSubdomain ? `/?tag=${encodeURIComponent(t)}` : `/blog?tag=${encodeURIComponent(t)}`;
+            tagEl.className = "post-tag";
+            tagEl.textContent = `#${t}`;
+            tagsContainer.appendChild(tagEl);
+          });
         }
 
         // Cover Image
+        const coverEl = document.getElementById("post-cover");
         if (post.cover_image) {
-          const coverEl = document.getElementById("post-cover");
           coverEl.src = post.cover_image;
           coverEl.style.display = "block";
+        } else {
+          coverEl.style.display = "none";
         }
 
-        // Render Markdown content
-        const contentEl = document.getElementById("article-content");
-        
-        // Configure marked options
+        // Parse Markdown Content
         marked.setOptions({
           highlight: function(code, lang) {
             if (lang && hljs.getLanguage(lang)) {
@@ -338,23 +400,23 @@
           gfm: true
         });
 
+        const contentEl = document.getElementById("article-content");
         contentEl.innerHTML = marked.parse(post.content || "");
 
-        // Enhance Code Blocks with header & 1-click copy button
-        const pres = contentEl.querySelectorAll("pre");
-        pres.forEach((pre) => {
-          const codeEl = pre.querySelector("code");
-          const langClass = Array.from(codeEl.classList).find(c => c.startsWith("language-"));
-          const lang = langClass ? langClass.replace("language-", "") : "code";
+        // Enhance Code Blocks with Copy Buttons
+        contentEl.querySelectorAll("pre").forEach(pre => {
+          const code = pre.querySelector("code");
+          const langMatch = code ? code.className.match(/language-(\w+)/) : null;
+          const langName = langMatch ? langMatch[1] : "code";
 
           const wrapper = document.createElement("div");
           wrapper.className = "code-block-wrapper";
 
           const header = document.createElement("div");
-          header.className = "code-header";
+          header.className = "code-block-header";
           header.innerHTML = `
-            <span>${lang.toUpperCase()}</span>
-            <button class="copy-btn">
+            <span class="code-lang">${langName}</span>
+            <button type="button" class="code-copy-btn">
               <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
                 <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
@@ -363,9 +425,9 @@
             </button>
           `;
 
-          const copyBtn = header.querySelector(".copy-btn");
+          const copyBtn = header.querySelector(".code-copy-btn");
           copyBtn.addEventListener("click", () => {
-            navigator.clipboard.writeText(codeEl.innerText);
+            navigator.clipboard.writeText(code ? code.innerText : pre.innerText);
             copyBtn.innerHTML = `
               <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--success);">
                 <polyline points="20 6 9 17 4 12"/>
@@ -388,7 +450,7 @@
           wrapper.appendChild(pre);
         });
 
-        // Build Table of Contents
+        // Table of Contents
         const headings = contentEl.querySelectorAll("h2, h3");
         const tocList = document.getElementById("toc-list");
         const sidebar = document.getElementById("article-sidebar");
@@ -412,18 +474,106 @@
         // Share Handlers
         const shareUrl = window.location.href;
         const shareTitle = encodeURIComponent(post.title);
-        
         document.getElementById("share-twitter").addEventListener("click", () => {
           window.open(`https://twitter.com/intent/tweet?text=${shareTitle}&url=${encodeURIComponent(shareUrl)}`, "_blank");
         });
-
         document.getElementById("share-linkedin").addEventListener("click", () => {
           window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, "_blank");
         });
-
         document.getElementById("share-copy").addEventListener("click", () => {
           navigator.clipboard.writeText(shareUrl);
           showToast("Article link copied to clipboard!");
+        });
+
+        // Export .md and Print PDF Handlers
+        document.getElementById("export-md-btn").addEventListener("click", () => {
+          const blob = new Blob([post.content], { type: "text/markdown" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `${post.slug || "article"}.md`;
+          a.click();
+          URL.revokeObjectURL(url);
+          showToast("Markdown exported!");
+        });
+
+        document.getElementById("print-pdf-btn").addEventListener("click", () => {
+          window.print();
+        });
+
+        // Reactions Handlers
+        async function loadReactions() {
+          try {
+            const rRes = await fetch(`/api/blogs/${encodeURIComponent(slug)}/reactions`);
+            if (rRes.ok) {
+              const data = await rRes.json();
+              ["clap", "idea", "heart", "rocket"].forEach(type => {
+                const el = document.getElementById(`count-${type}`);
+                if (el && data[type] !== undefined) el.textContent = data[type];
+              });
+            }
+          } catch (e) {}
+        }
+
+        loadReactions();
+
+        document.querySelectorAll(".reaction-btn").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const reaction = btn.dataset.reaction;
+            btn.classList.add("reacted");
+            try {
+              const res = await fetch(`/api/blogs/${encodeURIComponent(slug)}/react`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ reaction })
+              });
+              if (res.ok) {
+                const data = await res.json();
+                ["clap", "idea", "heart", "rocket"].forEach(type => {
+                  const el = document.getElementById(`count-${type}`);
+                  if (el && data[type] !== undefined) el.textContent = data[type];
+                });
+                showToast(`Added ${reaction}! 🎉`);
+              }
+            } catch (e) {}
+          });
+        });
+
+        // Newsletter Form Handler
+        const nlForm = document.getElementById("newsletter-form");
+        const nlEmail = document.getElementById("newsletter-email");
+        const nlMsg = document.getElementById("newsletter-msg");
+        const nlBtn = document.getElementById("newsletter-btn");
+
+        nlForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          nlBtn.disabled = true;
+          nlBtn.textContent = "Subscribing...";
+          try {
+            const nRes = await fetch("/api/newsletter/subscribe", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email: nlEmail.value })
+            });
+            const nData = await nRes.json();
+            if (nRes.ok) {
+              nlMsg.style.display = "block";
+              nlMsg.style.color = "var(--success)";
+              nlMsg.textContent = "🎉 Thanks for subscribing! You'll receive future engineering deep-dives.";
+              nlEmail.value = "";
+            } else {
+              nlMsg.style.display = "block";
+              nlMsg.style.color = "var(--danger)";
+              nlMsg.textContent = nData.detail || "Failed to subscribe.";
+            }
+          } catch (e) {
+            nlMsg.style.display = "block";
+            nlMsg.style.color = "var(--danger)";
+            nlMsg.textContent = "Error subscribing. Please try again.";
+          } finally {
+            nlBtn.disabled = false;
+            nlBtn.textContent = "Subscribe";
+          }
         });
 
         // Display Article

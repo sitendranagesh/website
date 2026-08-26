@@ -287,6 +287,8 @@
       }
     }
   </style>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/cmd_k.css">
 </head>
 
 <body>
@@ -300,7 +302,10 @@
     </div>
     <nav class="header-nav">
       <a href="/blog" class="nav-btn nav-btn-primary">Blog</a>
+      <a href="/projects" class="nav-btn">Projects</a>
+      <a href="/tools" class="nav-btn">Tools</a>
       <a href="/" class="nav-btn">My Notes</a>
+      <button type="button" class="nav-btn" id="cmdk-btn" style="font-family: monospace;">⌘K</button>
     </nav>
   </header>
 
@@ -383,6 +388,7 @@
   <footer class="site-footer">
     <p>&copy; 2026 Sitendra Kumar Nagesh. All rights reserved.</p>
   </footer>
+  <script src="/cmd_k.js"></script>
 </body>
 
 </html>
