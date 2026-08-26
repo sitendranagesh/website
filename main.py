@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
 INTRO_DIR = BASE_DIR / "intro"
 
-app = FastAPI(title="Sitendra Platform & Blog", version="2.0.0")
+app = FastAPI(title="Sitendra Multi-Subdomain Platform", version="2.5.0")
 
 SECRET_KEY = os.environ.get("SESSION_SECRET_KEY", "dev-secret-change-me")
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
@@ -39,7 +39,7 @@ USERNAME_PATTERN = re.compile(r"^[a-zA-Z0-9_]{3,20}$")
 
 
 # =========================================================
-# Pydantic Schemas for Blog Operations
+# Pydantic Schemas
 # =========================================================
 class BlogPayload(BaseModel):
     title: str
@@ -61,20 +61,61 @@ def require_login(request: Request) -> int:
     return user_id
 
 
-def is_blog_subdomain(request: Request) -> bool:
+# =========================================================
+# Multi-Subdomain Routing Engine
+# =========================================================
+def extract_subdomain(request: Request) -> Optional[str]:
+    """
+    Extracts the subdomain from the incoming Host header.
+    Examples:
+      - blog.sitendra.store -> 'blog'
+      - app.sitendra.store  -> 'app'
+      - docs.sitendra.store -> 'docs'
+      - about.sitendra.store -> 'about'
+      - sitendra.store      -> None
+      - www.sitendra.store  -> None
+      - blog.localhost:8000 -> 'blog'
+      - localhost:8000      -> None
+      - 127.0.0.1:8000      -> None
+    """
     host = request.headers.get("host", "").lower().split(":")[0]
-    return host.startswith("blog.")
+    if not host or re.match(r"^\d{1,3}(\.\d{1,3}){3}$", host):
+        return None
+
+    parts = host.split(".")
+    
+    # Handle localhost development (e.g. blog.localhost)
+    if len(parts) == 2 and parts[1] == "localhost":
+        return parts[0] if parts[0] != "www" else None
+        
+    # Handle production domains (e.g. blog.sitendra.store)
+    if len(parts) > 2:
+        sub = parts[0]
+        if sub != "www":
+            return sub
+
+    return None
 
 
 # =========================================================
-# Subdomain & Page Routing
+# Dynamic Host & Subdomain Dispatcher
 # =========================================================
 @app.get("/")
-def root(request: Request):
-    if is_blog_subdomain(request):
+def dynamic_root_dispatcher(request: Request):
+    subdomain = extract_subdomain(request)
+
+    # 1. Blog Subdomain (blog.sitendra.store)
+    if subdomain == "blog":
         return FileResponse(STATIC_DIR / "blog" / "index.html")
-    
-    # Main domain routing: if logged in -> notes dashboard, else -> login
+
+    # 2. About / Profile Subdomain (about.sitendra.store / me.sitendra.store)
+    if subdomain in ("about", "me", "intro"):
+        intro_file = INTRO_DIR / "index.html"
+        if intro_file.exists():
+            return FileResponse(intro_file)
+
+    # 3. Notes / App Subdomain (app.sitendra.store / notes.sitendra.store)
+    # or Main Root Domain (sitendra.store)
     if not request.session.get("user_id"):
         return RedirectResponse(url="/login.html")
     return RedirectResponse(url="/index.html")
@@ -88,7 +129,9 @@ def about_page():
     return RedirectResponse(url="/")
 
 
-# Direct Blog Routes (available on both main domain and subdomain)
+# =========================================================
+# Universal Blog Routes (Subdomain & Direct Path)
+# =========================================================
 @app.get("/blog")
 @app.get("/blog/")
 def blog_home():
@@ -99,7 +142,8 @@ def blog_home():
 @app.get("/write")
 def blog_write(request: Request):
     if not request.session.get("user_id"):
-        next_param = "/write" if is_blog_subdomain(request) else "/blog/write"
+        sub = extract_subdomain(request)
+        next_param = "/write" if sub == "blog" else "/blog/write"
         return RedirectResponse(url=f"/login.html?next={next_param}")
     return FileResponse(STATIC_DIR / "blog" / "write.html")
 
@@ -111,7 +155,7 @@ def blog_single_post(slug: str):
 
 
 # =========================================================
-# User Auth Endpoints
+# User Auth Endpoints (Universal)
 # =========================================================
 @app.post("/signup")
 def signup(request: Request, username: str, password: str):
