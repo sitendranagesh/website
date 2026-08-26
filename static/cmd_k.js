@@ -10,10 +10,13 @@
   // Predefined navigation items
   const defaultItems = [
     { title: 'Blog Feed & Articles', url: '/blog', category: 'Blog', icon: '📖' },
-    { title: 'Write New Blog Article', url: '/blog/write', category: 'Studio', icon: '✍️' },
-    { title: 'My Notes App', url: '/', category: 'Notes', icon: '📝' },
+    { title: 'Image Manipulation Studio', url: '/image-tools', category: 'Image Tool', icon: '🖼️' },
+    { title: 'Image to PDF Converter', url: '/image-tools', category: 'Image Tool', icon: '📄' },
+    { title: 'Image Resizer & Scaler', url: '/image-tools', category: 'Image Tool', icon: '📐' },
+    { title: 'Image Compressor & Converter', url: '/image-tools', category: 'Image Tool', icon: '🗜️' },
     { title: 'Developer & Engineering Tools', url: '/tools', category: 'Tools', icon: '⚙️' },
     { title: 'Projects Portfolio', url: '/projects', category: 'Projects', icon: '🚀' },
+    { title: 'My Notes App', url: '/', category: 'Notes', icon: '📝' },
     { title: 'About Sitendra', url: '/about', category: 'About', icon: '👤' },
     { title: 'JSON Formatter & Validator', url: '/tools', category: 'Tool', icon: '{ }' },
     { title: 'Engineering Unit Converter', url: '/tools', category: 'Tool', icon: '📐' },

@@ -134,7 +134,9 @@ def dynamic_root_dispatcher(request: Request):
     if subdomain == "blog":
         return FileResponse(STATIC_DIR / "blog" / "index.html")
 
-    # 2. Tools Subdomain (tools.sitendra.store)
+    # 2. Tools & Image Subdomains
+    if subdomain in ("image", "img", "images"):
+        return FileResponse(STATIC_DIR / "image_tools.html")
     if subdomain == "tools":
         return FileResponse(STATIC_DIR / "tools.html")
 
@@ -168,6 +170,13 @@ def about_page():
 @app.get("/tools")
 def tools_page():
     return FileResponse(STATIC_DIR / "tools.html")
+
+
+@app.get("/image-tools")
+@app.get("/image-studio")
+@app.get("/tools/image")
+def image_tools_page():
+    return FileResponse(STATIC_DIR / "image_tools.html")
 
 
 @app.get("/projects")
@@ -262,6 +271,7 @@ def sitemap_xml():
         {"loc": "https://sitendra.store/about", "priority": "0.9", "changefreq": "monthly"},
         {"loc": "https://blog.sitendra.store/", "priority": "0.95", "changefreq": "daily"},
         {"loc": "https://sitendra.store/tools", "priority": "0.85", "changefreq": "weekly"},
+        {"loc": "https://sitendra.store/image-tools", "priority": "0.9", "changefreq": "weekly"},
         {"loc": "https://sitendra.store/projects", "priority": "0.85", "changefreq": "monthly"},
     ]
 

@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Manipulation Studio | Convert to PDF, Resize & Compress - Sitendra</title>
+  <meta name="description" content="Free, 100% private, client-side image manipulation tools. Convert Image to PDF, resize images with presets, compress file size, convert PNG/JPG/WebP, rotate and flip.">
+
+  <!-- PWA & Feeds -->
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/blog/blog.css">
+  <link rel="stylesheet" href="/cmd_k.css">
+
+  <!-- jsPDF for Client-Side Image to PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    .tools-nav {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .tool-tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.25rem;
+      background: var(--bg-surface);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .tool-tab-btn:hover {
+      background: var(--bg-surface-hover);
+      color: var(--text-main);
+    }
+    .tool-tab-btn.active {
+      background: var(--primary-gradient);
+      color: #0B1120;
+      border-color: transparent;
+      font-weight: 700;
+      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+    }
+    .tool-pane {
+      display: none;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+    }
+    .tool-pane.active {
+      display: block;
+    }
+    .drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-lg);
+      padding: 3rem 1.5rem;
+      text-align: center;
+      background: var(--bg-surface-elevated);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 1.5rem;
+    }
+    .drop-zone:hover, .drop-zone.dragover {
+      border-color: var(--primary);
+      background: rgba(56, 189, 248, 0.05);
+    }
+    .drop-zone svg {
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+    }
+    .preview-canvas-container {
+      background: #090D16;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 260px;
+      max-height: 480px;
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+    .preview-canvas-container canvas, .preview-canvas-container img {
+      max-width: 100%;
+      max-height: 440px;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+    }
+    .images-pdf-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .image-pdf-card {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0.5rem;
+      text-align: center;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .image-pdf-card img {
+      width: 100%;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-bottom: 0.4rem;
+    }
+    .image-pdf-card .remove-img {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(239, 68, 68, 0.85);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .preset-pills {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin: 0.75rem 0 1.25rem;
+    }
+    .preset-pill {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .preset-pill:hover {
+      border-color: var(--primary);
+      color: var(--text-main);
+    }
+    .privacy-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--success);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-full);
+      font-size: 0.84rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header class="blog-header">
+    <div class="brand-wrapper">
+      <a href="/" id="brand-link" style="display: flex; align-items: center; gap: 0.85rem; color: inherit;">
+        <div class="brand-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+            <circle cx="9" cy="9" r="2"/>
+            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+          </svg>
+        </div>
+        <div class="brand-title">
+          Sitendra <span class="brand-badge">Image Studio</span>
+        </div>
+      </a>
+    </div>
+
+    <nav class="nav-links">
+      <a href="/blog" class="nav-item">Blog</a>
+      <a href="/tools" class="nav-item">All Tools</a>
+      <a href="/projects" class="nav-item">Projects</a>
+      <a href="/about" class="nav-item">About</a>
+      <a href="/" class="nav-item">Notes</a>
+      <button type="button" class="btn btn-secondary btn-sm" id="cmdk-btn" title="Quick Search (Cmd+K)">
+        <span style="font-family: var(--font-mono); font-size: 0.75rem;">⌘K</span>
+      </button>
+    </nav>
+  </header>
+
+  <main class="blog-container">
+    <div class="hero-section" style="padding: 1.5rem 0 1.5rem;">
+      <div class="hero-eyebrow">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+          <circle cx="9" cy="9" r="2"/>
+          <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+        </svg>
+        Client-Side Image Studio
+      </div>
+      <h1 class="hero-title" style="font-size: 2.3rem;">
+        Image <span class="gradient-text">Manipulation & PDF Studio</span>
+      </h1>
+      <p class="hero-desc">
+        Fast, high-quality image manipulation utilities. Convert photos to PDF, resize by pixels or presets, optimize file size, and transform formats.
+      </p>
+
+      <div class="privacy-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        100% Private & Client-Side: Your files are processed in your browser and never uploaded to any server.
+      </div>
+    </div>
+
+    <!-- Tool Switcher Tabs -->
+    <div class="tools-nav">
+      <button class="tool-tab-btn active" data-tool="pdf">
+        <span>📄</span> Image to PDF Converter
+      </button>
+      <button class="tool-tab-btn" data-tool="resize">
+        <span>📐</span> Image Resizer & Scaler
+      </button>
+      <button class="tool-tab-btn" data-tool="compress">
+        <span>🗜️</span> Compressor & Format Converter
+      </button>
+      <button class="tool-tab-btn" data-tool="transform">
+        <span>🔄</span> Rotate & Flip
+      </button>
+    </div>
+
+    <!-- =========================================================
+         1. Image to PDF Converter
+         ========================================================= -->
+    <div class="tool-pane active" id="pane-pdf">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.5rem;">Image to PDF Converter</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
+        Select or drag multiple images (JPG, PNG, WebP) to combine them into a single clean PDF document.
+      </p>
+
+      <div class="drop-zone" id="pdf-drop-zone">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" x2="12" y1="3" y2="15"/>
+        </svg>
+        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Choose Images or Drag & Drop Here</div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Supports JPG, PNG, WebP, GIF, SVG (Multiple files allowed)</p>
+        <input type="file" id="pdf-file-input" multiple accept="image/*" style="display: none;">
+      </div>
+
+      <div id="pdf-images-container" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 1.1rem; font-weight: 600;">Selected Images (<span id="pdf-img-count">0</span>)</h3>
+          <button type="button" class="btn btn-secondary btn-sm" id="pdf-clear-all">Clear All</button>
+        </div>
+
+        <div class="images-pdf-grid" id="pdf-grid"></div>
+
+        <!-- PDF Configuration -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; padding: 1.25rem; background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-md);">
+          <div class="form-group">
+            <label class="form-label">Page Size</label>
+            <select id="pdf-page-size" class="form-control">
+              <option value="a4" selected>A4 (Standard Document)</option>
+              <option value="letter">US Letter</option>
+              <option value="fit">Fit to Image Size</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Orientation</label>
+            <select id="pdf-orientation" class="form-control">
+              <option value="portrait" selected>Portrait (Vertical)</option>
+              <option value="landscape">Landscape (Horizontal)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Page Margins</label>
+            <select id="pdf-margin" class="form-control">
+              <option value="none">No Margin (Full Page)</option>
+              <option value="small" selected>Small (10 mm)</option>
+              <option value="normal">Normal (20 mm)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Output Filename</label>
+            <input type="text" id="pdf-filename" class="form-control" value="sitendra_documents.pdf">
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="pdf-generate-btn" style="min-height: 46px; width: 100%; font-size: 1.05rem;">
+          📥 Generate & Download PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         2. Image Resizer & Scaler
+         ========================================================= -->
+    <div class="tool-pane" id="pane-resize">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.5rem;">Image Resizer & Scaler</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
+        Resize images by exact pixels or percentage with aspect ratio protection and social media presets.
+      </p>
+
+      <div class="drop-zone" id="resize-drop-zone">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 3 21 3 21 9"/>
+          <polyline points="9 21 3 21 3 15"/>
+          <line x1="21" x2="14" y1="3" y2="10"/>
+          <line x1="3" x2="10" y1="21" y2="14"/>
+        </svg>
+        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Upload Image to Resize</div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Click or drop an image file here</p>
+        <input type="file" id="resize-file-input" accept="image/*" style="display: none;">
+      </div>
+
+      <div id="resize-controls-container" style="display: none;">
+        <div class="preview-canvas-container">
+          <canvas id="resize-canvas"></canvas>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <span class="form-label">Quick Social & Scale Presets</span>
+          <div class="preset-pills">
+            <button class="preset-pill" data-preset="1080x1080">Instagram Square (1080×1080)</button>
+            <button class="preset-pill" data-preset="1080x1920">Instagram Story / Reel (1080×1920)</button>
+            <button class="preset-pill" data-preset="1280x720">YouTube Thumbnail (1280×720)</button>
+            <button class="preset-pill" data-preset="1200x675">Twitter/X Post (1200×675)</button>
+            <button class="preset-pill" data-preset="1920x1080">Full HD (1920×1080)</button>
+            <button class="preset-pill" data-scale="0.75">75% Scale</button>
+            <button class="preset-pill" data-scale="0.50">50% Scale</button>
+            <button class="preset-pill" data-scale="0.25">25% Scale</button>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; align-items: end; margin-bottom: 1.5rem;">
+          <div class="form-group">
+            <label class="form-label">Width (px)</label>
+            <input type="number" id="resize-width" class="form-control" min="1">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Height (px)</label>
+            <input type="number" id="resize-height" class="form-control" min="1">
+          </div>
+          <div class="form-group" style="padding-bottom: 0.6rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.9rem;">
+              <input type="checkbox" id="resize-lock-aspect" checked style="accent-color: var(--primary);">
+              Lock Aspect Ratio
+            </label>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <button type="button" class="btn btn-primary" id="resize-download-btn">
+            📥 Download Resized Image
+          </button>
+          <button type="button" class="btn btn-secondary" id="resize-reset-btn">Reset to Original</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         3. Compressor & Format Converter
+         ========================================================= -->
+    <div class="tool-pane" id="pane-compress">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.5rem;">Image Compressor & Format Converter</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
+        Reduce image file size by up to 90% without visible quality loss. Convert to modern WebP, PNG, or JPG.
+      </p>
+
+      <div class="drop-zone" id="compress-drop-zone">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/>
+          <path d="M12 12v9"/>
+          <path d="m8 17 4 4 4-4"/>
+        </svg>
+        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Upload Image to Compress</div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Drag and drop an image or click to select</p>
+        <input type="file" id="compress-file-input" accept="image/*" style="display: none;">
+      </div>
+
+      <div id="compress-controls-container" style="display: none;">
+        <div class="preview-canvas-container">
+          <canvas id="compress-canvas"></canvas>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; padding: 1.25rem; background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-md);">
+          <div class="form-group">
+            <label class="form-label">Target Format</label>
+            <select id="compress-format" class="form-control">
+              <option value="image/webp" selected>WebP (Recommended - Smallest File Size)</option>
+              <option value="image/jpeg">JPG / JPEG (Universal)</option>
+              <option value="image/png">PNG (Lossless)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Quality: <span id="quality-val" style="color: var(--primary); font-weight: 700;">80%</span></label>
+            <input type="range" id="compress-quality" min="10" max="100" value="80" class="form-control" style="cursor: pointer;">
+          </div>
+        </div>
+
+        <div style="padding: 1.25rem; background: #090D16; border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 1.5rem; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Original Size</span>
+            <div id="orig-size-display" style="font-size: 1.3rem; font-weight: 700; color: var(--text-main);">-</div>
+          </div>
+          <div>
+            <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Optimized Size</span>
+            <div id="opt-size-display" style="font-size: 1.3rem; font-weight: 700; color: var(--success);">-</div>
+          </div>
+          <div>
+            <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Total Savings</span>
+            <div id="savings-display" style="font-size: 1.3rem; font-weight: 700; color: var(--primary);">-</div>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="compress-download-btn">
+          📥 Download Compressed Image
+        </button>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         4. Rotate & Flip
+         ========================================================= -->
+    <div class="tool-pane" id="pane-transform">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.5rem;">Image Rotate & Flip</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
+        Rotate images clockwise/counter-clockwise or mirror horizontally and vertically.
+      </p>
+
+      <div class="drop-zone" id="trans-drop-zone">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+          <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+          <path d="M16 21h5v-5"/>
+        </svg>
+        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Upload Image to Transform</div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Click or drop image here</p>
+        <input type="file" id="trans-file-input" accept="image/*" style="display: none;">
+      </div>
+
+      <div id="trans-controls-container" style="display: none;">
+        <div class="preview-canvas-container">
+          <canvas id="trans-canvas"></canvas>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+          <button type="button" class="btn btn-secondary" id="rotate-left-btn">↺ Rotate -90°</button>
+          <button type="button" class="btn btn-secondary" id="rotate-right-btn">↻ Rotate +90°</button>
+          <button type="button" class="btn btn-secondary" id="flip-h-btn">⇄ Flip Horizontal</button>
+          <button type="button" class="btn btn-secondary" id="flip-v-btn">⇅ Flip Vertical</button>
+          <button type="button" class="btn btn-danger btn-sm" id="trans-reset-btn">Reset</button>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="trans-download-btn">
+          📥 Download Transformed Image
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="blog-footer">
+    <p>&copy; 2026 Sitendra Kumar Nagesh &bull; <a href="/blog">Blog</a> &bull; <a href="/tools">Tools</a> &bull; <a href="/projects">Projects</a> &bull; <a href="/about">About</a> &bull; <a href="/">Notes</a></p>
+  </footer>
+
+  <script src="/cmd_k.js"></script>
+
+  <!-- Image Studio Logic -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // ---------------------------------------------------------
+      // Tab Navigation
+      // ---------------------------------------------------------
+      const tabs = document.querySelectorAll(".tool-tab-btn");
+      const panes = document.querySelectorAll(".tool-pane");
+
+      tabs.forEach(t => {
+        t.addEventListener("click", () => {
+          tabs.forEach(tab => tab.classList.remove("active"));
+          panes.forEach(pane => pane.classList.remove("active"));
+          t.classList.add("active");
+          const target = document.getElementById(`pane-${t.dataset.tool}`);
+          if (target) target.classList.add("active");
+        });
+      });
+
+      // ---------------------------------------------------------
+      // Helper: Format Bytes
+      // ---------------------------------------------------------
+      function formatBytes(bytes) {
+        if (bytes === 0) return "0 Bytes";
+        const k = 1024;
+        const sizes = ["Bytes", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+      }
+
+      // =========================================================
+      // 1. IMAGE TO PDF CONVERTER
+      // =========================================================
+      const pdfDropZone = document.getElementById("pdf-drop-zone");
+      const pdfFileInput = document.getElementById("pdf-file-input");
+      const pdfImagesContainer = document.getElementById("pdf-images-container");
+      const pdfGrid = document.getElementById("pdf-grid");
+      const pdfImgCount = document.getElementById("pdf-img-count");
+      const pdfGenerateBtn = document.getElementById("pdf-generate-btn");
+      const pdfClearAllBtn = document.getElementById("pdf-clear-all");
+
+      let selectedPdfImages = [];
+
+      pdfDropZone.addEventListener("click", () => pdfFileInput.click());
+      pdfDropZone.addEventListener("dragover", (e) => { e.preventDefault(); pdfDropZone.classList.add("dragover"); });
+      pdfDropZone.addEventListener("dragleave", () => pdfDropZone.classList.remove("dragover"));
+      pdfDropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        pdfDropZone.classList.remove("dragover");
+        if (e.dataTransfer.files) handlePdfFiles(e.dataTransfer.files);
+      });
+
+      pdfFileInput.addEventListener("change", (e) => {
+        if (e.target.files) handlePdfFiles(e.target.files);
+      });
+
+      function handlePdfFiles(files) {
+        Array.from(files).forEach(file => {
+          if (!file.type.startsWith("image/")) return;
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            selectedPdfImages.push({
+              name: file.name,
+              dataUrl: event.target.result
+            });
+            renderPdfImagesGrid();
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function renderPdfImagesGrid() {
+        pdfGrid.innerHTML = "";
+        pdfImgCount.textContent = selectedPdfImages.length;
+
+        if (selectedPdfImages.length === 0) {
+          pdfImagesContainer.style.display = "none";
+          return;
+        }
+
+        pdfImagesContainer.style.display = "block";
+        selectedPdfImages.forEach((imgObj, idx) => {
+          const card = document.createElement("div");
+          card.className = "image-pdf-card";
+          card.innerHTML = `
+            <button class="remove-img" data-idx="${idx}">&times;</button>
+            <img src="${imgObj.dataUrl}" alt="${imgObj.name}">
+            <div style="font-size: 0.75rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;">
+              ${idx + 1}. ${imgObj.name}
+            </div>
+          `;
+          card.querySelector(".remove-img").addEventListener("click", () => {
+            selectedPdfImages.splice(idx, 1);
+            renderPdfImagesGrid();
+          });
+          pdfGrid.appendChild(card);
+        });
+      }
+
+      pdfClearAllBtn.addEventListener("click", () => {
+        selectedPdfImages = [];
+        renderPdfImagesGrid();
+      });
+
+      pdfGenerateBtn.addEventListener("click", async () => {
+        if (selectedPdfImages.length === 0) return;
+        pdfGenerateBtn.disabled = true;
+        pdfGenerateBtn.textContent = "Generating PDF Document...";
+
+        try {
+          const { jsPDF } = window.jspdf;
+          const pageSize = document.getElementById("pdf-page-size").value;
+          const orientation = document.getElementById("pdf-orientation").value;
+          const marginSetting = document.getElementById("pdf-margin").value;
+          const filename = document.getElementById("pdf-filename").value.trim() || "converted_images.pdf";
+
+          let margin = 10;
+          if (marginSetting === "none") margin = 0;
+          else if (marginSetting === "normal") margin = 20;
+
+          const doc = new jsPDF({
+            orientation: orientation,
+            unit: "mm",
+            format: pageSize === "fit" ? "a4" : pageSize
+          });
+
+          for (let i = 0; i < selectedPdfImages.length; i++) {
+            if (i > 0) doc.addPage(pageSize === "fit" ? "a4" : pageSize, orientation);
+
+            const imgData = selectedPdfImages[i].dataUrl;
+            const img = new Image();
+            img.src = imgData;
+            await new Promise(r => { img.onload = r; });
+
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+
+            const maxWidth = pageWidth - (margin * 2);
+            const maxHeight = pageHeight - (margin * 2);
+
+            let imgW = maxWidth;
+            let imgH = (img.height * imgW) / img.width;
+
+            if (imgH > maxHeight) {
+              imgH = maxHeight;
+              imgW = (img.width * imgH) / img.height;
+            }
+
+            const x = margin + (maxWidth - imgW) / 2;
+            const y = margin + (maxHeight - imgH) / 2;
+
+            doc.addImage(imgData, "JPEG", x, y, imgW, imgH);
+          }
+
+          doc.save(filename.endsWith(".pdf") ? filename : `${filename}.pdf`);
+        } catch (e) {
+          console.error(e);
+          alert("Failed to generate PDF: " + e.message);
+        } finally {
+          pdfGenerateBtn.disabled = false;
+          pdfGenerateBtn.textContent = "📥 Generate & Download PDF";
+        }
+      });
+
+      // =========================================================
+      // 2. IMAGE RESIZER & SCALER
+      // =========================================================
+      const resizeDropZone = document.getElementById("resize-drop-zone");
+      const resizeFileInput = document.getElementById("resize-file-input");
+      const resizeContainer = document.getElementById("resize-controls-container");
+      const resizeCanvas = document.getElementById("resize-canvas");
+      const resizeCtx = resizeCanvas.getContext("2d");
+      const resizeWidthInput = document.getElementById("resize-width");
+      const resizeHeightInput = document.getElementById("resize-height");
+      const resizeLockAspect = document.getElementById("resize-lock-aspect");
+      const resizeDownloadBtn = document.getElementById("resize-download-btn");
+      const resizeResetBtn = document.getElementById("resize-reset-btn");
+
+      let originalResizeImg = null;
+      let originalAspectRatio = 1;
+
+      resizeDropZone.addEventListener("click", () => resizeFileInput.click());
+      resizeDropZone.addEventListener("dragover", (e) => { e.preventDefault(); resizeDropZone.classList.add("dragover"); });
+      resizeDropZone.addEventListener("dragleave", () => resizeDropZone.classList.remove("dragover"));
+      resizeDropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        resizeDropZone.classList.remove("dragover");
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) loadResizeImage(e.dataTransfer.files[0]);
+      });
+
+      resizeFileInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) loadResizeImage(e.target.files[0]);
+      });
+
+      function loadResizeImage(file) {
+        if (!file.type.startsWith("image/")) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            originalResizeImg = img;
+            originalAspectRatio = img.width / img.height;
+            resizeWidthInput.value = img.width;
+            resizeHeightInput.value = img.height;
+            drawResizeCanvas(img.width, img.height);
+            resizeContainer.style.display = "block";
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function drawResizeCanvas(w, h) {
+        if (!originalResizeImg) return;
+        resizeCanvas.width = w;
+        resizeCanvas.height = h;
+        resizeCtx.drawImage(originalResizeImg, 0, 0, w, h);
+      }
+
+      resizeWidthInput.addEventListener("input", () => {
+        const w = parseInt(resizeWidthInput.value) || 1;
+        if (resizeLockAspect.checked) {
+          const h = Math.round(w / originalAspectRatio);
+          resizeHeightInput.value = h;
+          drawResizeCanvas(w, h);
+        } else {
+          drawResizeCanvas(w, parseInt(resizeHeightInput.value) || 1);
+        }
+      });
+
+      resizeHeightInput.addEventListener("input", () => {
+        const h = parseInt(resizeHeightInput.value) || 1;
+        if (resizeLockAspect.checked) {
+          const w = Math.round(h * originalAspectRatio);
+          resizeWidthInput.value = w;
+          drawResizeCanvas(w, h);
+        } else {
+          drawResizeCanvas(parseInt(resizeWidthInput.value) || 1, h);
+        }
+      });
+
+      // Presets
+      document.querySelectorAll(".preset-pill").forEach(pill => {
+        pill.addEventListener("click", () => {
+          if (!originalResizeImg) return;
+          if (pill.dataset.preset) {
+            const [w, h] = pill.dataset.preset.split("x").map(Number);
+            resizeWidthInput.value = w;
+            resizeHeightInput.value = h;
+            drawResizeCanvas(w, h);
+          } else if (pill.dataset.scale) {
+            const scale = parseFloat(pill.dataset.scale);
+            const w = Math.round(originalResizeImg.width * scale);
+            const h = Math.round(originalResizeImg.height * scale);
+            resizeWidthInput.value = w;
+            resizeHeightInput.value = h;
+            drawResizeCanvas(w, h);
+          }
+        });
+      });
+
+      resizeResetBtn.addEventListener("click", () => {
+        if (!originalResizeImg) return;
+        resizeWidthInput.value = originalResizeImg.width;
+        resizeHeightInput.value = originalResizeImg.height;
+        drawResizeCanvas(originalResizeImg.width, originalResizeImg.height);
+      });
+
+      resizeDownloadBtn.addEventListener("click", () => {
+        const link = document.createElement("a");
+        link.download = `resized_${resizeCanvas.width}x${resizeCanvas.height}.png`;
+        link.href = resizeCanvas.toDataURL("image/png");
+        link.click();
+      });
+
+      // =========================================================
+      // 3. COMPRESSOR & FORMAT CONVERTER
+      // =========================================================
+      const compressDropZone = document.getElementById("compress-drop-zone");
+      const compressFileInput = document.getElementById("compress-file-input");
+      const compressContainer = document.getElementById("compress-controls-container");
+      const compressCanvas = document.getElementById("compress-canvas");
+      const compressCtx = compressCanvas.getContext("2d");
+      const compressFormat = document.getElementById("compress-format");
+      const compressQuality = document.getElementById("compress-quality");
+      const qualityVal = document.getElementById("quality-val");
+      const origSizeDisplay = document.getElementById("orig-size-display");
+      const optSizeDisplay = document.getElementById("opt-size-display");
+      const savingsDisplay = document.getElementById("savings-display");
+      const compressDownloadBtn = document.getElementById("compress-download-btn");
+
+      let originalCompressImg = null;
+      let originalFileSize = 0;
+      let currentCompressedBlob = null;
+
+      compressDropZone.addEventListener("click", () => compressFileInput.click());
+      compressDropZone.addEventListener("dragover", (e) => { e.preventDefault(); compressDropZone.classList.add("dragover"); });
+      compressDropZone.addEventListener("dragleave", () => compressDropZone.classList.remove("dragover"));
+      compressDropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        compressDropZone.classList.remove("dragover");
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) loadCompressImage(e.dataTransfer.files[0]);
+      });
+
+      compressFileInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) loadCompressImage(e.target.files[0]);
+      });
+
+      function loadCompressImage(file) {
+        if (!file.type.startsWith("image/")) return;
+        originalFileSize = file.size;
+        origSizeDisplay.textContent = formatBytes(originalFileSize);
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            originalCompressImg = img;
+            compressCanvas.width = img.width;
+            compressCanvas.height = img.height;
+            compressCtx.drawImage(img, 0, 0);
+            updateCompression();
+            compressContainer.style.display = "block";
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function updateCompression() {
+        if (!originalCompressImg) return;
+        const quality = parseInt(compressQuality.value) / 100;
+        qualityVal.textContent = `${compressQuality.value}%`;
+        const format = compressFormat.value;
+
+        compressCanvas.toBlob((blob) => {
+          if (!blob) return;
+          currentCompressedBlob = blob;
+          optSizeDisplay.textContent = formatBytes(blob.size);
+
+          const diff = originalFileSize - blob.size;
+          const percent = Math.round((diff / originalFileSize) * 100);
+          if (percent >= 0) {
+            savingsDisplay.textContent = `-${percent}% saved (${formatBytes(diff)})`;
+            savingsDisplay.style.color = "var(--success)";
+          } else {
+            savingsDisplay.textContent = `+${Math.abs(percent)}% (larger)`;
+            savingsDisplay.style.color = "var(--warning)";
+          }
+        }, format, quality);
+      }
+
+      compressQuality.addEventListener("input", updateCompression);
+      compressFormat.addEventListener("change", updateCompression);
+
+      compressDownloadBtn.addEventListener("click", () => {
+        if (!currentCompressedBlob) return;
+        const ext = compressFormat.value === "image/webp" ? "webp" : (compressFormat.value === "image/png" ? "png" : "jpg");
+        const link = document.createElement("a");
+        link.download = `optimized_image.${ext}`;
+        link.href = URL.createObjectURL(currentCompressedBlob);
+        link.click();
+      });
+
+      // =========================================================
+      // 4. ROTATE & FLIP
+      // =========================================================
+      const transDropZone = document.getElementById("trans-drop-zone");
+      const transFileInput = document.getElementById("trans-file-input");
+      const transContainer = document.getElementById("trans-controls-container");
+      const transCanvas = document.getElementById("trans-canvas");
+      const transCtx = transCanvas.getContext("2d");
+
+      let originalTransImg = null;
+      let rotationAngle = 0; // in degrees
+      let flipH = false;
+      let flipV = false;
+
+      transDropZone.addEventListener("click", () => transFileInput.click());
+      transDropZone.addEventListener("dragover", (e) => { e.preventDefault(); transDropZone.classList.add("dragover"); });
+      transDropZone.addEventListener("dragleave", () => transDropZone.classList.remove("dragover"));
+      transDropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        transDropZone.classList.remove("dragover");
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) loadTransImage(e.dataTransfer.files[0]);
+      });
+
+      transFileInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) loadTransImage(e.target.files[0]);
+      });
+
+      function loadTransImage(file) {
+        if (!file.type.startsWith("image/")) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            originalTransImg = img;
+            rotationAngle = 0;
+            flipH = false;
+            flipV = false;
+            renderTransform();
+            transContainer.style.display = "block";
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function renderTransform() {
+        if (!originalTransImg) return;
+        const isOrthogonal = (rotationAngle % 180 !== 0);
+        const w = isOrthogonal ? originalTransImg.height : originalTransImg.width;
+        const h = isOrthogonal ? originalTransImg.width : originalTransImg.height;
+
+        transCanvas.width = w;
+        transCanvas.height = h;
+
+        transCtx.save();
+        transCtx.translate(w / 2, h / 2);
+        transCtx.rotate((rotationAngle * Math.PI) / 180);
+        transCtx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
+        transCtx.drawImage(originalTransImg, -originalTransImg.width / 2, -originalTransImg.height / 2);
+        transCtx.restore();
+      }
+
+      document.getElementById("rotate-left-btn").addEventListener("click", () => {
+        rotationAngle = (rotationAngle - 90) % 360;
+        renderTransform();
+      });
+      document.getElementById("rotate-right-btn").addEventListener("click", () => {
+        rotationAngle = (rotationAngle + 90) % 360;
+        renderTransform();
+      });
+      document.getElementById("flip-h-btn").addEventListener("click", () => {
+        flipH = !flipH;
+        renderTransform();
+      });
+      document.getElementById("flip-v-btn").addEventListener("click", () => {
+        flipV = !flipV;
+        renderTransform();
+      });
+      document.getElementById("trans-reset-btn").addEventListener("click", () => {
+        rotationAngle = 0;
+        flipH = false;
+        flipV = false;
+        renderTransform();
+      });
+
+      document.getElementById("trans-download-btn").addEventListener("click", () => {
+        const link = document.createElement("a");
+        link.download = `transformed_image.png`;
+        link.href = transCanvas.toDataURL("image/png");
+        link.click();
+      });
+    });
+  </script>
+</body>
+</html>
