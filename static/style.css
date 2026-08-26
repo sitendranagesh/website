@@ -12,13 +12,22 @@
   --success: #10B981; /* Emerald Green */
   --success-hover: #059669;
   --border: #334155;
-  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --border-light: rgba(255, 255, 255, 0.08);
+  --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -28,20 +37,27 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  min-height: -webkit-fill-available;
   padding-top: 76px; 
   line-height: 1.6;
+  overflow-x: hidden;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4 {
   color: var(--text-main);
   font-weight: 600;
+  line-height: 1.3;
 }
 
 a {
-  color: var(--text-main);
+  color: var(--primary);
   text-decoration: none;
+  transition: all 0.2s ease;
 }
 
+a:hover {
+  color: var(--primary-hover);
+}
 
 /* ===== Fixed Top Navbar & Logo ===== */
 .site-header {
@@ -50,35 +66,42 @@ a {
   left: 0;
   width: 100%;
   background-color: var(--bg-surface);
-  padding: 1rem 2rem;
+  padding: 0.9rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid var(--border);
   z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
+  text-decoration: none;
+  color: inherit;
+  flex-shrink: 0;
 }
 
 .logo-icon {
   color: var(--primary);
+  flex-shrink: 0;
 }
 
 .brand h1 {
-  font-size: 1.4rem;
+  font-size: 1.25rem;
   margin: 0;
   display: flex;
   align-items: baseline;
-  gap: 0.4rem;
+  gap: 0.35rem;
+  white-space: nowrap;
 }
 
 .brand .author {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 400;
   color: var(--text-muted);
 }
@@ -88,34 +111,44 @@ a {
   font-weight: 600;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .user-badge {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--text-muted);
   font-weight: 500;
+  white-space: nowrap;
 }
 
 /* ===== Main Content Area ===== */
 .main-content {
   flex: 1;
-  padding: 2rem;
+  padding: 1.75rem 1.5rem 3rem;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-/* ===== Form Elements ===== */
+/* ===== Form Elements & Touch Targets ===== */
 textarea {
   background-color: var(--bg-main);
   color: var(--text-main);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 1.05rem;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
   font-family: var(--font-family);
   width: 100%;
   padding: 1rem;
   margin-bottom: 1rem;
   transition: all 0.2s ease;
   resize: vertical;
+  min-height: 180px;
 }
 
 textarea:focus, input:focus {
@@ -126,124 +159,139 @@ textarea:focus, input:focus {
 
 input {
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   color: var(--text-main);
   background-color: var(--bg-main);
   padding: 0.85rem 1rem;
   font-size: 1rem;
+  font-family: inherit;
   margin-bottom: 1rem;
   transition: all 0.2s ease;
   width: 100%;
+  min-height: 44px;
 }
 
-input::placeholder {
+input::placeholder, textarea::placeholder {
   color: var(--text-muted);
 }
 
-button {
+button, .btn {
   background-color: var(--primary);
   color: #ffffff;
   border: none;
-  border-radius: 8px;
-  padding: 0.75rem 1.5rem;
-  font-size: 0.95rem;
+  border-radius: var(--radius-md);
+  padding: 0.65rem 1.25rem;
+  font-size: 0.92rem;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.1s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  min-height: 42px;
+  touch-action: manipulation;
 }
 
-button:hover {
+button:hover, .btn:hover {
   background-color: var(--primary-hover);
+  color: #ffffff;
 }
 
-button:active {
+button:active, .btn:active {
   transform: scale(0.98);
 }
 
-button.danger {
+button.danger, .btn.danger {
   background-color: var(--danger);
 }
 
-button.danger:hover {
+button.danger:hover, .btn.danger:hover {
   background-color: var(--danger-hover);
 }
 
-button.success {
+button.success, .btn.success {
   background-color: var(--success);
 }
 
-button.success:hover {
+button.success:hover, .btn.success:hover {
   background-color: var(--success-hover);
 }
 
-button.secondary {
+button.secondary, .btn.secondary {
   background-color: var(--bg-surface-hover);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+}
+
+button.secondary:hover, .btn.secondary:hover {
+  background-color: var(--border);
   color: var(--text-main);
 }
 
-button.secondary:hover {
-  background-color: var(--border);
-}
-
-/* ===== Layout: Login Card ===== */
+/* ===== Layout: Login / Signup Cards ===== */
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  min-height: calc(100vh - 160px);
+  padding: 1.5rem 1rem;
 }
 
 .login-card {
   background-color: var(--bg-surface);
-  padding: 3rem;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  padding: 2.5rem 2rem;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
   width: 100%;
-  max-width: 420px;
+  max-width: 440px;
   text-align: center;
   border: 1px solid var(--border);
 }
 
 .login-card h2 {
-  margin-bottom: 2rem;
-  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.45rem;
 }
 
 .login-card button {
   width: 100%;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   padding: 0.85rem;
+  min-height: 48px;
 }
 
-/* ===== Layout: CSS Grid Note Interface ===== */
+/* ===== Layout: Responsive Grid Notes Interface ===== */
 .box-grid {
   display: grid;
   grid-template-columns: 320px 1fr;
-  gap: 2rem;
-  height: 100%;
+  gap: 1.75rem;
+  align-items: start;
 }
 
 .left-box {
   background-color: var(--bg-surface);
-  padding: 1.5rem;
-  border-radius: 12px;
+  padding: 1.25rem;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   max-height: calc(100vh - 120px);
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .left-box h2 {
-  margin-bottom: 1.5rem;
-  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   border-bottom: 1px solid var(--border);
-  padding-bottom: 0.75rem;
+  padding-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .right-box {
@@ -260,50 +308,147 @@ button.secondary:hover {
 
 .all-notes-list > * {
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   width: 100%;
-  padding: 0.85rem 1rem;
+  padding: 0.75rem 0.9rem;
   color: var(--text-main);
   background-color: var(--bg-main);
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  word-break: break-word;
 }
 
 .all-notes-list > *:hover {
   background-color: var(--bg-surface-hover);
-  border-color: var(--border);
-  transform: translateX(4px);
+  border-color: var(--primary);
+  transform: translateX(3px);
 }
 
 /* ===== Note Reading/Editing Interface ===== */
 .note-display-card {
   background-color: var(--bg-surface);
-  padding: 3rem;
-  border-radius: 12px;
+  padding: 2.5rem 2rem;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .note-display-card h2 {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   border-bottom: 1px solid var(--border);
-  padding-bottom: 1rem;
-  font-size: 1.8rem;
+  padding-bottom: 0.85rem;
+  font-size: 1.6rem;
+  word-break: break-word;
 }
 
 .note-actions {
-  margin-top: 2.5rem;
+  margin-top: 2rem;
   display: flex;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
 /* ===== Footer ===== */
 .site-footer {
   text-align: center;
-  padding: 2rem;
+  padding: 2rem 1rem;
   margin-top: auto;
   font-size: 0.85rem;
   color: var(--text-muted);
+  border-top: 1px solid var(--border);
+}
+
+/* =========================================================
+   Mobile & Tablet Media Queries
+   ========================================================= */
+
+/* Tablets & Small Laptops (max-width: 860px) */
+@media (max-width: 860px) {
+  .box-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .left-box {
+    max-height: 280px;
+    order: 2;
+  }
+
+  .right-box {
+    order: 1;
+  }
+
+  .main-content {
+    padding: 1.25rem 1rem 2.5rem;
+  }
+}
+
+/* Mobile Phones (max-width: 640px) */
+@media (max-width: 640px) {
+  body {
+    padding-top: 68px;
+  }
+
+  .site-header {
+    padding: 0.7rem 1rem;
+    height: auto;
+  }
+
+  .brand h1 {
+    font-size: 1.1rem;
+  }
+
+  .brand .author {
+    display: none; /* Hide 'by Sitendra' subtitle on tiny screens to save space */
+  }
+
+  .header-actions {
+    gap: 0.4rem;
+  }
+
+  .header-actions .btn, .header-actions button {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.82rem;
+    min-height: 36px;
+  }
+
+  .user-badge {
+    display: none; /* Hide "Hi, username" on small phones */
+  }
+
+  .note-display-card {
+    padding: 1.5rem 1.1rem;
+  }
+
+  .note-display-card h2 {
+    font-size: 1.35rem;
+  }
+
+  .note-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .note-actions button, .note-actions a {
+    width: 100%;
+    min-height: 46px;
+  }
+
+  .login-card {
+    padding: 2rem 1.25rem;
+    border-radius: var(--radius-md);
+  }
+}
+
+/* Extra Small Phones (max-width: 380px) */
+@media (max-width: 380px) {
+  .site-header {
+    padding: 0.6rem 0.75rem;
+  }
+
+  .brand-logo {
+    display: none;
+  }
 }

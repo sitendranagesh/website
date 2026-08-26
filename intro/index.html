@@ -211,17 +211,79 @@
       border-top: 1px solid var(--border);
     }
 
-    @media (max-width: 600px) {
-      .hero h2 {
-        font-size: 1.9rem;
-      }
+    .site-header {
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      background-color: var(--bg-surface);
+    }
 
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      background-color: var(--bg-surface-hover);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      background-color: var(--border);
+      color: var(--text-main);
+    }
+
+    .nav-btn-primary {
+      background-color: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    .nav-btn-primary:hover {
+      background-color: var(--primary-hover);
+      color: #ffffff;
+    }
+
+    @media (max-width: 640px) {
+      .site-header {
+        padding: 0.75rem 1rem;
+      }
+      .brand .author {
+        display: none;
+      }
+      .brand h1 {
+        font-size: 1.15rem;
+      }
+      .nav-btn {
+        padding: 0.35rem 0.65rem;
+        font-size: 0.8rem;
+      }
       .hero {
-        padding: 3rem 1.5rem 2rem;
+        padding: 2.5rem 1rem 2rem;
       }
-
+      .hero h2 {
+        font-size: 1.85rem;
+      }
       main {
-        padding: 0 1.5rem 3rem;
+        padding: 0 1rem 3rem;
+      }
+      .card {
+        padding: 1.25rem 1rem;
+      }
+      .cta {
+        padding: 2rem 1.25rem;
       }
     }
   </style>
@@ -230,12 +292,16 @@
 <body>
   <header class="site-header">
     <div class="brand">
-      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
         <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
       </svg>
-      <h1>My Notes <span class="author">by <strong>Sitendra</strong></span></h1>
+      <h1>Sitendra <span class="author">by <strong>Sitendra</strong></span></h1>
     </div>
+    <nav class="header-nav">
+      <a href="/blog" class="nav-btn nav-btn-primary">Blog</a>
+      <a href="/" class="nav-btn">My Notes</a>
+    </nav>
   </header>
 
   <section class="hero">
