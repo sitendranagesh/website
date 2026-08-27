@@ -27,6 +27,10 @@
       response: "👤 Sitendra Kumar Nagesh is a Mechanical Engineer by training and Software Engineer by trade, specializing in Python/FastAPI, modern web architectures, and mechanical systems. <br><br>👉 <a href='/about'>Read Full Bio & About Page &rarr;</a>"
     },
     {
+      keywords: ["resume", "cv", "curriculum", "career", "template", "job"],
+      response: "📄 Check out our **ATS Resume & CV Builder**! Choose between Modern Engineer, Minimalist, and Executive templates, customize colors, and download a vector-crisp PDF. <br><br>👉 <a href='/resume'>Open Resume Builder &rarr;</a>"
+    },
+    {
       keywords: ["contact", "email", "hire", "message", "touch", "reach"],
       response: "📬 You can leave a quick message right here in this chat, or email Sitendra directly at <a href='mailto:sitendranagesh@gmail.com'>sitendranagesh@gmail.com</a>."
     }
@@ -74,6 +78,7 @@
           <div class="chat-quick-chips">
             <button type="button" class="chat-chip" data-query="projects">🚀 Projects</button>
             <button type="button" class="chat-chip" data-query="image tools">🖼️ Image Studio</button>
+            <button type="button" class="chat-chip" data-query="resume">📄 Resume Builder</button>
             <button type="button" class="chat-chip" data-query="blog">📖 Blog</button>
             <button type="button" class="chat-chip" data-query="about">👤 Who is Sitendra?</button>
             <button type="button" class="chat-chip" data-query="contact">📬 Contact</button>

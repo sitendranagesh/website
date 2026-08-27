@@ -25,6 +25,7 @@
     { title: 'Batch Image Compressor (ZIP)', url: '/image-tools', category: 'Image Tool', icon: '⚡' },
     { title: 'Instagram No-Crop & Grid Slicer', url: '/image-tools', category: 'Image Tool', icon: '✂️' },
     { title: 'Favicon & Multi-Size Icon Maker', url: '/image-tools', category: 'Image Tool', icon: '🖼️' },
+    { title: 'ATS Resume & CV Builder', url: '/resume', category: 'Career', icon: '📄' },
     { title: 'Developer & Engineering Tools', url: '/tools', category: 'Tools', icon: '⚙️' },
     { title: 'Projects Portfolio', url: '/projects', category: 'Projects', icon: '🚀' },
     { title: 'My Notes App', url: '/', category: 'Notes', icon: '📝' },

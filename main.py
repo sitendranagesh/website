@@ -141,17 +141,17 @@ def dynamic_root_dispatcher(request: Request):
     if subdomain == "tools":
         return FileResponse(STATIC_DIR / "tools.html")
 
-    # 3. Projects Subdomain (projects.sitendra.store)
-    if subdomain in ("projects", "portfolio"):
-        return FileResponse(STATIC_DIR / "projects.html")
+    # 4. Resume / CV Subdomain (resume.sitendra.store / cv.sitendra.store)
+    if subdomain in ("resume", "cv"):
+        return FileResponse(STATIC_DIR / "resume.html")
 
-    # 4. About / Profile Subdomain (about.sitendra.store / me.sitendra.store)
+    # 5. About / Profile Subdomain (about.sitendra.store / me.sitendra.store)
     if subdomain in ("about", "me", "intro"):
         intro_file = INTRO_DIR / "index.html"
         if intro_file.exists():
             return FileResponse(intro_file)
 
-    # 5. Notes App / Main Root Domain (sitendra.store or app.sitendra.store)
+    # 6. Notes App / Main Root Domain (sitendra.store or app.sitendra.store)
     if not request.session.get("user_id"):
         return RedirectResponse(url="/login.html")
     return RedirectResponse(url="/index.html")
@@ -178,6 +178,13 @@ def tools_page():
 @app.get("/tools/image")
 def image_tools_page():
     return FileResponse(STATIC_DIR / "image_tools.html")
+
+
+@app.get("/resume")
+@app.get("/cv")
+@app.get("/resume-builder")
+def resume_builder_page():
+    return FileResponse(STATIC_DIR / "resume.html")
 
 
 @app.get("/projects")
@@ -273,6 +280,7 @@ def sitemap_xml():
         {"loc": "https://blog.sitendra.store/", "priority": "0.95", "changefreq": "daily"},
         {"loc": "https://sitendra.store/tools", "priority": "0.85", "changefreq": "weekly"},
         {"loc": "https://sitendra.store/image-tools", "priority": "0.9", "changefreq": "weekly"},
+        {"loc": "https://sitendra.store/resume", "priority": "0.9", "changefreq": "monthly"},
         {"loc": "https://sitendra.store/projects", "priority": "0.85", "changefreq": "monthly"},
     ]
 
