@@ -314,7 +314,7 @@
     <!-- Category Filters & Live Search -->
     <div class="studio-control-bar">
       <div class="category-pills" id="category-pills">
-        <button type="button" class="category-pill active" data-cat="all">All Tools (14)</button>
+        <button type="button" class="category-pill active" data-cat="all">All Tools (15)</button>
         <button type="button" class="category-pill" data-cat="compression">Compression &amp; Size</button>
         <button type="button" class="category-pill" data-cat="passport">Govt Exams &amp; Passports</button>
         <button type="button" class="category-pill" data-cat="signature">Signatures &amp; Watermarks</button>
@@ -322,7 +322,7 @@
         <button type="button" class="category-pill" data-cat="editing">Editing &amp; Utilities</button>
       </div>
 
-      <input type="text" id="tool-search" class="tool-search-input" placeholder="🔍 Search tool by name (e.g., '20KB', 'Passport', 'DOB', 'Signature', 'OCR', 'PDF', 'Censor', 'Batch')...">
+      <input type="text" id="tool-search" class="tool-search-input" placeholder="🔍 Search tool by name (e.g., '20KB', 'Passport', 'DOB', 'Signature', 'OCR', 'PDF', 'Censor', 'Pixel', 'Batch')...">
     </div>
 
     <!-- Navigation Tool Cards Grid -->
@@ -409,6 +409,12 @@
       <button type="button" class="tool-nav-item" data-tool="no-crop-grid" data-cat="editing">
         <span class="tool-nav-icon">✂️</span>
         <span>No-Crop &amp; Grid Slicer</span>
+      </button>
+
+      <!-- 15. Resize in Pixels -->
+      <button type="button" class="tool-nav-item" data-tool="resize-pixel" data-cat="editing">
+        <span class="tool-nav-icon">📏</span>
+        <span>Resize in Pixels (px)</span>
       </button>
     </div>
 
@@ -1099,6 +1105,87 @@
         </div>
       </div>
     </div>
+
+    <!-- =========================================================
+         TOOL 15: RESIZE IMAGE IN PIXELS (EXACT DIMENSIONS)
+         ========================================================= -->
+    <div class="tool-pane" id="pane-resize-pixel">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">📏 Resize Image in Pixels (Exact Width &amp; Height)</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
+        Change photo dimensions by exact pixels (px) or percentage scale with aspect ratio locking and standard exam/social presets.
+      </p>
+
+      <div class="drop-zone" id="rp-drop-zone">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+          <path d="M9 3v18"/>
+          <path d="M15 3v18"/>
+          <path d="M3 9h18"/>
+          <path d="M3 15h18"/>
+        </svg>
+        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Upload Image to Resize in Pixels</div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Click or drag image here</p>
+        <input type="file" id="rp-file-input" accept="image/*" style="display: none;">
+      </div>
+
+      <div id="rp-controls" style="display: none;">
+        <div class="preview-canvas-container">
+          <canvas id="rp-canvas"></canvas>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: center; justify-content: center; margin-bottom: 1.25rem; font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-muted);">
+          <span>Original: <strong id="rp-orig-dims" style="color: var(--text-main);">-</strong></span>
+          <span>&bull;</span>
+          <span>Target: <strong id="rp-target-dims" style="color: var(--primary);">-</strong></span>
+        </div>
+
+        <!-- Dimension Controls -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.25rem; background: var(--bg-surface-elevated); padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
+          <div class="form-group">
+            <label class="form-label">Width (pixels)</label>
+            <input type="number" id="rp-width" class="form-control" value="800" min="1">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Height (pixels)</label>
+            <input type="number" id="rp-height" class="form-control" value="600" min="1">
+          </div>
+          <div class="form-group" style="display: flex; flex-direction: column; justify-content: flex-end;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.6rem;">
+              <input type="checkbox" id="rp-lock-aspect" checked>
+              <span>🔒 Lock Aspect Ratio</span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Output Format</label>
+            <select id="rp-format" class="form-control">
+              <option value="image/jpeg" selected>JPEG (.jpg)</option>
+              <option value="image/png">PNG (.png)</option>
+              <option value="image/webp">WebP (.webp)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Quick Scale & Standard Presets -->
+        <div style="margin-bottom: 1.5rem;">
+          <label class="form-label">Quick Presets &amp; Scale:</label>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button type="button" class="preset-pill rp-scale-btn" data-scale="0.25">25%</button>
+            <button type="button" class="preset-pill rp-scale-btn" data-scale="0.50">50%</button>
+            <button type="button" class="preset-pill rp-scale-btn" data-scale="0.75">75%</button>
+            <button type="button" class="preset-pill rp-scale-btn" data-scale="1.50">150%</button>
+            <button type="button" class="preset-pill rp-scale-btn" data-scale="2.00">200%</button>
+            <button type="button" class="preset-pill rp-preset-btn" data-w="350" data-h="350">UPSC (350×350)</button>
+            <button type="button" class="preset-pill rp-preset-btn" data-w="100" data-h="120">SSC (100×120)</button>
+            <button type="button" class="preset-pill rp-preset-btn" data-w="1920" data-h="1080">Full HD (1920×1080)</button>
+            <button type="button" class="preset-pill rp-preset-btn" data-w="1080" data-h="1080">Square (1080×1080)</button>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="rp-download-btn">
+          📥 Download Resized Image
+        </button>
+      </div>
+    </div>
   </main>
 
   <footer class="blog-footer">
@@ -1497,7 +1584,7 @@
         const dateText = ndDate.value.trim().toUpperCase();
 
         ndCtx.fillText(nameText, ndCanvas.width / 2, yStart + bannerHeight * 0.42);
-        ndCtx.font = `${Math.round(fontSize * 0.88)}px sans-serif`;
+        ndCtx.font = `bold ${Math.round(fontSize * 0.90)}px sans-serif`;
         ndCtx.fillText(dateText, ndCanvas.width / 2, yStart + bannerHeight * 0.82);
       }
 
@@ -2244,6 +2331,113 @@
         link.download = `grid_slices_${cols}x${rows}.zip`;
         link.href = URL.createObjectURL(content);
         link.click();
+      });
+
+      // =========================================================
+      // TOOL 15: RESIZE IN PIXELS
+      // =========================================================
+      const rpDropZone = document.getElementById("rp-drop-zone");
+      const rpFileInput = document.getElementById("rp-file-input");
+      const rpControls = document.getElementById("rp-controls");
+      const rpCanvas = document.getElementById("rp-canvas");
+      const rpCtx = rpCanvas.getContext("2d");
+      const rpWidthInput = document.getElementById("rp-width");
+      const rpHeightInput = document.getElementById("rp-height");
+      const rpLockAspect = document.getElementById("rp-lock-aspect");
+      const rpFormat = document.getElementById("rp-format");
+      const rpOrigDims = document.getElementById("rp-orig-dims");
+      const rpTargetDims = document.getElementById("rp-target-dims");
+      const rpDownloadBtn = document.getElementById("rp-download-btn");
+
+      let rpImage = null;
+      let rpAspectRatio = 1.0;
+
+      rpDropZone.addEventListener("click", () => rpFileInput.click());
+      rpFileInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const img = new Image();
+            img.onload = () => {
+              rpImage = img;
+              rpAspectRatio = img.width / img.height;
+              rpOrigDims.textContent = `${img.width} × ${img.height} px`;
+              rpWidthInput.value = img.width;
+              rpHeightInput.value = img.height;
+              rpControls.style.display = "block";
+              renderResizedPixels();
+            };
+            img.src = ev.target.result;
+          };
+          reader.readAsDataURL(e.target.files[0]);
+        }
+      });
+
+      function renderResizedPixels() {
+        if (!rpImage) return;
+        const targetW = Math.max(1, parseInt(rpWidthInput.value) || rpImage.width);
+        const targetH = Math.max(1, parseInt(rpHeightInput.value) || rpImage.height);
+
+        rpTargetDims.textContent = `${targetW} × ${targetH} px`;
+        rpCanvas.width = targetW;
+        rpCanvas.height = targetH;
+
+        rpCtx.imageSmoothingEnabled = true;
+        rpCtx.imageSmoothingQuality = "high";
+        rpCtx.drawImage(rpImage, 0, 0, targetW, targetH);
+      }
+
+      rpWidthInput.addEventListener("input", () => {
+        if (rpLockAspect.checked && rpImage) {
+          const w = parseInt(rpWidthInput.value) || 1;
+          rpHeightInput.value = Math.round(w / rpAspectRatio);
+        }
+        renderResizedPixels();
+      });
+
+      rpHeightInput.addEventListener("input", () => {
+        if (rpLockAspect.checked && rpImage) {
+          const h = parseInt(rpHeightInput.value) || 1;
+          rpWidthInput.value = Math.round(h * rpAspectRatio);
+        }
+        renderResizedPixels();
+      });
+
+      rpFormat.addEventListener("change", renderResizedPixels);
+
+      // Percentage Scale Buttons
+      document.querySelectorAll(".rp-scale-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (!rpImage) return;
+          const scale = parseFloat(btn.dataset.scale);
+          rpWidthInput.value = Math.round(rpImage.width * scale);
+          rpHeightInput.value = Math.round(rpImage.height * scale);
+          renderResizedPixels();
+        });
+      });
+
+      // Dimension Preset Buttons
+      document.querySelectorAll(".rp-preset-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          rpWidthInput.value = parseInt(btn.dataset.w);
+          rpHeightInput.value = parseInt(btn.dataset.h);
+          renderResizedPixels();
+        });
+      });
+
+      rpDownloadBtn.addEventListener("click", () => {
+        if (!rpImage) return;
+        const fmt = rpFormat.value;
+        const ext = fmt === "image/png" ? "png" : (fmt === "image/webp" ? "webp" : "jpg");
+        const w = rpCanvas.width;
+        const h = rpCanvas.height;
+
+        rpCanvas.toBlob((blob) => {
+          const link = document.createElement("a");
+          link.download = `resized_${w}x${h}.${ext}`;
+          link.href = URL.createObjectURL(blob);
+          link.click();
+        }, fmt, 0.95);
       });
     });
   </script>
