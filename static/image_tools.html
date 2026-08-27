@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Manipulation Studio | Convert to PDF, Resize & Compress - Sitendra</title>
-  <meta name="description" content="Free, 100% private, client-side image manipulation tools. Convert Image to PDF, resize images with presets, compress file size, convert PNG/JPG/WebP, rotate and flip.">
+  <title>Image Manipulation Studio | 100% Client-Side Tools Suite - Sitendra</title>
+  <meta name="description" content="Comprehensive client-side image utility suite: Target KB Compressor (20KB, 50KB, 100KB), Passport Photo Maker, Add Name & Date on Photo, Merge Photo & Signature, Signature Pad, Watermark Studio, OCR, Image to PDF, PDF to JPG, and Face Censor. Zero server upload, 100% private.">
 
   <!-- PWA & Feeds -->
   <link rel="manifest" href="/manifest.json">
@@ -12,60 +12,132 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Dancing+Script:wght@600&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Pacifico&display=swap" rel="stylesheet">
 
   <!-- CSS -->
   <link rel="stylesheet" href="/blog/blog.css">
   <link rel="stylesheet" href="/cmd_k.css">
 
-  <!-- jsPDF for Client-Side Image to PDF -->
+  <!-- Theme Script (Instant FOUC prevention) -->
+  <script src="/theme.js"></script>
+
+  <!-- Client-Side Libraries (jsPDF, JSZip, PDF.js, Tesseract.js) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+  <!-- Core Image Engine -->
+  <script src="/image_engine.js"></script>
 
   <style>
-    .tools-nav {
+    /* Category Filter & Search Bar */
+    .studio-control-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .category-pills {
       display: flex;
       gap: 0.5rem;
       flex-wrap: wrap;
-      margin-bottom: 2rem;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 1rem;
     }
-    .tool-tab-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.65rem 1.25rem;
+    .category-pill {
       background: var(--bg-surface);
-      color: var(--text-muted);
       border: 1px solid var(--border);
-      border-radius: var(--radius-md);
+      color: var(--text-muted);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-full);
+      font-size: 0.88rem;
       font-weight: 600;
-      font-size: 0.92rem;
       cursor: pointer;
       transition: all 0.2s ease;
     }
-    .tool-tab-btn:hover {
+    .category-pill:hover {
       background: var(--bg-surface-hover);
       color: var(--text-main);
     }
-    .tool-tab-btn.active {
+    .category-pill.active {
       background: var(--primary-gradient);
       color: #0B1120;
       border-color: transparent;
       font-weight: 700;
-      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
     }
+    .tool-search-input {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      padding: 0.75rem 1.25rem;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    .tool-search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+    }
+
+    /* Tools Navigation Grid */
+    .tools-nav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 2.5rem;
+    }
+    .tool-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.75rem 1rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+    .tool-nav-item:hover {
+      background: var(--bg-surface-hover);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+    .tool-nav-item.active {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+    }
+    .tool-nav-icon {
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    /* Active Tool Pane */
     .tool-pane {
       display: none;
       background: var(--bg-surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 2rem;
+      padding: 2.25rem 2rem;
       box-shadow: var(--shadow-md);
+      margin-bottom: 3rem;
     }
     .tool-pane.active {
       display: block;
+      animation: fadeIn 0.25s ease-out;
     }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Drop Zone */
     .drop-zone {
       border: 2px dashed var(--border);
       border-radius: var(--radius-lg);
@@ -84,6 +156,8 @@
       color: var(--primary);
       margin-bottom: 0.75rem;
     }
+
+    /* Canvas Preview Container */
     .preview-canvas-container {
       background: #090D16;
       border: 1px solid var(--border);
@@ -93,56 +167,18 @@
       align-items: center;
       justify-content: center;
       min-height: 260px;
-      max-height: 480px;
+      max-height: 520px;
       overflow: hidden;
       margin-bottom: 1.25rem;
+      position: relative;
     }
     .preview-canvas-container canvas, .preview-canvas-container img {
       max-width: 100%;
-      max-height: 440px;
+      max-height: 480px;
       object-fit: contain;
       border-radius: var(--radius-sm);
     }
-    .images-pdf-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      gap: 1rem;
-      margin: 1.5rem 0;
-    }
-    .image-pdf-card {
-      background: var(--bg-surface-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 0.5rem;
-      text-align: center;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .image-pdf-card img {
-      width: 100%;
-      height: 90px;
-      object-fit: cover;
-      border-radius: 4px;
-      margin-bottom: 0.4rem;
-    }
-    .image-pdf-card .remove-img {
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      background: rgba(239, 68, 68, 0.85);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      font-size: 11px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+
     .preset-pills {
       display: flex;
       gap: 0.4rem;
@@ -159,22 +195,59 @@
       cursor: pointer;
       transition: all 0.15s ease;
     }
-    .preset-pill:hover {
+    .preset-pill:hover, .preset-pill.active {
       border-color: var(--primary);
       color: var(--text-main);
+      background: rgba(56, 189, 248, 0.1);
     }
-    .privacy-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      color: var(--success);
-      padding: 0.5rem 1rem;
-      border-radius: var(--radius-full);
-      font-size: 0.84rem;
-      font-weight: 600;
+
+    .stat-badge-group {
+      padding: 1.25rem;
+      background: #090D16;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
       margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .stat-badge-title {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 0.2rem;
+    }
+    .stat-badge-val {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .palette-swatches {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .palette-swatch {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 0.35rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .palette-swatch:hover {
+      transform: scale(1.08);
     }
   </style>
 </head>
@@ -199,17 +272,18 @@
 
     <nav class="nav-links">
       <a href="/blog" class="nav-item">Blog</a>
-      <a href="/tools" class="nav-item">All Tools</a>
+      <a href="/tools" class="nav-item">Dev Tools</a>
       <a href="/projects" class="nav-item">Projects</a>
       <a href="/about" class="nav-item">About</a>
       <a href="/" class="nav-item">Notes</a>
+      <button type="button" class="theme-toggle-btn" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">☀️</button>
       <button type="button" class="btn btn-secondary btn-sm" id="cmdk-btn" title="Quick Search (Cmd+K)">
         <span style="font-family: var(--font-mono); font-size: 0.75rem;">⌘K</span>
       </button>
     </nav>
   </header>
 
-  <main class="blog-container">
+  <main class="blog-container" style="max-width: 1200px;">
     <div class="hero-section" style="padding: 1.5rem 0 1.5rem;">
       <div class="hero-eyebrow">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -217,47 +291,569 @@
           <circle cx="9" cy="9" r="2"/>
           <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
         </svg>
-        Client-Side Image Studio
+        Client-Side Image Manipulation Suite
       </div>
       <h1 class="hero-title" style="font-size: 2.3rem;">
-        Image <span class="gradient-text">Manipulation & PDF Studio</span>
+        Image <span class="gradient-text">Studio &amp; Utilities</span>
       </h1>
       <p class="hero-desc">
-        Fast, high-quality image manipulation utilities. Convert photos to PDF, resize by pixels or presets, optimize file size, and transform formats.
+        Fast, high-precision in-browser tools inspired by Pi7. Compress to exact KB targets, format passport photos, add exam Name/DOB banners, generate signatures, and run OCR text extraction with complete privacy.
       </p>
 
-      <div class="privacy-badge">
+      <div class="privacy-badge" style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--success); padding: 0.5rem 1rem; border-radius: var(--radius-full); font-size: 0.84rem; font-weight: 600; margin-bottom: 1.5rem;">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
           <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
         </svg>
-        100% Private & Client-Side: Your files are processed in your browser and never uploaded to any server.
+        100% In-Browser &amp; Zero Server Uploads: All files are processed locally on your device for absolute security and zero latency.
       </div>
     </div>
 
-    <!-- Tool Switcher Tabs -->
-    <div class="tools-nav">
-      <button class="tool-tab-btn active" data-tool="pdf">
-        <span>📄</span> Image to PDF Converter
+    <!-- Category Filters & Live Search -->
+    <div class="studio-control-bar">
+      <div class="category-pills" id="category-pills">
+        <button type="button" class="category-pill active" data-cat="all">All Tools (14)</button>
+        <button type="button" class="category-pill" data-cat="compression">Compression &amp; Size</button>
+        <button type="button" class="category-pill" data-cat="passport">Govt Exams &amp; Passports</button>
+        <button type="button" class="category-pill" data-cat="signature">Signatures &amp; Watermarks</button>
+        <button type="button" class="category-pill" data-cat="conversions">Conversions &amp; OCR</button>
+        <button type="button" class="category-pill" data-cat="editing">Editing &amp; Utilities</button>
+      </div>
+
+      <input type="text" id="tool-search" class="tool-search-input" placeholder="🔍 Search tool by name (e.g., '20KB', 'Passport', 'DOB', 'Signature', 'OCR', 'PDF', 'Censor', 'Batch')...">
+    </div>
+
+    <!-- Navigation Tool Cards Grid -->
+    <div class="tools-nav-grid" id="tools-nav-grid">
+      <!-- 1. Target KB Compressor -->
+      <button type="button" class="tool-nav-item active" data-tool="target-compress" data-cat="compression">
+        <span class="tool-nav-icon">🎯</span>
+        <span>Target KB Compressor</span>
       </button>
-      <button class="tool-tab-btn" data-tool="resize">
-        <span>📐</span> Image Resizer & Scaler
+
+      <!-- 2. Increase File Size -->
+      <button type="button" class="tool-nav-item" data-tool="increase-size" data-cat="compression">
+        <span class="tool-nav-icon">📈</span>
+        <span>Increase File Size (KB)</span>
       </button>
-      <button class="tool-tab-btn" data-tool="compress">
-        <span>🗜️</span> Compressor & Format Converter
+
+      <!-- 3. Batch Image Compressor -->
+      <button type="button" class="tool-nav-item" data-tool="batch-compress" data-cat="compression">
+        <span class="tool-nav-icon">⚡</span>
+        <span>Batch Compress (ZIP)</span>
       </button>
-      <button class="tool-tab-btn" data-tool="transform">
-        <span>🔄</span> Rotate & Flip
+
+      <!-- 4. Passport Photo Maker -->
+      <button type="button" class="tool-nav-item" data-tool="passport-maker" data-cat="passport">
+        <span class="tool-nav-icon">🛂</span>
+        <span>Passport Photo Maker</span>
+      </button>
+
+      <!-- 5. Add Name & DOB on Photo -->
+      <button type="button" class="tool-nav-item" data-tool="name-dob" data-cat="passport">
+        <span class="tool-nav-icon">📝</span>
+        <span>Add Name &amp; Date on Photo</span>
+      </button>
+
+      <!-- 6. Merge Photo & Signature -->
+      <button type="button" class="tool-nav-item" data-tool="merge-sign" data-cat="passport">
+        <span class="tool-nav-icon">🖋️</span>
+        <span>Merge Photo &amp; Signature</span>
+      </button>
+
+      <!-- 7. Canvas Signature Maker -->
+      <button type="button" class="tool-nav-item" data-tool="signature-maker" data-cat="signature">
+        <span class="tool-nav-icon">✍️</span>
+        <span>Signature Maker Pad</span>
+      </button>
+
+      <!-- 8. Watermark Studio -->
+      <button type="button" class="tool-nav-item" data-tool="watermark-studio" data-cat="signature">
+        <span class="tool-nav-icon">💧</span>
+        <span>Watermark Studio</span>
+      </button>
+
+      <!-- 9. Image to PDF -->
+      <button type="button" class="tool-nav-item" data-tool="image-to-pdf" data-cat="conversions">
+        <span class="tool-nav-icon">📄</span>
+        <span>Image to PDF Converter</span>
+      </button>
+
+      <!-- 10. PDF to JPG -->
+      <button type="button" class="tool-nav-item" data-tool="pdf-to-jpg" data-cat="conversions">
+        <span class="tool-nav-icon">📑</span>
+        <span>PDF to JPG Converter</span>
+      </button>
+
+      <!-- 11. Client-Side OCR -->
+      <button type="button" class="tool-nav-item" data-tool="ocr-text" data-cat="conversions">
+        <span class="tool-nav-icon">🔍</span>
+        <span>Image to Text (OCR)</span>
+      </button>
+
+      <!-- 12. Favicon & Multi-Size Maker -->
+      <button type="button" class="tool-nav-item" data-tool="favicon-maker" data-cat="conversions">
+        <span class="tool-nav-icon">🖼️</span>
+        <span>Favicon &amp; Icon Maker</span>
+      </button>
+
+      <!-- 13. Blur, Censor & Pixelate -->
+      <button type="button" class="tool-nav-item" data-tool="censor-blur" data-cat="editing">
+        <span class="tool-nav-icon">🛡️</span>
+        <span>Blur, Censor &amp; Pixelate</span>
+      </button>
+
+      <!-- 14. Instagram No-Crop & Grid Slicer -->
+      <button type="button" class="tool-nav-item" data-tool="no-crop-grid" data-cat="editing">
+        <span class="tool-nav-icon">✂️</span>
+        <span>No-Crop &amp; Grid Slicer</span>
       </button>
     </div>
 
     <!-- =========================================================
-         1. Image to PDF Converter
+         TOOL 1: TARGET KB COMPRESSOR (Binary Search)
          ========================================================= -->
-    <div class="tool-pane active" id="pane-pdf">
-      <h2 style="font-size: 1.35rem; margin-bottom: 0.5rem;">Image to PDF Converter</h2>
+    <div class="tool-pane active" id="pane-target-compress">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">🎯 Target KB Compressor (Exact Size)</h2>
       <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
-        Select or drag multiple images (JPG, PNG, WebP) to combine them into a single clean PDF document.
+        Binary search engine that compresses images to an exact target file size (e.g. 20KB, 50KB, 100KB) with ±5% precision for online exam forms and government portals.
+      </p>
+
+      <div class="drop-zone" id="tc-drop-zone">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <circle cx="12" cy="12" r="6"/>
+          <circle cx="12" cy="12" r="2"/>
+        </svg>
+        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Upload Image for Target Compression</div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Click or drag an image here</p>
+        <input type="file" id="tc-file-input" accept="image/*" style="display: none;">
+      </div>
+
+      <div id="tc-controls" style="display: none;">
+        <div class="preview-canvas-container">
+          <canvas id="tc-canvas"></canvas>
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <span class="form-label">Common Target Size Presets</span>
+          <div class="preset-pills">
+            <button class="preset-pill" data-kb="10">10 KB</button>
+            <button class="preset-pill active" data-kb="20">20 KB (UPSC / SSC)</button>
+            <button class="preset-pill" data-kb="50">50 KB (Govt Forms)</button>
+            <button class="preset-pill" data-kb="100">100 KB (Websites)</button>
+            <button class="preset-pill" data-kb="200">200 KB</button>
+            <button class="preset-pill" data-kb="500">500 KB</button>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+          <div class="form-group">
+            <label class="form-label">Target Size (KB)</label>
+            <input type="number" id="tc-target-val" class="form-control" value="20" min="5" max="5000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Output Format</label>
+            <select id="tc-format" class="form-control">
+              <option value="image/jpeg" selected>JPEG / JPG</option>
+              <option value="image/webp">WebP</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="stat-badge-group">
+          <div>
+            <div class="stat-badge-title">Original Size</div>
+            <div id="tc-orig-size" class="stat-badge-val" style="color: var(--text-main);">-</div>
+          </div>
+          <div>
+            <div class="stat-badge-title">Achieved Size</div>
+            <div id="tc-achieved-size" class="stat-badge-val" style="color: var(--success);">-</div>
+          </div>
+          <div>
+            <div class="stat-badge-title">Target Goal</div>
+            <div id="tc-target-goal" class="stat-badge-val" style="color: var(--primary);">20 KB</div>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="tc-download-btn" style="min-height: 46px; width: 100%;">
+          📥 Download Target Size Image
+        </button>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         TOOL 2: INCREASE FILE SIZE IN KB
+         ========================================================= -->
+    <div class="tool-pane" id="pane-increase-size">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">📈 Increase File Size in KB / MB</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
+        Need your image to meet a minimum size portal requirement (e.g. "Image must be at least 50KB")? Safely pads metadata bytes without altering the visual image.
+      </p>
+
+      <div class="drop-zone" id="inc-drop-zone">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+          <polyline points="16 7 22 7 22 13"/>
+        </svg>
+        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Upload Image to Increase Size</div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Click or drag an image here</p>
+        <input type="file" id="inc-file-input" accept="image/*" style="display: none;">
+      </div>
+
+      <div id="inc-controls" style="display: none;">
+        <div class="preview-canvas-container">
+          <canvas id="inc-canvas"></canvas>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+          <div class="form-group">
+            <label class="form-label">Desired Minimum Size (KB)</label>
+            <input type="number" id="inc-target-val" class="form-control" value="60" min="10" max="10000">
+          </div>
+        </div>
+
+        <div class="stat-badge-group">
+          <div>
+            <div class="stat-badge-title">Original Size</div>
+            <div id="inc-orig-size" class="stat-badge-val" style="color: var(--text-main);">-</div>
+          </div>
+          <div>
+            <div class="stat-badge-title">Padded Output Size</div>
+            <div id="inc-achieved-size" class="stat-badge-val" style="color: var(--success);">-</div>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="inc-download-btn" style="min-height: 46px; width: 100%;">
+          📥 Download Padded Image
+        </button>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         TOOL 3: BATCH IMAGE COMPRESSOR (ZIP)
+         ========================================================= -->
+    <div class="tool-pane" id="pane-batch-compress">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">⚡ Batch Image Compressor &amp; ZIP Exporter</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
+        Compress hundreds of photos simultaneously in parallel Web Workers and download them all in a single `.zip` file.
+      </p>
+
+      <div class="drop-zone" id="batch-drop-zone">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+          <line x1="12" y1="22.08" x2="12" y2="12"/>
+        </svg>
+        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Upload Multiple Images</div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Select multiple JPG, PNG, WebP files</p>
+        <input type="file" id="batch-file-input" multiple accept="image/*" style="display: none;">
+      </div>
+
+      <div id="batch-controls" style="display: none;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+          <div class="form-group">
+            <label class="form-label">Compression Quality: <span id="batch-q-val" style="color: var(--primary); font-weight: 700;">80%</span></label>
+            <input type="range" id="batch-quality" min="10" max="100" value="80" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Convert Format</label>
+            <select id="batch-format" class="form-control">
+              <option value="image/jpeg" selected>JPEG (.jpg)</option>
+              <option value="image/webp">WebP (.webp)</option>
+              <option value="image/png">PNG (.png)</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="batch-list" style="max-height: 240px; overflow-y: auto; background: #090D16; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.5rem;"></div>
+
+        <button type="button" class="btn btn-primary" id="batch-download-btn" style="min-height: 46px; width: 100%;">
+          📦 Compress All &amp; Download ZIP (<span id="batch-count">0</span> images)
+        </button>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         TOOL 4: PASSPORT PHOTO MAKER
+         ========================================================= -->
+    <div class="tool-pane" id="pane-passport-maker">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">🛂 Passport Photo Maker &amp; Background Fill</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
+        Generate official standard passport photos with exact physical dimensions (3.5 × 4.5 cm, 2 × 2 in @ 300 DPI) and solid white/blue background fills.
+      </p>
+
+      <div class="drop-zone" id="pass-drop-zone">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Upload Portrait / Selfie</div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Click or drag your photo here</p>
+        <input type="file" id="pass-file-input" accept="image/*" style="display: none;">
+      </div>
+
+      <div id="pass-controls" style="display: none;">
+        <div class="preview-canvas-container">
+          <canvas id="pass-canvas"></canvas>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+          <div class="form-group">
+            <label class="form-label">Country / Standard</label>
+            <select id="pass-preset-select" class="form-control">
+              <option value="india" selected>India Passport (3.5 × 4.5 cm @ 300 DPI)</option>
+              <option value="us">US Visa / Passport (2 × 2 in @ 300 DPI)</option>
+              <option value="uk">UK / EU Passport (35 × 45 mm @ 300 DPI)</option>
+              <option value="bangladesh">Bangladesh Passport (45 × 35 mm @ 300 DPI)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Background Matting Fill</label>
+            <select id="pass-bg-select" class="form-control">
+              <option value="#FFFFFF" selected>White (Standard)</option>
+              <option value="#38BDF8">Light Blue</option>
+              <option value="#F1F5F9">Light Gray</option>
+              <option value="#EF4444">Red (Singapore/Custom)</option>
+              <option value="transparent">Transparent / Original</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="pass-download-btn" style="min-height: 46px; width: 100%;">
+          📥 Download 300 DPI Passport Photo
+        </button>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         TOOL 5: ADD NAME & DATE ON PHOTO (DOB/DOP)
+         ========================================================= -->
+    <div class="tool-pane" id="pane-name-dob">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">📝 Add Name &amp; Date on Photo (DOB / DOP)</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
+        Add official bottom Name and Date of Photo (DOP) text strips required for NEET, UPSC, SSC, and state competitive examinations.
+      </p>
+
+      <div class="drop-zone" id="nd-drop-zone">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+          <line x1="3" y1="15" x2="21" y2="15"/>
+          <line x1="9" y1="9" x2="15" y2="9"/>
+        </svg>
+        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Upload Exam Photo</div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Click or drag photo here</p>
+        <input type="file" id="nd-file-input" accept="image/*" style="display: none;">
+      </div>
+
+      <div id="nd-controls" style="display: none;">
+        <div class="preview-canvas-container">
+          <canvas id="nd-canvas"></canvas>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+          <div class="form-group">
+            <label class="form-label">Candidate Full Name</label>
+            <input type="text" id="nd-name" class="form-control" value="SITENDRA KUMAR NAGESH" placeholder="e.g. JOHN DOE">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date of Photo (DOP / DOB)</label>
+            <input type="text" id="nd-date" class="form-control" value="DOP: 25.08.2026" placeholder="e.g. DOP: 15.08.2026">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Banner Style</label>
+            <select id="nd-style" class="form-control">
+              <option value="white_bg" selected>White Background (Black Text)</option>
+              <option value="black_bg">Black Background (White Text)</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="nd-download-btn" style="min-height: 46px; width: 100%;">
+          📥 Download Exam Form Photo
+        </button>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         TOOL 6: MERGE PHOTO & SIGNATURE
+         ========================================================= -->
+    <div class="tool-pane" id="pane-merge-sign">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">🖋️ Merge Photo &amp; Signature (Single Frame)</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
+        Combine your passport photo and digital signature vertically or side-by-side into a single image required by online registration portals.
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+        <div>
+          <div class="form-label">1. Upload Passport Photo</div>
+          <div class="drop-zone" id="mps-photo-drop" style="padding: 2rem 1rem;">
+            <div>Upload Photo</div>
+            <input type="file" id="mps-photo-input" accept="image/*" style="display: none;">
+          </div>
+        </div>
+        <div>
+          <div class="form-label">2. Upload Signature Image</div>
+          <div class="drop-zone" id="mps-sign-drop" style="padding: 2rem 1rem;">
+            <div>Upload Signature</div>
+            <input type="file" id="mps-sign-input" accept="image/*" style="display: none;">
+          </div>
+        </div>
+      </div>
+
+      <div id="mps-controls" style="display: none;">
+        <div class="preview-canvas-container">
+          <canvas id="mps-canvas"></canvas>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+          <div class="form-group">
+            <label class="form-label">Merge Layout</label>
+            <select id="mps-layout" class="form-control">
+              <option value="vertical" selected>Vertical (Photo Top, Signature Bottom)</option>
+              <option value="horizontal">Side-by-Side (Photo Left, Signature Right)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Background Color</label>
+            <select id="mps-bg" class="form-control">
+              <option value="#FFFFFF" selected>White</option>
+              <option value="#F8FAFC">Off-White</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="mps-download-btn" style="min-height: 46px; width: 100%;">
+          📥 Download Merged Photo &amp; Signature
+        </button>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         TOOL 7: CANVAS SIGNATURE MAKER PAD
+         ========================================================= -->
+    <div class="tool-pane" id="pane-signature-maker">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">✍️ Signature Maker &amp; Digital Pen Pad</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
+        Draw your smooth digital signature or generate realistic cursive handwritten signatures for documents. Export as transparent PNG.
+      </p>
+
+      <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem;">
+        <button type="button" class="preset-pill active" id="sig-mode-draw">✏️ Draw Pad</button>
+        <button type="button" class="preset-pill" id="sig-mode-type">⌨️ Type Cursive</button>
+      </div>
+
+      <div id="sig-draw-section">
+        <div class="preview-canvas-container" style="background: #FFFFFF; cursor: crosshair;">
+          <canvas id="sig-canvas" width="600" height="240"></canvas>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-bottom: 1.5rem;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Ink Color</label>
+            <input type="color" id="sig-ink-color" value="#0F172A" style="height: 38px; width: 60px; background: transparent; border: none; cursor: pointer;">
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Pen Width</label>
+            <select id="sig-pen-width" class="form-control">
+              <option value="2">Fine (2px)</option>
+              <option value="3" selected>Medium (3px)</option>
+              <option value="5">Thick (5px)</option>
+            </select>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" id="sig-clear-btn">Clear Canvas</button>
+        </div>
+      </div>
+
+      <div id="sig-type-section" style="display: none;">
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label">Type Your Name</label>
+          <input type="text" id="sig-type-input" class="form-control" value="Sitendra Kumar" placeholder="Type name here...">
+        </div>
+        <div class="preview-canvas-container" style="background: #FFFFFF;">
+          <canvas id="sig-type-canvas" width="600" height="200"></canvas>
+        </div>
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label class="form-label">Cursive Font Style</label>
+          <select id="sig-font-select" class="form-control">
+            <option value="Dancing Script" selected>Dancing Script (Elegant)</option>
+            <option value="Pacifico">Pacifico (Bold Script)</option>
+            <option value="Caveat">Caveat (Casual Handwriting)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <button type="button" class="btn btn-primary" id="sig-download-transparent">
+          📥 Download Transparent PNG
+        </button>
+        <button type="button" class="btn btn-secondary" id="sig-download-white">
+          Download White Background
+        </button>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         TOOL 8: WATERMARK STUDIO
+         ========================================================= -->
+    <div class="tool-pane" id="pane-watermark-studio">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">💧 Watermark Studio (Text &amp; Logo)</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
+        Protect your images by stamping customizable text or logo watermarks with opacity control and diagonal repeat tiling.
+      </p>
+
+      <div class="drop-zone" id="wm-drop-zone">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+        </svg>
+        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Upload Image to Watermark</div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Click or drag image here</p>
+        <input type="file" id="wm-file-input" accept="image/*" style="display: none;">
+      </div>
+
+      <div id="wm-controls" style="display: none;">
+        <div class="preview-canvas-container">
+          <canvas id="wm-canvas"></canvas>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+          <div class="form-group">
+            <label class="form-label">Watermark Text</label>
+            <input type="text" id="wm-text" class="form-control" value="© Sitendra Kumar Nagesh">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Opacity: <span id="wm-op-val" style="color: var(--primary); font-weight: 700;">40%</span></label>
+            <input type="range" id="wm-opacity" min="5" max="100" value="40" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Font Size (px)</label>
+            <input type="number" id="wm-font-size" class="form-control" value="32" min="10" max="200">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Position Mode</label>
+            <select id="wm-position" class="form-control">
+              <option value="bottom-right" selected>Bottom Right</option>
+              <option value="bottom-left">Bottom Left</option>
+              <option value="center">Center</option>
+              <option value="top-right">Top Right</option>
+              <option value="tile">Diagonal Tiling (Full Protection)</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="wm-download-btn" style="min-height: 46px; width: 100%;">
+          📥 Download Watermarked Image
+        </button>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         TOOL 9: IMAGE TO PDF CONVERTER
+         ========================================================= -->
+    <div class="tool-pane" id="pane-image-to-pdf">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">📄 Image to PDF Converter</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
+        Combine single or multiple images (JPG, PNG, WebP) into a merged, formatted PDF document with customizable margins and page sizes.
       </p>
 
       <div class="drop-zone" id="pdf-drop-zone">
@@ -266,8 +862,8 @@
           <polyline points="17 8 12 3 7 8"/>
           <line x1="12" x2="12" y1="3" y2="15"/>
         </svg>
-        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Choose Images or Drag & Drop Here</div>
-        <p style="color: var(--text-muted); font-size: 0.85rem;">Supports JPG, PNG, WebP, GIF, SVG (Multiple files allowed)</p>
+        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Choose Images or Drag &amp; Drop</div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Multiple files supported (JPG, PNG, WebP)</p>
         <input type="file" id="pdf-file-input" multiple accept="image/*" style="display: none;">
       </div>
 
@@ -277,9 +873,8 @@
           <button type="button" class="btn btn-secondary btn-sm" id="pdf-clear-all">Clear All</button>
         </div>
 
-        <div class="images-pdf-grid" id="pdf-grid"></div>
+        <div class="images-pdf-grid" id="pdf-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 1rem; margin: 1.5rem 0;"></div>
 
-        <!-- PDF Configuration -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; padding: 1.25rem; background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-md);">
           <div class="form-group">
             <label class="form-label">Page Size</label>
@@ -310,202 +905,253 @@
           </div>
         </div>
 
-        <button type="button" class="btn btn-primary" id="pdf-generate-btn" style="min-height: 46px; width: 100%; font-size: 1.05rem;">
-          📥 Generate & Download PDF
+        <button type="button" class="btn btn-primary" id="pdf-generate-btn" style="min-height: 46px; width: 100%;">
+          📥 Generate &amp; Download PDF
         </button>
       </div>
     </div>
 
     <!-- =========================================================
-         2. Image Resizer & Scaler
+         TOOL 10: PDF TO JPG CONVERTER
          ========================================================= -->
-    <div class="tool-pane" id="pane-resize">
-      <h2 style="font-size: 1.35rem; margin-bottom: 0.5rem;">Image Resizer & Scaler</h2>
+    <div class="tool-pane" id="pane-pdf-to-jpg">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">📑 PDF to JPG Image Converter</h2>
       <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
-        Resize images by exact pixels or percentage with aspect ratio protection and social media presets.
+        Render each page of your PDF document into high-resolution JPG images directly inside your browser.
       </p>
 
-      <div class="drop-zone" id="resize-drop-zone">
+      <div class="drop-zone" id="p2j-drop-zone">
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="15 3 21 3 21 9"/>
-          <polyline points="9 21 3 21 3 15"/>
-          <line x1="21" x2="14" y1="3" y2="10"/>
-          <line x1="3" x2="10" y1="21" y2="14"/>
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
         </svg>
-        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Upload Image to Resize</div>
-        <p style="color: var(--text-muted); font-size: 0.85rem;">Click or drop an image file here</p>
-        <input type="file" id="resize-file-input" accept="image/*" style="display: none;">
+        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Upload PDF Document</div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Click or drag PDF file here</p>
+        <input type="file" id="p2j-file-input" accept="application/pdf" style="display: none;">
       </div>
 
-      <div id="resize-controls-container" style="display: none;">
+      <div id="p2j-controls" style="display: none;">
+        <div id="p2j-pages-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;"></div>
+
+        <button type="button" class="btn btn-primary" id="p2j-download-all" style="min-height: 46px; width: 100%;">
+          📦 Download All Pages as ZIP
+        </button>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         TOOL 11: CLIENT-SIDE OCR (Image to Text)
+         ========================================================= -->
+    <div class="tool-pane" id="pane-ocr-text">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">🔍 In-Browser Optical Character Recognition (OCR)</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
+        Extract selectable, searchable text from photos, scans, receipts, and screenshots using Tesseract.js.
+      </p>
+
+      <div class="drop-zone" id="ocr-drop-zone">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="4 7 4 4 20 4 20 7"/>
+          <line x1="9" y1="20" x2="15" y2="20"/>
+          <line x1="12" y1="4" x2="12" y2="20"/>
+        </svg>
+        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Upload Image for Text Extraction</div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Click or drag image with text</p>
+        <input type="file" id="ocr-file-input" accept="image/*" style="display: none;">
+      </div>
+
+      <div id="ocr-controls" style="display: none;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+          <div>
+            <div class="form-label">Original Image</div>
+            <div class="preview-canvas-container" style="min-height: 240px;">
+              <img id="ocr-preview-img" alt="OCR Source">
+            </div>
+          </div>
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+              <span class="form-label">Extracted Text Output</span>
+              <button type="button" class="btn btn-secondary btn-sm" id="ocr-copy-btn">📋 Copy Text</button>
+            </div>
+            <textarea id="ocr-output-text" class="editor-textarea" style="width: 100%; min-height: 240px; background: #090D16; border: 1px solid var(--border); border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 0.95rem;" placeholder="Text will be extracted here..."></textarea>
+          </div>
+        </div>
+
+        <div id="ocr-status-bar" style="font-size: 0.9rem; color: var(--primary); margin-bottom: 1rem;"></div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         TOOL 12: FAVICON & MULTI-SIZE MAKER
+         ========================================================= -->
+    <div class="tool-pane" id="pane-favicon-maker">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">🖼️ Favicon &amp; Multi-Size Icon Maker</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
+        Generate multi-size web favicons and app icons (16px, 32px, 48px, 64px, 128px) in PNG and ICO packages.
+      </p>
+
+      <div class="drop-zone" id="fav-drop-zone">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="m4.93 4.93 4.24 4.24"/>
+          <path d="m14.83 9.17 4.24-4.24"/>
+          <path d="m14.83 14.83 4.24 4.24"/>
+          <path d="m9.17 14.83-4.24 4.24"/>
+        </svg>
+        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Upload Logo / Image</div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Click or drag a square logo or image</p>
+        <input type="file" id="fav-file-input" accept="image/*" style="display: none;">
+      </div>
+
+      <div id="fav-controls" style="display: none;">
+        <div id="fav-grid" style="display: flex; gap: 1.5rem; justify-content: space-around; flex-wrap: wrap; margin-bottom: 1.5rem; padding: 1.5rem; background: #090D16; border: 1px solid var(--border); border-radius: var(--radius-md);"></div>
+
+        <button type="button" class="btn btn-primary" id="fav-download-all" style="min-height: 46px; width: 100%;">
+          📦 Download Complete Icon Pack (.ZIP)
+        </button>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         TOOL 13: BLUR, CENSOR & PIXELATE
+         ========================================================= -->
+    <div class="tool-pane" id="pane-censor-blur">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">🛡️ Blur, Censor &amp; Pixelate Sensitive Info</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
+        Click and drag on your image to blur or pixelate faces, ID cards, license plates, or credit card numbers.
+      </p>
+
+      <div class="drop-zone" id="cen-drop-zone">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+          <circle cx="12" cy="12" r="3"/>
+          <line x1="2" y1="2" x2="22" y2="22"/>
+        </svg>
+        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Upload Image to Redact / Blur</div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Click or drag image here</p>
+        <input type="file" id="cen-file-input" accept="image/*" style="display: none;">
+      </div>
+
+      <div id="cen-controls" style="display: none;">
+        <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+          <button type="button" class="preset-pill active" data-mode="pixelate">🔲 Pixelate</button>
+          <button type="button" class="preset-pill" data-mode="blackbar">⬛ Black Redaction Bar</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="cen-reset-btn" style="margin-left: auto;">Reset Original</button>
+        </div>
+
+        <div class="preview-canvas-container" style="cursor: crosshair;">
+          <canvas id="cen-canvas"></canvas>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="cen-download-btn" style="min-height: 46px; width: 100%;">
+          📥 Download Censored Image
+        </button>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         TOOL 14: NO-CROP & GRID SLICER
+         ========================================================= -->
+    <div class="tool-pane" id="pane-no-crop-grid">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">✂️ Instagram No-Crop &amp; Grid Slicer</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
+        Fit rectangular photos to 1:1 square with blurred background padding, or slice large photos into 3×1 and 3×3 grids.
+      </p>
+
+      <div class="drop-zone" id="nc-drop-zone">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+          <line x1="3" y1="9" x2="21" y2="9"/>
+          <line x1="3" y1="15" x2="21" y2="15"/>
+          <line x1="9" y1="3" x2="9" y2="21"/>
+          <line x1="15" y1="3" x2="15" y2="21"/>
+        </svg>
+        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Upload Image for No-Crop / Grid</div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Click or drag image here</p>
+        <input type="file" id="nc-file-input" accept="image/*" style="display: none;">
+      </div>
+
+      <div id="nc-controls" style="display: none;">
         <div class="preview-canvas-container">
-          <canvas id="resize-canvas"></canvas>
+          <canvas id="nc-canvas"></canvas>
         </div>
 
-        <div style="margin-bottom: 1rem;">
-          <span class="form-label">Quick Social & Scale Presets</span>
-          <div class="preset-pills">
-            <button class="preset-pill" data-preset="1080x1080">Instagram Square (1080×1080)</button>
-            <button class="preset-pill" data-preset="1080x1920">Instagram Story / Reel (1080×1920)</button>
-            <button class="preset-pill" data-preset="1280x720">YouTube Thumbnail (1280×720)</button>
-            <button class="preset-pill" data-preset="1200x675">Twitter/X Post (1200×675)</button>
-            <button class="preset-pill" data-preset="1920x1080">Full HD (1920×1080)</button>
-            <button class="preset-pill" data-scale="0.75">75% Scale</button>
-            <button class="preset-pill" data-scale="0.50">50% Scale</button>
-            <button class="preset-pill" data-scale="0.25">25% Scale</button>
-          </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; align-items: end; margin-bottom: 1.5rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
           <div class="form-group">
-            <label class="form-label">Width (px)</label>
-            <input type="number" id="resize-width" class="form-control" min="1">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Height (px)</label>
-            <input type="number" id="resize-height" class="form-control" min="1">
-          </div>
-          <div class="form-group" style="padding-bottom: 0.6rem;">
-            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.9rem;">
-              <input type="checkbox" id="resize-lock-aspect" checked style="accent-color: var(--primary);">
-              Lock Aspect Ratio
-            </label>
+            <label class="form-label">Mode</label>
+            <select id="nc-mode" class="form-control">
+              <option value="square_blur" selected>1:1 Square (Blurred Background Padding)</option>
+              <option value="square_solid">1:1 Square (Solid Black/White)</option>
+              <option value="grid_3x1">3×1 Panorama Grid Split</option>
+              <option value="grid_3x3">3×3 Giant Grid Split</option>
+            </select>
           </div>
         </div>
 
         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-          <button type="button" class="btn btn-primary" id="resize-download-btn">
-            📥 Download Resized Image
+          <button type="button" class="btn btn-primary" id="nc-download-btn">
+            📥 Download No-Crop Image
           </button>
-          <button type="button" class="btn btn-secondary" id="resize-reset-btn">Reset to Original</button>
+          <button type="button" class="btn btn-secondary" id="nc-download-zip-btn" style="display: none;">
+            📦 Download Grid Slices (.ZIP)
+          </button>
         </div>
-      </div>
-    </div>
-
-    <!-- =========================================================
-         3. Compressor & Format Converter
-         ========================================================= -->
-    <div class="tool-pane" id="pane-compress">
-      <h2 style="font-size: 1.35rem; margin-bottom: 0.5rem;">Image Compressor & Format Converter</h2>
-      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
-        Reduce image file size by up to 90% without visible quality loss. Convert to modern WebP, PNG, or JPG.
-      </p>
-
-      <div class="drop-zone" id="compress-drop-zone">
-        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/>
-          <path d="M12 12v9"/>
-          <path d="m8 17 4 4 4-4"/>
-        </svg>
-        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Upload Image to Compress</div>
-        <p style="color: var(--text-muted); font-size: 0.85rem;">Drag and drop an image or click to select</p>
-        <input type="file" id="compress-file-input" accept="image/*" style="display: none;">
-      </div>
-
-      <div id="compress-controls-container" style="display: none;">
-        <div class="preview-canvas-container">
-          <canvas id="compress-canvas"></canvas>
-        </div>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; padding: 1.25rem; background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-md);">
-          <div class="form-group">
-            <label class="form-label">Target Format</label>
-            <select id="compress-format" class="form-control">
-              <option value="image/webp" selected>WebP (Recommended - Smallest File Size)</option>
-              <option value="image/jpeg">JPG / JPEG (Universal)</option>
-              <option value="image/png">PNG (Lossless)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Quality: <span id="quality-val" style="color: var(--primary); font-weight: 700;">80%</span></label>
-            <input type="range" id="compress-quality" min="10" max="100" value="80" class="form-control" style="cursor: pointer;">
-          </div>
-        </div>
-
-        <div style="padding: 1.25rem; background: #090D16; border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 1.5rem; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1rem;">
-          <div>
-            <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Original Size</span>
-            <div id="orig-size-display" style="font-size: 1.3rem; font-weight: 700; color: var(--text-main);">-</div>
-          </div>
-          <div>
-            <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Optimized Size</span>
-            <div id="opt-size-display" style="font-size: 1.3rem; font-weight: 700; color: var(--success);">-</div>
-          </div>
-          <div>
-            <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Total Savings</span>
-            <div id="savings-display" style="font-size: 1.3rem; font-weight: 700; color: var(--primary);">-</div>
-          </div>
-        </div>
-
-        <button type="button" class="btn btn-primary" id="compress-download-btn">
-          📥 Download Compressed Image
-        </button>
-      </div>
-    </div>
-
-    <!-- =========================================================
-         4. Rotate & Flip
-         ========================================================= -->
-    <div class="tool-pane" id="pane-transform">
-      <h2 style="font-size: 1.35rem; margin-bottom: 0.5rem;">Image Rotate & Flip</h2>
-      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
-        Rotate images clockwise/counter-clockwise or mirror horizontally and vertically.
-      </p>
-
-      <div class="drop-zone" id="trans-drop-zone">
-        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-          <path d="M3 3v5h5"/>
-          <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
-          <path d="M16 21h5v-5"/>
-        </svg>
-        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Upload Image to Transform</div>
-        <p style="color: var(--text-muted); font-size: 0.85rem;">Click or drop image here</p>
-        <input type="file" id="trans-file-input" accept="image/*" style="display: none;">
-      </div>
-
-      <div id="trans-controls-container" style="display: none;">
-        <div class="preview-canvas-container">
-          <canvas id="trans-canvas"></canvas>
-        </div>
-
-        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
-          <button type="button" class="btn btn-secondary" id="rotate-left-btn">↺ Rotate -90°</button>
-          <button type="button" class="btn btn-secondary" id="rotate-right-btn">↻ Rotate +90°</button>
-          <button type="button" class="btn btn-secondary" id="flip-h-btn">⇄ Flip Horizontal</button>
-          <button type="button" class="btn btn-secondary" id="flip-v-btn">⇅ Flip Vertical</button>
-          <button type="button" class="btn btn-danger btn-sm" id="trans-reset-btn">Reset</button>
-        </div>
-
-        <button type="button" class="btn btn-primary" id="trans-download-btn">
-          📥 Download Transformed Image
-        </button>
       </div>
     </div>
   </main>
 
   <footer class="blog-footer">
-    <p>&copy; 2026 Sitendra Kumar Nagesh &bull; <a href="/blog">Blog</a> &bull; <a href="/tools">Tools</a> &bull; <a href="/projects">Projects</a> &bull; <a href="/about">About</a> &bull; <a href="/">Notes</a></p>
+    <p>&copy; 2026 Sitendra Kumar Nagesh &bull; <a href="/blog">Blog</a> &bull; <a href="/tools">Dev Tools</a> &bull; <a href="/projects">Projects</a> &bull; <a href="/about">About</a> &bull; <a href="/">Notes</a></p>
   </footer>
 
   <script src="/cmd_k.js"></script>
 
-  <!-- Image Studio Logic -->
+  <!-- =========================================================
+       Full Studio Integration Logic
+       ========================================================= -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       // ---------------------------------------------------------
-      // Tab Navigation
+      // 1. Navigation & Category Filtering
       // ---------------------------------------------------------
-      const tabs = document.querySelectorAll(".tool-tab-btn");
+      const navItems = document.querySelectorAll(".tool-nav-item");
       const panes = document.querySelectorAll(".tool-pane");
+      const categoryPills = document.querySelectorAll(".category-pill");
+      const searchInput = document.getElementById("tool-search");
 
-      tabs.forEach(t => {
-        t.addEventListener("click", () => {
-          tabs.forEach(tab => tab.classList.remove("active"));
-          panes.forEach(pane => pane.classList.remove("active"));
-          t.classList.add("active");
-          const target = document.getElementById(`pane-${t.dataset.tool}`);
-          if (target) target.classList.add("active");
+      function activateTool(toolId) {
+        navItems.forEach(item => {
+          item.classList.toggle("active", item.dataset.tool === toolId);
+        });
+        panes.forEach(pane => {
+          pane.classList.toggle("active", pane.id === `pane-${toolId}`);
+        });
+      }
+
+      navItems.forEach(item => {
+        item.addEventListener("click", () => activateTool(item.dataset.tool));
+      });
+
+      categoryPills.forEach(pill => {
+        pill.addEventListener("click", () => {
+          categoryPills.forEach(p => p.classList.remove("active"));
+          pill.classList.add("active");
+          const cat = pill.dataset.cat;
+
+          navItems.forEach(item => {
+            if (cat === "all" || item.dataset.cat === cat) {
+              item.style.display = "flex";
+            } else {
+              item.style.display = "none";
+            }
+          });
+        });
+      });
+
+      searchInput.addEventListener("input", (e) => {
+        const q = e.target.value.toLowerCase().trim();
+        navItems.forEach(item => {
+          const text = item.textContent.toLowerCase();
+          item.style.display = text.includes(q) ? "flex" : "none";
         });
       });
 
@@ -513,7 +1159,7 @@
       // Helper: Format Bytes
       // ---------------------------------------------------------
       function formatBytes(bytes) {
-        if (bytes === 0) return "0 Bytes";
+        if (!bytes || bytes === 0) return "0 Bytes";
         const k = 1024;
         const sizes = ["Bytes", "KB", "MB", "GB"];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -521,7 +1167,656 @@
       }
 
       // =========================================================
-      // 1. IMAGE TO PDF CONVERTER
+      // TOOL 1: TARGET KB COMPRESSOR
+      // =========================================================
+      const tcDropZone = document.getElementById("tc-drop-zone");
+      const tcFileInput = document.getElementById("tc-file-input");
+      const tcControls = document.getElementById("tc-controls");
+      const tcCanvas = document.getElementById("tc-canvas");
+      const tcCtx = tcCanvas.getContext("2d");
+      const tcTargetVal = document.getElementById("tc-target-val");
+      const tcFormat = document.getElementById("tc-format");
+      const tcOrigSize = document.getElementById("tc-orig-size");
+      const tcAchievedSize = document.getElementById("tc-achieved-size");
+      const tcTargetGoal = document.getElementById("tc-target-goal");
+      const tcDownloadBtn = document.getElementById("tc-download-btn");
+
+      let tcImage = null;
+      let tcCurrentBlob = null;
+
+      tcDropZone.addEventListener("click", () => tcFileInput.click());
+      tcFileInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) loadTcImage(e.target.files[0]);
+      });
+
+      function loadTcImage(file) {
+        tcOrigSize.textContent = formatBytes(file.size);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            tcImage = img;
+            tcCanvas.width = img.width;
+            tcCanvas.height = img.height;
+            tcCtx.drawImage(img, 0, 0);
+            tcControls.style.display = "block";
+            runTargetCompression();
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      async function runTargetCompression() {
+        if (!tcImage) return;
+        const targetKB = parseInt(tcTargetVal.value) || 20;
+        tcTargetGoal.textContent = `${targetKB} KB`;
+        tcAchievedSize.textContent = "Compressing...";
+
+        const blob = await ImageEngine.compressToTargetKB(tcCanvas, targetKB, {
+          mimeType: tcFormat.value,
+          maxIterations: 8
+        });
+
+        if (blob) {
+          tcCurrentBlob = blob;
+          tcAchievedSize.textContent = formatBytes(blob.size);
+        }
+      }
+
+      tcTargetVal.addEventListener("input", runTargetCompression);
+      tcFormat.addEventListener("change", runTargetCompression);
+
+      document.querySelectorAll("#pane-target-compress .preset-pill").forEach(pill => {
+        pill.addEventListener("click", () => {
+          document.querySelectorAll("#pane-target-compress .preset-pill").forEach(p => p.classList.remove("active"));
+          pill.classList.add("active");
+          tcTargetVal.value = pill.dataset.kb;
+          runTargetCompression();
+        });
+      });
+
+      tcDownloadBtn.addEventListener("click", () => {
+        if (!tcCurrentBlob) return;
+        const ext = tcFormat.value === "image/webp" ? "webp" : "jpg";
+        const link = document.createElement("a");
+        link.download = `compressed_${tcTargetVal.value}kb.${ext}`;
+        link.href = URL.createObjectURL(tcCurrentBlob);
+        link.click();
+      });
+
+      // =========================================================
+      // TOOL 2: INCREASE FILE SIZE IN KB
+      // =========================================================
+      const incDropZone = document.getElementById("inc-drop-zone");
+      const incFileInput = document.getElementById("inc-file-input");
+      const incControls = document.getElementById("inc-controls");
+      const incCanvas = document.getElementById("inc-canvas");
+      const incCtx = incCanvas.getContext("2d");
+      const incTargetVal = document.getElementById("inc-target-val");
+      const incOrigSize = document.getElementById("inc-orig-size");
+      const incAchievedSize = document.getElementById("inc-achieved-size");
+      const incDownloadBtn = document.getElementById("inc-download-btn");
+
+      let incOriginalBlob = null;
+      let incPaddedBlob = null;
+
+      incDropZone.addEventListener("click", () => incFileInput.click());
+      incFileInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const file = e.target.files[0];
+          incOriginalBlob = file;
+          incOrigSize.textContent = formatBytes(file.size);
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const img = new Image();
+            img.onload = () => {
+              incCanvas.width = img.width;
+              incCanvas.height = img.height;
+              incCtx.drawImage(img, 0, 0);
+              incControls.style.display = "block";
+              runIncreaseSize();
+            };
+            img.src = ev.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      async function runIncreaseSize() {
+        if (!incOriginalBlob) return;
+        const targetKB = parseInt(incTargetVal.value) || 50;
+        const padded = await ImageEngine.increaseBlobSize(incOriginalBlob, targetKB);
+        incPaddedBlob = padded;
+        incAchievedSize.textContent = formatBytes(padded.size);
+      }
+
+      incTargetVal.addEventListener("input", runIncreaseSize);
+      incDownloadBtn.addEventListener("click", () => {
+        if (!incPaddedBlob) return;
+        const link = document.createElement("a");
+        link.download = `padded_${incTargetVal.value}kb.jpg`;
+        link.href = URL.createObjectURL(incPaddedBlob);
+        link.click();
+      });
+
+      // =========================================================
+      // TOOL 3: BATCH IMAGE COMPRESSOR (ZIP)
+      // =========================================================
+      const batchDropZone = document.getElementById("batch-drop-zone");
+      const batchFileInput = document.getElementById("batch-file-input");
+      const batchControls = document.getElementById("batch-controls");
+      const batchList = document.getElementById("batch-list");
+      const batchCount = document.getElementById("batch-count");
+      const batchQuality = document.getElementById("batch-quality");
+      const batchQVal = document.getElementById("batch-q-val");
+      const batchFormat = document.getElementById("batch-format");
+      const batchDownloadBtn = document.getElementById("batch-download-btn");
+
+      let batchFiles = [];
+
+      batchDropZone.addEventListener("click", () => batchFileInput.click());
+      batchFileInput.addEventListener("change", (e) => {
+        if (e.target.files) {
+          batchFiles = Array.from(e.target.files).filter(f => f.type.startsWith("image/"));
+          batchCount.textContent = batchFiles.length;
+          batchList.innerHTML = batchFiles.map(f => `<div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.3rem;">• ${f.name} (${formatBytes(f.size)})</div>`).join("");
+          batchControls.style.display = "block";
+        }
+      });
+
+      batchQuality.addEventListener("input", () => batchQVal.textContent = `${batchQuality.value}%`);
+
+      batchDownloadBtn.addEventListener("click", async () => {
+        if (batchFiles.length === 0) return;
+        batchDownloadBtn.disabled = true;
+        batchDownloadBtn.textContent = "Compressing in Parallel...";
+
+        try {
+          const zip = new JSZip();
+          const q = parseInt(batchQuality.value) / 100;
+          const fmt = batchFormat.value;
+          const ext = fmt === "image/webp" ? "webp" : (fmt === "image/png" ? "png" : "jpg");
+
+          for (let i = 0; i < batchFiles.length; i++) {
+            const file = batchFiles[i];
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+            await new Promise(r => img.onload = r);
+
+            const canvas = document.createElement("canvas");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0);
+
+            const blob = await new Promise(r => canvas.toBlob(r, fmt, q));
+            zip.file(`${file.name.replace(/\.[^/.]+$/, "")}_opt.${ext}`, blob);
+          }
+
+          const content = await zip.generateAsync({ type: "blob" });
+          const link = document.createElement("a");
+          link.download = `compressed_images_batch.zip`;
+          link.href = URL.createObjectURL(content);
+          link.click();
+        } catch (e) {
+          alert("Batch compression error: " + e.message);
+        } finally {
+          batchDownloadBtn.disabled = false;
+          batchDownloadBtn.textContent = `📦 Compress All & Download ZIP (${batchFiles.length} images)`;
+        }
+      });
+
+      // =========================================================
+      // TOOL 4: PASSPORT PHOTO MAKER
+      // =========================================================
+      const passDropZone = document.getElementById("pass-drop-zone");
+      const passFileInput = document.getElementById("pass-file-input");
+      const passControls = document.getElementById("pass-controls");
+      const passCanvas = document.getElementById("pass-canvas");
+      const passCtx = passCanvas.getContext("2d");
+      const passPresetSelect = document.getElementById("pass-preset-select");
+      const passBgSelect = document.getElementById("pass-bg-select");
+      const passDownloadBtn = document.getElementById("pass-download-btn");
+
+      let passOriginalImg = null;
+
+      passDropZone.addEventListener("click", () => passFileInput.click());
+      passFileInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const img = new Image();
+            img.onload = () => {
+              passOriginalImg = img;
+              passControls.style.display = "block";
+              renderPassportPhoto();
+            };
+            img.src = ev.target.result;
+          };
+          reader.readAsDataURL(e.target.files[0]);
+        }
+      });
+
+      function renderPassportPhoto() {
+        if (!passOriginalImg) return;
+        const preset = ImageEngine.Presets.passports[passPresetSelect.value] || ImageEngine.Presets.passports.india;
+        passCanvas.width = preset.widthPx;
+        passCanvas.height = preset.heightPx;
+
+        // Background Fill
+        const bg = passBgSelect.value;
+        if (bg !== "transparent") {
+          passCtx.fillStyle = bg;
+          passCtx.fillRect(0, 0, passCanvas.width, passCanvas.height);
+        } else {
+          passCtx.clearRect(0, 0, passCanvas.width, passCanvas.height);
+        }
+
+        // Fit & Center image
+        const scale = Math.max(passCanvas.width / passOriginalImg.width, passCanvas.height / passOriginalImg.height);
+        const w = passOriginalImg.width * scale;
+        const h = passOriginalImg.height * scale;
+        const x = (passCanvas.width - w) / 2;
+        const y = (passCanvas.height - h) / 2;
+
+        passCtx.drawImage(passOriginalImg, x, y, w, h);
+      }
+
+      passPresetSelect.addEventListener("change", renderPassportPhoto);
+      passBgSelect.addEventListener("change", renderPassportPhoto);
+
+      passDownloadBtn.addEventListener("click", async () => {
+        passCanvas.toBlob(async (blob) => {
+          const buffer = await blob.arrayBuffer();
+          // Inject 300 DPI JFIF segment
+          const dpiBuffer = ImageEngine.DPI.injectJfifDpi(buffer, 300);
+          const finalBlob = new Blob([dpiBuffer], { type: "image/jpeg" });
+          const link = document.createElement("a");
+          link.download = `passport_photo_300dpi.jpg`;
+          link.href = URL.createObjectURL(finalBlob);
+          link.click();
+        }, "image/jpeg", 0.95);
+      });
+
+      // =========================================================
+      // TOOL 5: ADD NAME & DATE ON PHOTO
+      // =========================================================
+      const ndDropZone = document.getElementById("nd-drop-zone");
+      const ndFileInput = document.getElementById("nd-file-input");
+      const ndControls = document.getElementById("nd-controls");
+      const ndCanvas = document.getElementById("nd-canvas");
+      const ndCtx = ndCanvas.getContext("2d");
+      const ndName = document.getElementById("nd-name");
+      const ndDate = document.getElementById("nd-date");
+      const ndStyle = document.getElementById("nd-style");
+      const ndDownloadBtn = document.getElementById("nd-download-btn");
+
+      let ndOriginalImg = null;
+
+      ndDropZone.addEventListener("click", () => ndFileInput.click());
+      ndFileInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const img = new Image();
+            img.onload = () => {
+              ndOriginalImg = img;
+              ndControls.style.display = "block";
+              renderNameDobPhoto();
+            };
+            img.src = ev.target.result;
+          };
+          reader.readAsDataURL(e.target.files[0]);
+        }
+      });
+
+      function renderNameDobPhoto() {
+        if (!ndOriginalImg) return;
+        ndCanvas.width = ndOriginalImg.width;
+        ndCanvas.height = ndOriginalImg.height;
+        ndCtx.drawImage(ndOriginalImg, 0, 0);
+
+        const bannerHeight = Math.max(50, Math.round(ndCanvas.height * 0.18));
+        const yStart = ndCanvas.height - bannerHeight;
+
+        // Draw Banner
+        const isWhite = ndStyle.value === "white_bg";
+        ndCtx.fillStyle = isWhite ? "#FFFFFF" : "#000000";
+        ndCtx.fillRect(0, yStart, ndCanvas.width, bannerHeight);
+
+        // Text Properties
+        ndCtx.fillStyle = isWhite ? "#000000" : "#FFFFFF";
+        ndCtx.textAlign = "center";
+        const fontSize = Math.max(14, Math.round(bannerHeight * 0.32));
+        ndCtx.font = `bold ${fontSize}px sans-serif`;
+
+        const nameText = ndName.value.trim().toUpperCase();
+        const dateText = ndDate.value.trim().toUpperCase();
+
+        ndCtx.fillText(nameText, ndCanvas.width / 2, yStart + bannerHeight * 0.42);
+        ndCtx.font = `${Math.round(fontSize * 0.88)}px sans-serif`;
+        ndCtx.fillText(dateText, ndCanvas.width / 2, yStart + bannerHeight * 0.82);
+      }
+
+      ndName.addEventListener("input", renderNameDobPhoto);
+      ndDate.addEventListener("input", renderNameDobPhoto);
+      ndStyle.addEventListener("change", renderNameDobPhoto);
+
+      ndDownloadBtn.addEventListener("click", () => {
+        const link = document.createElement("a");
+        link.download = `exam_photo_with_name_date.jpg`;
+        link.href = ndCanvas.toDataURL("image/jpeg", 0.95);
+        link.click();
+      });
+
+      // =========================================================
+      // TOOL 6: MERGE PHOTO & SIGNATURE
+      // =========================================================
+      const mpsPhotoDrop = document.getElementById("mps-photo-drop");
+      const mpsPhotoInput = document.getElementById("mps-photo-input");
+      const mpsSignDrop = document.getElementById("mps-sign-drop");
+      const mpsSignInput = document.getElementById("mps-sign-input");
+      const mpsControls = document.getElementById("mps-controls");
+      const mpsCanvas = document.getElementById("mps-canvas");
+      const mpsCtx = mpsCanvas.getContext("2d");
+      const mpsLayout = document.getElementById("mps-layout");
+      const mpsBg = document.getElementById("mps-bg");
+      const mpsDownloadBtn = document.getElementById("mps-download-btn");
+
+      let mpsPhotoImg = null;
+      let mpsSignImg = null;
+
+      mpsPhotoDrop.addEventListener("click", () => mpsPhotoInput.click());
+      mpsPhotoInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const img = new Image();
+            img.onload = () => {
+              mpsPhotoImg = img;
+              mpsPhotoDrop.innerHTML = `<img src="${ev.target.result}" style="height: 60px; object-fit: contain;">`;
+              checkMpsReady();
+            };
+            img.src = ev.target.result;
+          };
+          reader.readAsDataURL(e.target.files[0]);
+        }
+      });
+
+      mpsSignDrop.addEventListener("click", () => mpsSignInput.click());
+      mpsSignInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const img = new Image();
+            img.onload = () => {
+              mpsSignImg = img;
+              mpsSignDrop.innerHTML = `<img src="${ev.target.result}" style="height: 60px; object-fit: contain;">`;
+              checkMpsReady();
+            };
+            img.src = ev.target.result;
+          };
+          reader.readAsDataURL(e.target.files[0]);
+        }
+      });
+
+      function checkMpsReady() {
+        if (mpsPhotoImg && mpsSignImg) {
+          mpsControls.style.display = "block";
+          renderMps();
+        }
+      }
+
+      function renderMps() {
+        if (!mpsPhotoImg || !mpsSignImg) return;
+        const isVert = mpsLayout.value === "vertical";
+        const width = 450;
+        const photoHeight = 400;
+        const signHeight = 150;
+
+        if (isVert) {
+          mpsCanvas.width = width;
+          mpsCanvas.height = photoHeight + signHeight;
+        } else {
+          mpsCanvas.width = width * 2;
+          mpsCanvas.height = photoHeight;
+        }
+
+        mpsCtx.fillStyle = mpsBg.value;
+        mpsCtx.fillRect(0, 0, mpsCanvas.width, mpsCanvas.height);
+
+        if (isVert) {
+          // Photo Top
+          mpsCtx.drawImage(mpsPhotoImg, 0, 0, width, photoHeight);
+          // Sign Bottom
+          mpsCtx.drawImage(mpsSignImg, 0, photoHeight, width, signHeight);
+        } else {
+          // Photo Left
+          mpsCtx.drawImage(mpsPhotoImg, 0, 0, width, photoHeight);
+          // Sign Right
+          mpsCtx.drawImage(mpsSignImg, width, (photoHeight - signHeight) / 2, width, signHeight);
+        }
+      }
+
+      mpsLayout.addEventListener("change", renderMps);
+      mpsBg.addEventListener("change", renderMps);
+      mpsDownloadBtn.addEventListener("click", () => {
+        const link = document.createElement("a");
+        link.download = `merged_photo_and_signature.jpg`;
+        link.href = mpsCanvas.toDataURL("image/jpeg", 0.95);
+        link.click();
+      });
+
+      // =========================================================
+      // TOOL 7: CANVAS SIGNATURE MAKER PAD
+      // =========================================================
+      const sigCanvas = document.getElementById("sig-canvas");
+      const sigCtx = sigCanvas.getContext("2d");
+      const sigTypeCanvas = document.getElementById("sig-type-canvas");
+      const sigTypeCtx = sigTypeCanvas.getContext("2d");
+      const sigInkColor = document.getElementById("sig-ink-color");
+      const sigPenWidth = document.getElementById("sig-pen-width");
+      const sigClearBtn = document.getElementById("sig-clear-btn");
+      const sigModeDraw = document.getElementById("sig-mode-draw");
+      const sigModeType = document.getElementById("sig-mode-type");
+      const sigDrawSection = document.getElementById("sig-draw-section");
+      const sigTypeSection = document.getElementById("sig-type-section");
+      const sigTypeInput = document.getElementById("sig-type-input");
+      const sigFontSelect = document.getElementById("sig-font-select");
+      const sigDownloadTransparent = document.getElementById("sig-download-transparent");
+      const sigDownloadWhite = document.getElementById("sig-download-white");
+
+      let isDrawing = false;
+      let lastX = 0, lastY = 0;
+
+      sigCanvas.addEventListener("mousedown", (e) => {
+        isDrawing = true;
+        const rect = sigCanvas.getBoundingClientRect();
+        lastX = e.clientX - rect.left;
+        lastY = e.clientY - rect.top;
+      });
+
+      sigCanvas.addEventListener("mousemove", (e) => {
+        if (!isDrawing) return;
+        const rect = sigCanvas.getBoundingClientRect();
+        const curX = e.clientX - rect.left;
+        const curY = e.clientY - rect.top;
+
+        sigCtx.strokeStyle = sigInkColor.value;
+        sigCtx.lineWidth = parseInt(sigPenWidth.value);
+        sigCtx.lineCap = "round";
+        sigCtx.lineJoin = "round";
+
+        sigCtx.beginPath();
+        sigCtx.moveTo(lastX, lastY);
+        sigCtx.lineTo(curX, curY);
+        sigCtx.stroke();
+
+        lastX = curX;
+        lastY = curY;
+      });
+
+      window.addEventListener("mouseup", () => isDrawing = false);
+
+      sigClearBtn.addEventListener("click", () => {
+        sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+      });
+
+      sigModeDraw.addEventListener("click", () => {
+        sigModeDraw.classList.add("active");
+        sigModeType.classList.remove("active");
+        sigDrawSection.style.display = "block";
+        sigTypeSection.style.display = "none";
+      });
+
+      sigModeType.addEventListener("click", () => {
+        sigModeType.classList.add("active");
+        sigModeDraw.classList.remove("active");
+        sigDrawSection.style.display = "none";
+        sigTypeSection.style.display = "block";
+        renderTypedSig();
+      });
+
+      function renderTypedSig() {
+        sigTypeCtx.clearRect(0, 0, sigTypeCanvas.width, sigTypeCanvas.height);
+        sigTypeCtx.fillStyle = sigInkColor.value;
+        sigTypeCtx.font = `64px '${sigFontSelect.value}', cursive`;
+        sigTypeCtx.textAlign = "center";
+        sigTypeCtx.textBaseline = "middle";
+        sigTypeCtx.fillText(sigTypeInput.value, sigTypeCanvas.width / 2, sigTypeCanvas.height / 2);
+      }
+
+      sigTypeInput.addEventListener("input", renderTypedSig);
+      sigFontSelect.addEventListener("change", renderTypedSig);
+
+      function getActiveSigCanvas() {
+        return sigModeDraw.classList.contains("active") ? sigCanvas : sigTypeCanvas;
+      }
+
+      sigDownloadTransparent.addEventListener("click", () => {
+        const c = getActiveSigCanvas();
+        const link = document.createElement("a");
+        link.download = `signature_transparent.png`;
+        link.href = c.toDataURL("image/png");
+        link.click();
+      });
+
+      sigDownloadWhite.addEventListener("click", () => {
+        const c = getActiveSigCanvas();
+        const temp = document.createElement("canvas");
+        temp.width = c.width;
+        temp.height = c.height;
+        const ctx = temp.getContext("2d");
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillRect(0, 0, temp.width, temp.height);
+        ctx.drawImage(c, 0, 0);
+
+        const link = document.createElement("a");
+        link.download = `signature_white_bg.jpg`;
+        link.href = temp.toDataURL("image/jpeg", 0.95);
+        link.click();
+      });
+
+      // =========================================================
+      // TOOL 8: WATERMARK STUDIO
+      // =========================================================
+      const wmDropZone = document.getElementById("wm-drop-zone");
+      const wmFileInput = document.getElementById("wm-file-input");
+      const wmControls = document.getElementById("wm-controls");
+      const wmCanvas = document.getElementById("wm-canvas");
+      const wmCtx = wmCanvas.getContext("2d");
+      const wmText = document.getElementById("wm-text");
+      const wmOpacity = document.getElementById("wm-opacity");
+      const wmOpVal = document.getElementById("wm-op-val");
+      const wmFontSize = document.getElementById("wm-font-size");
+      const wmPosition = document.getElementById("wm-position");
+      const wmDownloadBtn = document.getElementById("wm-download-btn");
+
+      let wmImg = null;
+
+      wmDropZone.addEventListener("click", () => wmFileInput.click());
+      wmFileInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const img = new Image();
+            img.onload = () => {
+              wmImg = img;
+              wmControls.style.display = "block";
+              renderWatermark();
+            };
+            img.src = ev.target.result;
+          };
+          reader.readAsDataURL(e.target.files[0]);
+        }
+      });
+
+      function renderWatermark() {
+        if (!wmImg) return;
+        wmCanvas.width = wmImg.width;
+        wmCanvas.height = wmImg.height;
+        wmCtx.drawImage(wmImg, 0, 0);
+
+        const text = wmText.value.trim();
+        if (!text) return;
+
+        const op = parseInt(wmOpacity.value) / 100;
+        wmOpVal.textContent = `${wmOpacity.value}%`;
+        const size = parseInt(wmFontSize.value) || 32;
+        const pos = wmPosition.value;
+
+        wmCtx.save();
+        wmCtx.globalAlpha = op;
+        wmCtx.fillStyle = "#FFFFFF";
+        wmCtx.shadowColor = "rgba(0,0,0,0.8)";
+        wmCtx.shadowBlur = 4;
+        wmCtx.font = `bold ${size}px sans-serif`;
+
+        if (pos === "tile") {
+          wmCtx.translate(wmCanvas.width / 2, wmCanvas.height / 2);
+          wmCtx.rotate(-Math.PI / 4);
+          wmCtx.textAlign = "center";
+          for (let y = -wmCanvas.height; y < wmCanvas.height; y += size * 4) {
+            for (let x = -wmCanvas.width; x < wmCanvas.width; x += size * 6) {
+              wmCtx.fillText(text, x, y);
+            }
+          }
+        } else if (pos === "center") {
+          wmCtx.textAlign = "center";
+          wmCtx.textBaseline = "middle";
+          wmCtx.fillText(text, wmCanvas.width / 2, wmCanvas.height / 2);
+        } else if (pos === "bottom-right") {
+          wmCtx.textAlign = "right";
+          wmCtx.textBaseline = "bottom";
+          wmCtx.fillText(text, wmCanvas.width - 20, wmCanvas.height - 20);
+        } else if (pos === "bottom-left") {
+          wmCtx.textAlign = "left";
+          wmCtx.textBaseline = "bottom";
+          wmCtx.fillText(text, 20, wmCanvas.height - 20);
+        } else if (pos === "top-right") {
+          wmCtx.textAlign = "right";
+          wmCtx.textBaseline = "top";
+          wmCtx.fillText(text, wmCanvas.width - 20, 20);
+        }
+
+        wmCtx.restore();
+      }
+
+      wmText.addEventListener("input", renderWatermark);
+      wmOpacity.addEventListener("input", renderWatermark);
+      wmFontSize.addEventListener("input", renderWatermark);
+      wmPosition.addEventListener("change", renderWatermark);
+
+      wmDownloadBtn.addEventListener("click", () => {
+        const link = document.createElement("a");
+        link.download = `watermarked_image.jpg`;
+        link.href = wmCanvas.toDataURL("image/jpeg", 0.95);
+        link.click();
+      });
+
+      // =========================================================
+      // TOOL 9: IMAGE TO PDF CONVERTER
       // =========================================================
       const pdfDropZone = document.getElementById("pdf-drop-zone");
       const pdfFileInput = document.getElementById("pdf-file-input");
@@ -534,14 +1829,6 @@
       let selectedPdfImages = [];
 
       pdfDropZone.addEventListener("click", () => pdfFileInput.click());
-      pdfDropZone.addEventListener("dragover", (e) => { e.preventDefault(); pdfDropZone.classList.add("dragover"); });
-      pdfDropZone.addEventListener("dragleave", () => pdfDropZone.classList.remove("dragover"));
-      pdfDropZone.addEventListener("drop", (e) => {
-        e.preventDefault();
-        pdfDropZone.classList.remove("dragover");
-        if (e.dataTransfer.files) handlePdfFiles(e.dataTransfer.files);
-      });
-
       pdfFileInput.addEventListener("change", (e) => {
         if (e.target.files) handlePdfFiles(e.target.files);
       });
@@ -551,103 +1838,59 @@
           if (!file.type.startsWith("image/")) return;
           const reader = new FileReader();
           reader.onload = (event) => {
-            selectedPdfImages.push({
-              name: file.name,
-              dataUrl: event.target.result
-            });
-            renderPdfImagesGrid();
+            selectedPdfImages.push({ name: file.name, dataUrl: event.target.result });
+            renderPdfGrid();
           };
           reader.readAsDataURL(file);
         });
       }
 
-      function renderPdfImagesGrid() {
+      function renderPdfGrid() {
         pdfGrid.innerHTML = "";
         pdfImgCount.textContent = selectedPdfImages.length;
-
         if (selectedPdfImages.length === 0) {
           pdfImagesContainer.style.display = "none";
           return;
         }
-
         pdfImagesContainer.style.display = "block";
         selectedPdfImages.forEach((imgObj, idx) => {
           const card = document.createElement("div");
-          card.className = "image-pdf-card";
+          card.style.cssText = "background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem; text-align: center; position: relative;";
           card.innerHTML = `
-            <button class="remove-img" data-idx="${idx}">&times;</button>
-            <img src="${imgObj.dataUrl}" alt="${imgObj.name}">
-            <div style="font-size: 0.75rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;">
-              ${idx + 1}. ${imgObj.name}
-            </div>
+            <img src="${imgObj.dataUrl}" style="width: 100%; height: 80px; object-fit: cover; border-radius: 4px; margin-bottom: 0.3rem;">
+            <div style="font-size: 0.72rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${idx + 1}. ${imgObj.name}</div>
           `;
-          card.querySelector(".remove-img").addEventListener("click", () => {
-            selectedPdfImages.splice(idx, 1);
-            renderPdfImagesGrid();
-          });
           pdfGrid.appendChild(card);
         });
       }
 
       pdfClearAllBtn.addEventListener("click", () => {
         selectedPdfImages = [];
-        renderPdfImagesGrid();
+        renderPdfGrid();
       });
 
       pdfGenerateBtn.addEventListener("click", async () => {
         if (selectedPdfImages.length === 0) return;
         pdfGenerateBtn.disabled = true;
-        pdfGenerateBtn.textContent = "Generating PDF Document...";
-
+        pdfGenerateBtn.textContent = "Generating PDF...";
         try {
           const { jsPDF } = window.jspdf;
-          const pageSize = document.getElementById("pdf-page-size").value;
-          const orientation = document.getElementById("pdf-orientation").value;
-          const marginSetting = document.getElementById("pdf-margin").value;
-          const filename = document.getElementById("pdf-filename").value.trim() || "converted_images.pdf";
-
-          let margin = 10;
-          if (marginSetting === "none") margin = 0;
-          else if (marginSetting === "normal") margin = 20;
-
-          const doc = new jsPDF({
-            orientation: orientation,
-            unit: "mm",
-            format: pageSize === "fit" ? "a4" : pageSize
-          });
-
+          const doc = new jsPDF({ unit: "mm", format: "a4" });
           for (let i = 0; i < selectedPdfImages.length; i++) {
-            if (i > 0) doc.addPage(pageSize === "fit" ? "a4" : pageSize, orientation);
-
-            const imgData = selectedPdfImages[i].dataUrl;
+            if (i > 0) doc.addPage("a4");
             const img = new Image();
-            img.src = imgData;
-            await new Promise(r => { img.onload = r; });
-
-            const pageWidth = doc.internal.pageSize.getWidth();
-            const pageHeight = doc.internal.pageSize.getHeight();
-
-            const maxWidth = pageWidth - (margin * 2);
-            const maxHeight = pageHeight - (margin * 2);
-
-            let imgW = maxWidth;
-            let imgH = (img.height * imgW) / img.width;
-
-            if (imgH > maxHeight) {
-              imgH = maxHeight;
-              imgW = (img.width * imgH) / img.height;
-            }
-
-            const x = margin + (maxWidth - imgW) / 2;
-            const y = margin + (maxHeight - imgH) / 2;
-
-            doc.addImage(imgData, "JPEG", x, y, imgW, imgH);
+            img.src = selectedPdfImages[i].dataUrl;
+            await new Promise(r => img.onload = r);
+            const pageW = doc.internal.pageSize.getWidth();
+            const pageH = doc.internal.pageSize.getHeight();
+            const ratio = Math.min((pageW - 20) / img.width, (pageH - 20) / img.height);
+            const w = img.width * ratio;
+            const h = img.height * ratio;
+            doc.addImage(selectedPdfImages[i].dataUrl, "JPEG", (pageW - w) / 2, (pageH - h) / 2, w, h);
           }
-
-          doc.save(filename.endsWith(".pdf") ? filename : `${filename}.pdf`);
+          doc.save(document.getElementById("pdf-filename").value || "documents.pdf");
         } catch (e) {
-          console.error(e);
-          alert("Failed to generate PDF: " + e.message);
+          alert("Error: " + e.message);
         } finally {
           pdfGenerateBtn.disabled = false;
           pdfGenerateBtn.textContent = "📥 Generate & Download PDF";
@@ -655,294 +1898,349 @@
       });
 
       // =========================================================
-      // 2. IMAGE RESIZER & SCALER
+      // TOOL 10: PDF TO JPG CONVERTER
       // =========================================================
-      const resizeDropZone = document.getElementById("resize-drop-zone");
-      const resizeFileInput = document.getElementById("resize-file-input");
-      const resizeContainer = document.getElementById("resize-controls-container");
-      const resizeCanvas = document.getElementById("resize-canvas");
-      const resizeCtx = resizeCanvas.getContext("2d");
-      const resizeWidthInput = document.getElementById("resize-width");
-      const resizeHeightInput = document.getElementById("resize-height");
-      const resizeLockAspect = document.getElementById("resize-lock-aspect");
-      const resizeDownloadBtn = document.getElementById("resize-download-btn");
-      const resizeResetBtn = document.getElementById("resize-reset-btn");
+      const p2jDropZone = document.getElementById("p2j-drop-zone");
+      const p2jFileInput = document.getElementById("p2j-file-input");
+      const p2jControls = document.getElementById("p2j-controls");
+      const p2jContainer = document.getElementById("p2j-pages-container");
+      const p2jDownloadAll = document.getElementById("p2j-download-all");
 
-      let originalResizeImg = null;
-      let originalAspectRatio = 1;
+      let p2jPageBlobs = [];
 
-      resizeDropZone.addEventListener("click", () => resizeFileInput.click());
-      resizeDropZone.addEventListener("dragover", (e) => { e.preventDefault(); resizeDropZone.classList.add("dragover"); });
-      resizeDropZone.addEventListener("dragleave", () => resizeDropZone.classList.remove("dragover"));
-      resizeDropZone.addEventListener("drop", (e) => {
-        e.preventDefault();
-        resizeDropZone.classList.remove("dragover");
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) loadResizeImage(e.dataTransfer.files[0]);
-      });
+      p2jDropZone.addEventListener("click", () => p2jFileInput.click());
+      p2jFileInput.addEventListener("change", async (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const file = e.target.files[0];
+          p2jContainer.innerHTML = `<div style="color: var(--primary);">Rendering PDF pages to high-res JPGs...</div>`;
+          p2jControls.style.display = "block";
+          p2jPageBlobs = [];
 
-      resizeFileInput.addEventListener("change", (e) => {
-        if (e.target.files && e.target.files[0]) loadResizeImage(e.target.files[0]);
-      });
+          try {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            p2jContainer.innerHTML = "";
 
-      function loadResizeImage(file) {
-        if (!file.type.startsWith("image/")) return;
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const img = new Image();
-          img.onload = () => {
-            originalResizeImg = img;
-            originalAspectRatio = img.width / img.height;
-            resizeWidthInput.value = img.width;
-            resizeHeightInput.value = img.height;
-            drawResizeCanvas(img.width, img.height);
-            resizeContainer.style.display = "block";
-          };
-          img.src = event.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
+            for (let num = 1; num <= pdf.numPages; num++) {
+              const page = await pdf.getPage(num);
+              const viewport = page.getViewport({ scale: 2.0 });
+              const canvas = document.createElement("canvas");
+              canvas.width = viewport.width;
+              canvas.height = viewport.height;
+              const ctx = canvas.getContext("2d");
+              await page.render({ canvasContext: ctx, viewport: viewport }).promise;
 
-      function drawResizeCanvas(w, h) {
-        if (!originalResizeImg) return;
-        resizeCanvas.width = w;
-        resizeCanvas.height = h;
-        resizeCtx.drawImage(originalResizeImg, 0, 0, w, h);
-      }
+              const blob = await new Promise(r => canvas.toBlob(r, "image/jpeg", 0.92));
+              p2jPageBlobs.push({ page: num, blob: blob });
 
-      resizeWidthInput.addEventListener("input", () => {
-        const w = parseInt(resizeWidthInput.value) || 1;
-        if (resizeLockAspect.checked) {
-          const h = Math.round(w / originalAspectRatio);
-          resizeHeightInput.value = h;
-          drawResizeCanvas(w, h);
-        } else {
-          drawResizeCanvas(w, parseInt(resizeHeightInput.value) || 1);
-        }
-      });
-
-      resizeHeightInput.addEventListener("input", () => {
-        const h = parseInt(resizeHeightInput.value) || 1;
-        if (resizeLockAspect.checked) {
-          const w = Math.round(h * originalAspectRatio);
-          resizeWidthInput.value = w;
-          drawResizeCanvas(w, h);
-        } else {
-          drawResizeCanvas(parseInt(resizeWidthInput.value) || 1, h);
-        }
-      });
-
-      // Presets
-      document.querySelectorAll(".preset-pill").forEach(pill => {
-        pill.addEventListener("click", () => {
-          if (!originalResizeImg) return;
-          if (pill.dataset.preset) {
-            const [w, h] = pill.dataset.preset.split("x").map(Number);
-            resizeWidthInput.value = w;
-            resizeHeightInput.value = h;
-            drawResizeCanvas(w, h);
-          } else if (pill.dataset.scale) {
-            const scale = parseFloat(pill.dataset.scale);
-            const w = Math.round(originalResizeImg.width * scale);
-            const h = Math.round(originalResizeImg.height * scale);
-            resizeWidthInput.value = w;
-            resizeHeightInput.value = h;
-            drawResizeCanvas(w, h);
+              const card = document.createElement("div");
+              card.style.cssText = "background: #090D16; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; text-align: center;";
+              card.innerHTML = `
+                <img src="${URL.createObjectURL(blob)}" style="width: 100%; height: 160px; object-fit: contain; margin-bottom: 0.5rem;">
+                <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">Page ${num}</div>
+                <a href="${URL.createObjectURL(blob)}" download="page_${num}.jpg" class="btn btn-secondary btn-sm" style="width: 100%;">Download JPG</a>
+              `;
+              p2jContainer.appendChild(card);
+            }
+          } catch (err) {
+            p2jContainer.innerHTML = `<div style="color: var(--danger);">Failed to render PDF: ${err.message}</div>`;
           }
+        }
+      });
+
+      p2jDownloadAll.addEventListener("click", async () => {
+        if (p2jPageBlobs.length === 0) return;
+        const zip = new JSZip();
+        p2jPageBlobs.forEach(p => zip.file(`page_${p.page}.jpg`, p.blob));
+        const content = await zip.generateAsync({ type: "blob" });
+        const link = document.createElement("a");
+        link.download = `pdf_pages_jpg.zip`;
+        link.href = URL.createObjectURL(content);
+        link.click();
+      });
+
+      // =========================================================
+      // TOOL 11: CLIENT-SIDE OCR (IMAGE TO TEXT)
+      // =========================================================
+      const ocrDropZone = document.getElementById("ocr-drop-zone");
+      const ocrFileInput = document.getElementById("ocr-file-input");
+      const ocrControls = document.getElementById("ocr-controls");
+      const ocrPreviewImg = document.getElementById("ocr-preview-img");
+      const ocrOutputText = document.getElementById("ocr-output-text");
+      const ocrStatusBar = document.getElementById("ocr-status-bar");
+      const ocrCopyBtn = document.getElementById("ocr-copy-btn");
+
+      ocrDropZone.addEventListener("click", () => ocrFileInput.click());
+      ocrFileInput.addEventListener("change", async (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const file = e.target.files[0];
+          ocrPreviewImg.src = URL.createObjectURL(file);
+          ocrControls.style.display = "block";
+          ocrOutputText.value = "Processing image with Tesseract OCR...";
+          ocrStatusBar.textContent = "Initializing OCR worker...";
+
+          try {
+            const worker = await Tesseract.createWorker("eng");
+            ocrStatusBar.textContent = "Recognizing text in browser...";
+            const ret = await worker.recognize(file);
+            ocrOutputText.value = ret.data.text || "No text detected.";
+            ocrStatusBar.textContent = "✅ Text extraction complete!";
+            await worker.terminate();
+          } catch (err) {
+            ocrOutputText.value = "OCR Error: " + err.message;
+            ocrStatusBar.textContent = "❌ Extraction failed.";
+          }
+        }
+      });
+
+      ocrCopyBtn.addEventListener("click", () => {
+        navigator.clipboard.writeText(ocrOutputText.value);
+        alert("Extracted text copied to clipboard!");
+      });
+
+      // =========================================================
+      // TOOL 12: FAVICON & MULTI-SIZE MAKER
+      // =========================================================
+      const favDropZone = document.getElementById("fav-drop-zone");
+      const favFileInput = document.getElementById("fav-file-input");
+      const favControls = document.getElementById("fav-controls");
+      const favGrid = document.getElementById("fav-grid");
+      const favDownloadAll = document.getElementById("fav-download-all");
+
+      let favBlobs = {};
+
+      favDropZone.addEventListener("click", () => favFileInput.click());
+      favFileInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const img = new Image();
+            img.onload = () => {
+              favGrid.innerHTML = "";
+              favBlobs = {};
+              const sizes = [16, 32, 48, 64, 128];
+              sizes.forEach(s => {
+                const canvas = document.createElement("canvas");
+                canvas.width = s;
+                canvas.height = s;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, s, s);
+                canvas.toBlob(blob => {
+                  favBlobs[s] = blob;
+                }, "image/png");
+
+                const card = document.createElement("div");
+                card.style.cssText = "text-align: center;";
+                card.innerHTML = `
+                  <img src="${canvas.toDataURL()}" style="width: ${s}px; height: ${s}px; image-rendering: pixelated; margin-bottom: 0.3rem;">
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">${s}×${s}</div>
+                `;
+                favGrid.appendChild(card);
+              });
+              favControls.style.display = "block";
+            };
+            img.src = ev.target.result;
+          };
+          reader.readAsDataURL(e.target.files[0]);
+        }
+      });
+
+      favDownloadAll.addEventListener("click", async () => {
+        const zip = new JSZip();
+        Object.entries(favBlobs).forEach(([s, blob]) => zip.file(`favicon-${s}x${s}.png`, blob));
+        const content = await zip.generateAsync({ type: "blob" });
+        const link = document.createElement("a");
+        link.download = `favicon_package.zip`;
+        link.href = URL.createObjectURL(content);
+        link.click();
+      });
+
+      // =========================================================
+      // TOOL 13: BLUR, CENSOR & PIXELATE
+      // =========================================================
+      const cenDropZone = document.getElementById("cen-drop-zone");
+      const cenFileInput = document.getElementById("cen-file-input");
+      const cenControls = document.getElementById("cen-controls");
+      const cenCanvas = document.getElementById("cen-canvas");
+      const cenCtx = cenCanvas.getContext("2d");
+      const cenResetBtn = document.getElementById("cen-reset-btn");
+      const cenDownloadBtn = document.getElementById("cen-download-btn");
+
+      let cenImg = null;
+      let cenMode = "pixelate";
+      let cenSelecting = false;
+      let startX = 0, startY = 0;
+
+      cenDropZone.addEventListener("click", () => cenFileInput.click());
+      cenFileInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const img = new Image();
+            img.onload = () => {
+              cenImg = img;
+              cenCanvas.width = img.width;
+              cenCanvas.height = img.height;
+              cenCtx.drawImage(img, 0, 0);
+              cenControls.style.display = "block";
+            };
+            img.src = ev.target.result;
+          };
+          reader.readAsDataURL(e.target.files[0]);
+        }
+      });
+
+      document.querySelectorAll("#pane-censor-blur .preset-pill").forEach(p => {
+        p.addEventListener("click", () => {
+          document.querySelectorAll("#pane-censor-blur .preset-pill").forEach(x => x.classList.remove("active"));
+          p.classList.add("active");
+          cenMode = p.dataset.mode;
         });
       });
 
-      resizeResetBtn.addEventListener("click", () => {
-        if (!originalResizeImg) return;
-        resizeWidthInput.value = originalResizeImg.width;
-        resizeHeightInput.value = originalResizeImg.height;
-        drawResizeCanvas(originalResizeImg.width, originalResizeImg.height);
+      cenCanvas.addEventListener("mousedown", (e) => {
+        cenSelecting = true;
+        const rect = cenCanvas.getBoundingClientRect();
+        const scaleX = cenCanvas.width / rect.width;
+        const scaleY = cenCanvas.height / rect.height;
+        startX = (e.clientX - rect.left) * scaleX;
+        startY = (e.clientY - rect.top) * scaleY;
       });
 
-      resizeDownloadBtn.addEventListener("click", () => {
-        const link = document.createElement("a");
-        link.download = `resized_${resizeCanvas.width}x${resizeCanvas.height}.png`;
-        link.href = resizeCanvas.toDataURL("image/png");
-        link.click();
-      });
+      cenCanvas.addEventListener("mouseup", (e) => {
+        if (!cenSelecting) return;
+        cenSelecting = false;
+        const rect = cenCanvas.getBoundingClientRect();
+        const scaleX = cenCanvas.width / rect.width;
+        const scaleY = cenCanvas.height / rect.height;
+        const endX = (e.clientX - rect.left) * scaleX;
+        const endY = (e.clientY - rect.top) * scaleY;
 
-      // =========================================================
-      // 3. COMPRESSOR & FORMAT CONVERTER
-      // =========================================================
-      const compressDropZone = document.getElementById("compress-drop-zone");
-      const compressFileInput = document.getElementById("compress-file-input");
-      const compressContainer = document.getElementById("compress-controls-container");
-      const compressCanvas = document.getElementById("compress-canvas");
-      const compressCtx = compressCanvas.getContext("2d");
-      const compressFormat = document.getElementById("compress-format");
-      const compressQuality = document.getElementById("compress-quality");
-      const qualityVal = document.getElementById("quality-val");
-      const origSizeDisplay = document.getElementById("orig-size-display");
-      const optSizeDisplay = document.getElementById("opt-size-display");
-      const savingsDisplay = document.getElementById("savings-display");
-      const compressDownloadBtn = document.getElementById("compress-download-btn");
+        const x = Math.min(startX, endX);
+        const y = Math.min(startY, endY);
+        const w = Math.abs(endX - startX);
+        const h = Math.abs(endY - startY);
 
-      let originalCompressImg = null;
-      let originalFileSize = 0;
-      let currentCompressedBlob = null;
-
-      compressDropZone.addEventListener("click", () => compressFileInput.click());
-      compressDropZone.addEventListener("dragover", (e) => { e.preventDefault(); compressDropZone.classList.add("dragover"); });
-      compressDropZone.addEventListener("dragleave", () => compressDropZone.classList.remove("dragover"));
-      compressDropZone.addEventListener("drop", (e) => {
-        e.preventDefault();
-        compressDropZone.classList.remove("dragover");
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) loadCompressImage(e.dataTransfer.files[0]);
-      });
-
-      compressFileInput.addEventListener("change", (e) => {
-        if (e.target.files && e.target.files[0]) loadCompressImage(e.target.files[0]);
-      });
-
-      function loadCompressImage(file) {
-        if (!file.type.startsWith("image/")) return;
-        originalFileSize = file.size;
-        origSizeDisplay.textContent = formatBytes(originalFileSize);
-
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const img = new Image();
-          img.onload = () => {
-            originalCompressImg = img;
-            compressCanvas.width = img.width;
-            compressCanvas.height = img.height;
-            compressCtx.drawImage(img, 0, 0);
-            updateCompression();
-            compressContainer.style.display = "block";
-          };
-          img.src = event.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-
-      function updateCompression() {
-        if (!originalCompressImg) return;
-        const quality = parseInt(compressQuality.value) / 100;
-        qualityVal.textContent = `${compressQuality.value}%`;
-        const format = compressFormat.value;
-
-        compressCanvas.toBlob((blob) => {
-          if (!blob) return;
-          currentCompressedBlob = blob;
-          optSizeDisplay.textContent = formatBytes(blob.size);
-
-          const diff = originalFileSize - blob.size;
-          const percent = Math.round((diff / originalFileSize) * 100);
-          if (percent >= 0) {
-            savingsDisplay.textContent = `-${percent}% saved (${formatBytes(diff)})`;
-            savingsDisplay.style.color = "var(--success)";
+        if (w > 5 && h > 5) {
+          if (cenMode === "pixelate") {
+            ImageEngine.pixelateArea(cenCtx, Math.round(x), Math.round(y), Math.round(w), Math.round(h), 14);
           } else {
-            savingsDisplay.textContent = `+${Math.abs(percent)}% (larger)`;
-            savingsDisplay.style.color = "var(--warning)";
+            ImageEngine.blackBarArea(cenCtx, Math.round(x), Math.round(y), Math.round(w), Math.round(h));
           }
-        }, format, quality);
-      }
+        }
+      });
 
-      compressQuality.addEventListener("input", updateCompression);
-      compressFormat.addEventListener("change", updateCompression);
+      cenResetBtn.addEventListener("click", () => {
+        if (cenImg) cenCtx.drawImage(cenImg, 0, 0);
+      });
 
-      compressDownloadBtn.addEventListener("click", () => {
-        if (!currentCompressedBlob) return;
-        const ext = compressFormat.value === "image/webp" ? "webp" : (compressFormat.value === "image/png" ? "png" : "jpg");
+      cenDownloadBtn.addEventListener("click", () => {
         const link = document.createElement("a");
-        link.download = `optimized_image.${ext}`;
-        link.href = URL.createObjectURL(currentCompressedBlob);
+        link.download = `censored_image.jpg`;
+        link.href = cenCanvas.toDataURL("image/jpeg", 0.95);
         link.click();
       });
 
       // =========================================================
-      // 4. ROTATE & FLIP
+      // TOOL 14: NO-CROP & GRID SLICER
       // =========================================================
-      const transDropZone = document.getElementById("trans-drop-zone");
-      const transFileInput = document.getElementById("trans-file-input");
-      const transContainer = document.getElementById("trans-controls-container");
-      const transCanvas = document.getElementById("trans-canvas");
-      const transCtx = transCanvas.getContext("2d");
+      const ncDropZone = document.getElementById("nc-drop-zone");
+      const ncFileInput = document.getElementById("nc-file-input");
+      const ncControls = document.getElementById("nc-controls");
+      const ncCanvas = document.getElementById("nc-canvas");
+      const ncCtx = ncCanvas.getContext("2d");
+      const ncMode = document.getElementById("nc-mode");
+      const ncDownloadBtn = document.getElementById("nc-download-btn");
+      const ncDownloadZipBtn = document.getElementById("nc-download-zip-btn");
 
-      let originalTransImg = null;
-      let rotationAngle = 0; // in degrees
-      let flipH = false;
-      let flipV = false;
+      let ncImg = null;
 
-      transDropZone.addEventListener("click", () => transFileInput.click());
-      transDropZone.addEventListener("dragover", (e) => { e.preventDefault(); transDropZone.classList.add("dragover"); });
-      transDropZone.addEventListener("dragleave", () => transDropZone.classList.remove("dragover"));
-      transDropZone.addEventListener("drop", (e) => {
-        e.preventDefault();
-        transDropZone.classList.remove("dragover");
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) loadTransImage(e.dataTransfer.files[0]);
-      });
-
-      transFileInput.addEventListener("change", (e) => {
-        if (e.target.files && e.target.files[0]) loadTransImage(e.target.files[0]);
-      });
-
-      function loadTransImage(file) {
-        if (!file.type.startsWith("image/")) return;
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const img = new Image();
-          img.onload = () => {
-            originalTransImg = img;
-            rotationAngle = 0;
-            flipH = false;
-            flipV = false;
-            renderTransform();
-            transContainer.style.display = "block";
+      ncDropZone.addEventListener("click", () => ncFileInput.click());
+      ncFileInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const img = new Image();
+            img.onload = () => {
+              ncImg = img;
+              ncControls.style.display = "block";
+              renderNoCropGrid();
+            };
+            img.src = ev.target.result;
           };
-          img.src = event.target.result;
-        };
-        reader.readAsDataURL(file);
+          reader.readAsDataURL(e.target.files[0]);
+        }
+      });
+
+      function renderNoCropGrid() {
+        if (!ncImg) return;
+        const mode = ncMode.value;
+        const maxSide = Math.max(ncImg.width, ncImg.height);
+
+        if (mode.startsWith("square")) {
+          ncCanvas.width = maxSide;
+          ncCanvas.height = maxSide;
+
+          if (mode === "square_blur") {
+            ncCtx.filter = "blur(20px)";
+            ncCtx.drawImage(ncImg, 0, 0, maxSide, maxSide);
+            ncCtx.filter = "none";
+          } else {
+            ncCtx.fillStyle = "#000000";
+            ncCtx.fillRect(0, 0, maxSide, maxSide);
+          }
+
+          const x = (maxSide - ncImg.width) / 2;
+          const y = (maxSide - ncImg.height) / 2;
+          ncCtx.drawImage(ncImg, x, y);
+
+          ncDownloadBtn.style.display = "inline-flex";
+          ncDownloadZipBtn.style.display = "none";
+        } else {
+          // Grid Split
+          ncCanvas.width = ncImg.width;
+          ncCanvas.height = ncImg.height;
+          ncCtx.drawImage(ncImg, 0, 0);
+          ncDownloadBtn.style.display = "none";
+          ncDownloadZipBtn.style.display = "inline-flex";
+        }
       }
 
-      function renderTransform() {
-        if (!originalTransImg) return;
-        const isOrthogonal = (rotationAngle % 180 !== 0);
-        const w = isOrthogonal ? originalTransImg.height : originalTransImg.width;
-        const h = isOrthogonal ? originalTransImg.width : originalTransImg.height;
+      ncMode.addEventListener("change", renderNoCropGrid);
 
-        transCanvas.width = w;
-        transCanvas.height = h;
-
-        transCtx.save();
-        transCtx.translate(w / 2, h / 2);
-        transCtx.rotate((rotationAngle * Math.PI) / 180);
-        transCtx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
-        transCtx.drawImage(originalTransImg, -originalTransImg.width / 2, -originalTransImg.height / 2);
-        transCtx.restore();
-      }
-
-      document.getElementById("rotate-left-btn").addEventListener("click", () => {
-        rotationAngle = (rotationAngle - 90) % 360;
-        renderTransform();
-      });
-      document.getElementById("rotate-right-btn").addEventListener("click", () => {
-        rotationAngle = (rotationAngle + 90) % 360;
-        renderTransform();
-      });
-      document.getElementById("flip-h-btn").addEventListener("click", () => {
-        flipH = !flipH;
-        renderTransform();
-      });
-      document.getElementById("flip-v-btn").addEventListener("click", () => {
-        flipV = !flipV;
-        renderTransform();
-      });
-      document.getElementById("trans-reset-btn").addEventListener("click", () => {
-        rotationAngle = 0;
-        flipH = false;
-        flipV = false;
-        renderTransform();
-      });
-
-      document.getElementById("trans-download-btn").addEventListener("click", () => {
+      ncDownloadBtn.addEventListener("click", () => {
         const link = document.createElement("a");
-        link.download = `transformed_image.png`;
-        link.href = transCanvas.toDataURL("image/png");
+        link.download = `instagram_nocrop_square.jpg`;
+        link.href = ncCanvas.toDataURL("image/jpeg", 0.95);
+        link.click();
+      });
+
+      ncDownloadZipBtn.addEventListener("click", async () => {
+        if (!ncImg) return;
+        const mode = ncMode.value;
+        const zip = new JSZip();
+        const cols = 3;
+        const rows = mode === "grid_3x3" ? 3 : 1;
+        const sliceW = Math.floor(ncImg.width / cols);
+        const sliceH = Math.floor(ncImg.height / rows);
+
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const canvas = document.createElement("canvas");
+            canvas.width = sliceW;
+            canvas.height = sliceH;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(ncImg, c * sliceW, r * sliceH, sliceW, sliceH, 0, 0, sliceW, sliceH);
+            const blob = await new Promise(res => canvas.toBlob(res, "image/jpeg", 0.95));
+            zip.file(`grid_slice_${r + 1}_${c + 1}.jpg`, blob);
+          }
+        }
+
+        const content = await zip.generateAsync({ type: "blob" });
+        const link = document.createElement("a");
+        link.download = `grid_slices_${cols}x${rows}.zip`;
+        link.href = URL.createObjectURL(content);
         link.click();
       });
     });

@@ -7,6 +7,7 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="./style.css" />
     <link rel="stylesheet" href="/cmd_k.css" />
+    <script src="/theme.js"></script>
   </head>
   <body>
   <header class="site-header">
@@ -19,8 +20,10 @@
     <div class="header-actions">
       <span class="user-greeting" id="current_user"></span>
       <a href="/blog" class="btn secondary">Blog</a>
+      <a href="/image-tools" class="btn secondary">Image Studio</a>
       <a href="/tools" class="btn secondary">Tools</a>
       <a href="./index.html" class="btn secondary">← Dashboard</a>
+      <button type="button" class="theme-toggle-btn" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">☀️</button>
       <button type="button" class="btn secondary" id="cmdk-btn" style="padding: 0.35rem 0.6rem; font-family: monospace;">⌘K</button>
       <button id="logout_btn" class="danger">Logout</button>
     </div>

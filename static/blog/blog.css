@@ -1,8 +1,8 @@
 /* =========================================================
-   Sitendra Blog - Modern Dark Design System (Fully Responsive)
+   Sitendra Platform - Dual-Theme Design System (Dark & Light)
    ========================================================= */
 
-:root {
+:root, [data-theme="dark"] {
   --bg-deep: #0B1120;
   --bg-main: #0F172A;
   --bg-surface: #1E293B;
@@ -40,6 +40,44 @@
   
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace;
+
+  --theme-bg-gradient: radial-gradient(at 10% 20%, rgba(56, 189, 248, 0.07) 0px, transparent 50%),
+                       radial-gradient(at 90% 80%, rgba(99, 102, 241, 0.06) 0px, transparent 50%);
+}
+
+[data-theme="light"] {
+  --bg-deep: #F1F5F9;
+  --bg-main: #F8FAFC;
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #F8FAFC;
+  --bg-surface-hover: #F1F5F9;
+  --bg-glass: rgba(255, 255, 255, 0.88);
+  
+  --text-main: #0F172A;
+  --text-muted: #475569;
+  --text-subtle: #64748B;
+  
+  --primary: #0284C7;
+  --primary-hover: #0369A1;
+  --primary-gradient: linear-gradient(135deg, #0284C7 0%, #4F46E5 100%);
+  --primary-glow: rgba(2, 132, 199, 0.15);
+  
+  --success: #059669;
+  --success-hover: #047857;
+  --danger: #DC2626;
+  --danger-hover: #B91C1C;
+  --warning: #D97706;
+  
+  --border: #E2E8F0;
+  --border-light: rgba(0, 0, 0, 0.06);
+  --border-focus: #0284C7;
+  
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.07);
+  --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 0 25px rgba(2, 132, 199, 0.12);
+
+  --theme-bg-gradient: radial-gradient(at 10% 20%, rgba(2, 132, 199, 0.05) 0px, transparent 50%),
+                       radial-gradient(at 90% 80%, rgba(79, 70, 229, 0.04) 0px, transparent 50%);
 }
 
 /* ===== Global Resets ===== */
@@ -64,11 +102,10 @@ body {
   display: flex;
   flex-direction: column;
   padding-top: 76px;
-  background-image: 
-    radial-gradient(at 10% 20%, rgba(56, 189, 248, 0.06) 0px, transparent 50%),
-    radial-gradient(at 90% 80%, rgba(99, 102, 241, 0.05) 0px, transparent 50%);
+  background-image: var(--theme-bg-gradient);
   background-attachment: fixed;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 a {
@@ -79,6 +116,30 @@ a {
 
 a:hover {
   color: var(--primary-hover);
+}
+
+/* ===== Theme Switcher Button ===== */
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  color: var(--text-main);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle-btn:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--primary);
+  transform: rotate(15deg) scale(1.08);
+  box-shadow: 0 0 12px var(--primary-glow);
 }
 
 /* ===== Fixed Navigation Header ===== */
@@ -97,7 +158,8 @@ a:hover {
   justify-content: space-between;
   padding: 0 1.5rem;
   z-index: 1000;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--shadow-sm);
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .brand-wrapper {
