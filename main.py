@@ -151,13 +151,17 @@ def dynamic_root_dispatcher(request: Request):
         if intro_file.exists():
             return FileResponse(intro_file)
 
-    # 6. Notes App Subdomain (app.sitendra.store / notes.sitendra.store)
+    # 6. Games Subdomain (games.sitendra.store / game.sitendra.store / scrabble.sitendra.store)
+    if subdomain in ("games", "game", "scrabble", "play"):
+        return FileResponse(STATIC_DIR / "games.html")
+
+    # 7. Notes App Subdomain (app.sitendra.store / notes.sitendra.store)
     if subdomain in ("app", "notes", "my"):
         if not request.session.get("user_id"):
             return RedirectResponse(url="/login.html")
         return RedirectResponse(url="/index.html")
 
-    # 7. Main Root Domain Homepage (sitendra.store)
+    # 8. Main Root Domain Homepage (sitendra.store)
     return FileResponse(STATIC_DIR / "home.html")
 
 
@@ -205,6 +209,16 @@ def image_tools_page():
 @app.get("/resume-builder")
 def resume_builder_page():
     return FileResponse(STATIC_DIR / "resume.html")
+
+
+@app.get("/games")
+@app.get("/game")
+@app.get("/games/word-scramble")
+@app.get("/games/scrabble")
+@app.get("/scrabble")
+@app.get("/play")
+def games_page():
+    return FileResponse(STATIC_DIR / "games.html")
 
 
 @app.get("/projects")
@@ -301,6 +315,7 @@ def sitemap_xml():
         {"loc": "https://sitendra.store/tools", "priority": "0.85", "changefreq": "weekly"},
         {"loc": "https://sitendra.store/image-tools", "priority": "0.9", "changefreq": "weekly"},
         {"loc": "https://sitendra.store/resume", "priority": "0.9", "changefreq": "monthly"},
+        {"loc": "https://sitendra.store/games", "priority": "0.9", "changefreq": "weekly"},
         {"loc": "https://sitendra.store/projects", "priority": "0.85", "changefreq": "monthly"},
     ]
 

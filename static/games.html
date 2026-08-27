@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>2-Player Word Scramble &amp; Scrabble Duel | Sitendra Games</title>
+  <meta name="description" content="Free 2-player Word Scramble and Scrabble duel game. Play head-to-head on mobile, tablet, or desktop with Scrabble tile points, timer duels, and offline sound effects.">
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/blog/blog.css">
+  <link rel="stylesheet" href="/cmd_k.css">
+  <link rel="stylesheet" href="/chat.css">
+
+  <!-- Theme Script -->
+  <script src="/theme.js"></script>
+
+  <style>
+    /* Full-Screen Mobile App Architecture */
+    :root {
+      --p1-color: #38BDF8;
+      --p1-bg: rgba(56, 189, 248, 0.15);
+      --p2-color: #10B981;
+      --p2-bg: rgba(16, 185, 129, 0.15);
+      --tile-wood: #FDE68A;
+      --tile-wood-dark: #F59E0B;
+      --tile-text: #78350F;
+    }
+
+    [data-theme="light"] {
+      --tile-wood: #FEF3C7;
+      --tile-wood-dark: #D97706;
+      --tile-text: #451A03;
+    }
+
+    body {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .game-app-container {
+      flex: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 1rem 1rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Scoreboard */
+    .scoreboard-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 0.85rem 1.25rem;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .player-score-box {
+      display: flex;
+      flex-direction: column;
+      padding: 0.6rem 0.85rem;
+      border-radius: var(--radius-md);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .player-score-box.active {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px var(--glow-color, rgba(56, 189, 248, 0.4));
+      border: 2px solid currentColor;
+    }
+    .player-score-box.p1 {
+      color: var(--p1-color);
+      background: var(--p1-bg);
+      --glow-color: rgba(56, 189, 248, 0.4);
+    }
+    .player-score-box.p2 {
+      color: var(--p2-color);
+      background: var(--p2-bg);
+      text-align: right;
+      --glow-color: rgba(16, 185, 129, 0.4);
+    }
+    .score-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .score-val {
+      font-size: 1.8rem;
+      font-weight: 800;
+      font-family: 'Fredoka', 'Inter', sans-serif;
+      line-height: 1.1;
+    }
+    .score-center {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2rem;
+    }
+    .round-badge {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .timer-ring {
+      font-size: 1.35rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: var(--warning);
+    }
+
+    /* Turn Indicator Banner */
+    .turn-banner {
+      text-align: center;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-full);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+      animation: pulseBanner 2s infinite;
+    }
+    @keyframes pulseBanner {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+
+    /* Scrabble Tiles Board & Slot Rack */
+    .board-area {
+      background: var(--bg-surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem 1rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      min-height: 240px;
+      justify-content: center;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Answer Slots */
+    .answer-slots-rack {
+      display: flex;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      min-height: 60px;
+    }
+    .answer-slot {
+      width: 52px;
+      height: 58px;
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-surface-elevated);
+      transition: all 0.2s ease;
+    }
+    .answer-slot.filled {
+      border-style: solid;
+      border-color: transparent;
+      background: transparent;
+    }
+
+    /* Scrabble Wooden Tile */
+    .scrabble-tile {
+      width: 50px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--tile-wood) 0%, var(--tile-wood-dark) 100%);
+      color: var(--tile-text);
+      border-radius: 7px;
+      box-shadow: 0 4px 0 #92400E, 0 6px 12px rgba(0, 0, 0, 0.25);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer;
+      font-family: 'Fredoka', 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 1.6rem;
+      line-height: 1;
+      transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+      touch-action: none;
+    }
+    .scrabble-tile:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 0 #92400E, 0 10px 18px rgba(0, 0, 0, 0.35);
+    }
+    .scrabble-tile:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #92400E, 0 3px 6px rgba(0, 0, 0, 0.2);
+    }
+    .tile-points {
+      position: absolute;
+      bottom: 3px;
+      right: 4px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      opacity: 0.85;
+    }
+    .scrabble-tile.used {
+      opacity: 0.25;
+      pointer-events: none;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Player Source Tile Tray */
+    .tiles-tray-container {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .tiles-tray {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* Action Controls Bar */
+    .game-actions-bar {
+      display: flex;
+      gap: 0.6rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .game-btn {
+      padding: 0.75rem 1.25rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: var(--radius-full);
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+    .btn-submit-word {
+      background: var(--primary-gradient);
+      color: #0B1120;
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+    }
+    .btn-submit-word:hover {
+      transform: scale(1.05);
+    }
+    .btn-aux {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+    }
+    .btn-aux:hover {
+      background: var(--bg-surface-hover);
+      border-color: var(--primary);
+    }
+
+    /* Category & Mode Selector Modal */
+    .setup-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem 1.5rem;
+      max-width: 560px;
+      margin: 2rem auto;
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* Fullscreen Game Canvas Overlay for Confetti */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 999999;
+    }
+
+    /* Mobile Adaptations */
+    @media (max-width: 480px) {
+      .scrabble-tile {
+        width: 42px;
+        height: 48px;
+        font-size: 1.35rem;
+      }
+      .answer-slot {
+        width: 44px;
+        height: 50px;
+      }
+      .home-hero-title {
+        font-size: 2.2rem;
+      }
+      .scoreboard-card {
+        padding: 0.6rem 0.85rem;
+      }
+      .score-val {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Navigation Header -->
+  <header class="blog-header">
+    <div class="brand-wrapper">
+      <a href="/" id="brand-link" style="display: flex; align-items: center; gap: 0.85rem; color: inherit;">
+        <div class="brand-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+        <div class="brand-title">
+          Sitendra <span class="brand-badge">Word Duel</span>
+        </div>
+      </a>
+    </div>
+
+    <nav class="nav-links">
+      <a href="/tools" class="nav-item">Tools</a>
+      <a href="/image-tools" class="nav-item">Image Studio</a>
+      <a href="/resume" class="nav-item">Resume Builder</a>
+      <a href="/projects" class="nav-item">Projects</a>
+      <a href="/blog" class="nav-item">Blog</a>
+      <a href="/about" class="nav-item">About</a>
+      <button type="button" class="theme-toggle-btn" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">☀️</button>
+      <button type="button" class="btn btn-secondary btn-sm" id="fullscreen-toggle-btn" title="Toggle Fullscreen App">⛶</button>
+      <button type="button" class="btn btn-secondary btn-sm" id="cmdk-btn" title="Quick Search (Cmd+K)">
+        <span style="font-family: var(--font-mono); font-size: 0.75rem;">⌘K</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Main Game Container -->
+  <main class="game-app-container">
+
+    <!-- Screen 1: Game Setup / Lobby -->
+    <div id="game-setup-screen" class="setup-card">
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <span style="font-size: 2.8rem;">🔤</span>
+        <h1 style="font-size: 1.8rem; font-weight: 800; margin-top: 0.5rem;">2-Player Word Scramble Duel</h1>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Play head-to-head against a friend or challenge Sitendra AI</p>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label class="form-label">Game Mode</label>
+        <select id="setup-mode" class="form-control">
+          <option value="pass_play" selected>⚔️ 2-Player Pass &amp; Play (Turn-by-Turn)</option>
+          <option value="solo_bot">🤖 Solo vs Sitendra Bot</option>
+        </select>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Player 1 Name</label>
+          <input type="text" id="setup-p1-name" class="form-control" value="Player 1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Player 2 / Opponent</label>
+          <input type="text" id="setup-p2-name" class="form-control" value="Player 2">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem;">
+        <div class="form-group">
+          <label class="form-label">Total Rounds</label>
+          <select id="setup-rounds" class="form-control">
+            <option value="3">3 Rounds (Quick Match)</option>
+            <option value="5" selected>5 Rounds (Standard)</option>
+            <option value="10">10 Rounds (Championship)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Turn Timer</label>
+          <select id="setup-timer" class="form-control">
+            <option value="30">30 Seconds (Fast)</option>
+            <option value="45" selected>45 Seconds (Balanced)</option>
+            <option value="60">60 Seconds (Relaxed)</option>
+            <option value="0">Unlimited Time</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1.75rem;">
+        <label class="form-label">Word Category Theme</label>
+        <select id="setup-category" class="form-control">
+          <option value="general" selected>🌟 All-Round Everyday English</option>
+          <option value="tech">💻 Tech, Software &amp; Algorithms</option>
+          <option value="engineering">⚙️ Mechanical &amp; Engineering Terms</option>
+          <option value="science">🔬 Science, Space &amp; Physics</option>
+        </select>
+      </div>
+
+      <button type="button" class="btn btn-primary" id="btn-start-game" style="width: 100%; padding: 0.9rem; font-size: 1.05rem; font-weight: 700;">
+        🚀 Start Word Duel
+      </button>
+    </div>
+
+    <!-- Screen 2: Active Gameplay Screen -->
+    <div id="game-play-screen" style="display: none; flex-direction: column; flex: 1;">
+      
+      <!-- Scoreboard -->
+      <div class="scoreboard-card">
+        <div class="player-score-box p1 active" id="p1-box">
+          <span class="score-name" id="p1-display-name">Player 1</span>
+          <span class="score-val" id="p1-score">0</span>
+        </div>
+
+        <div class="score-center">
+          <span class="round-badge" id="round-display">Round 1 / 5</span>
+          <span class="timer-ring" id="timer-display">45s</span>
+        </div>
+
+        <div class="player-score-box p2" id="p2-box">
+          <span class="score-name" id="p2-display-name">Player 2</span>
+          <span class="score-val" id="p2-score">0</span>
+        </div>
+      </div>
+
+      <!-- Turn Banner -->
+      <div class="turn-banner" id="turn-banner" style="background: var(--p1-bg); color: var(--p1-color);">
+        🎯 Player 1's Turn: Unscramble the Word!
+      </div>
+
+      <!-- Word Answer Slots Board -->
+      <div class="board-area">
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">
+          Tap letters below or type on keyboard:
+        </div>
+        <div class="answer-slots-rack" id="answer-slots-rack"></div>
+        <div id="word-feedback" style="font-size: 0.95rem; font-weight: 700; min-height: 24px; text-align: center;"></div>
+      </div>
+
+      <!-- Scrambled Letter Source Tray -->
+      <div class="tiles-tray-container">
+        <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+          Available Scrabble Tiles:
+        </div>
+        <div class="tiles-tray" id="source-tiles-tray"></div>
+      </div>
+
+      <!-- Controls -->
+      <div class="game-actions-bar">
+        <button type="button" class="game-btn btn-aux" id="btn-shuffle">🔀 Shuffle</button>
+        <button type="button" class="game-btn btn-aux" id="btn-clear-word">⌫ Clear</button>
+        <button type="button" class="game-btn btn-aux" id="btn-skip-turn">⏭️ Pass / Reveal</button>
+        <button type="button" class="game-btn btn-submit-word" id="btn-submit-word">✅ Submit Word</button>
+      </div>
+
+    </div>
+
+    <!-- Screen 3: Match Results / Winner Screen -->
+    <div id="game-winner-screen" class="setup-card" style="display: none; text-align: center;">
+      <span style="font-size: 4rem; display: block; margin-bottom: 0.5rem;" id="winner-trophy">🏆</span>
+      <h2 style="font-size: 2.2rem; font-weight: 800;" id="winner-title">Player 1 Wins!</h2>
+      <p style="color: var(--text-muted); font-size: 1rem; margin-bottom: 1.5rem;" id="winner-subtitle">Awesome Word Duel Match!</p>
+
+      <div style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem; background: var(--bg-surface-elevated); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+        <div>
+          <div style="font-size: 0.85rem; color: var(--p1-color); font-weight: 700;" id="res-p1-name">Player 1</div>
+          <div style="font-size: 2rem; font-weight: 800; color: var(--p1-color);" id="res-p1-score">0</div>
+        </div>
+        <div style="font-size: 1.5rem; font-weight: 800; color: var(--text-muted); align-self: center;">VS</div>
+        <div>
+          <div style="font-size: 0.85rem; color: var(--p2-color); font-weight: 700;" id="res-p2-name">Player 2</div>
+          <div style="font-size: 2rem; font-weight: 800; color: var(--p2-color);" id="res-p2-score">0</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem; justify-content: center;">
+        <button type="button" class="btn btn-primary" id="btn-play-again">🔄 Rematch</button>
+        <button type="button" class="btn btn-secondary" id="btn-new-setup">⚙️ New Game Setup</button>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="blog-footer">
+    <p>&copy; 2026 Sitendra Kumar Nagesh &bull; <a href="/tools">All Tools</a> &bull; <a href="/image-tools">Image Studio</a> &bull; <a href="/resume">Resume Builder</a> &bull; <a href="/projects">Projects</a> &bull; <a href="/about">About</a></p>
+  </footer>
+
+  <script src="/cmd_k.js"></script>
+  <script src="/chat.js"></script>
+
+  <!-- Word Scramble Game Engine & Synthesizer -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // ---------------------------------------------------------
+      // 1. Scrabble Point Values
+      // ---------------------------------------------------------
+      const SCRABBLE_POINTS = {
+        A: 1, B: 3, C: 3, D: 2, E: 1, F: 4, G: 2, H: 4, I: 1, J: 8,
+        K: 5, L: 1, M: 3, N: 1, O: 1, P: 3, Q: 10, R: 1, S: 1, T: 1,
+        U: 1, V: 4, W: 4, X: 8, Y: 4, Z: 10
+      };
+
+      // ---------------------------------------------------------
+      // 2. Curated Word Datasets
+      // ---------------------------------------------------------
+      const WORD_PACKS = {
+        general: [
+          "PLANET", "GALAXY", "STREAM", "CASTLE", "BREEZE", "FOREST", "SHADOW", "SILVER", "GOLDEN",
+          "WINTER", "SUMMER", "SPRING", "AUTUMN", "BRIDGE", "ISLAND", "CANYON", "VOYAGE", "NATURE",
+          "RIPPLE", "FLIGHT", "PUZZLE", "SPARK", "BEACON", "HORIZON", "MYSTERY", "FREEDOM", "BALANCE",
+          "JOURNEY", "THUNDER", "WHISPER", "CRYSTAL", "DYNAMIC", "TRIUMPH", "COURAGE", "HARMONY"
+        ],
+        tech: [
+          "PYTHON", "BINARY", "SERVER", "CLIENT", "ROUTER", "DATABASE", "SYSTEM", "PACKET", "MODULE",
+          "RENDER", "BUFFER", "CANVAS", "SCRIPT", "DEPLOY", "MEMORY", "VECTOR", "SYNTAX", "THREAD",
+          "DOCKER", "DOMAIN", "BROWSER", "BACKEND", "ENGINE", "LIBRARY", "SOCKET", "LAMBDA", "SCHEDULER"
+        ],
+        engineering: [
+          "TORQUE", "STRESS", "BEARING", "FLANGE", "SPRING", "STRAIN", "KINEMATIC", "LINKAGE", "PISTON",
+          "CHASSIS", "DAMPER", "PULLEY", "TURBINE", "NOZZLE", "GASKET", "VALVE", "MODULE", "DYNAMIC",
+          "FATIGUE", "FRICTION", "TOLERANCE", "HARDNESS", "TENSILE", "EXPANSION", "MOMENTUM", "COUPLING"
+        ],
+        science: [
+          "GRAVITY", "QUANTUM", "PHOTON", "NUCLEUS", "PROTON", "NEURON", "GENOME", "ISOTOPE", "SPECTRUM",
+          "COSMOS", "ENERGY", "VECTOR", "PRISM", "RADIAN", "THERMAL", "DENSITY", "VELOCITY", "KINETIC",
+          "OSMOSIS", "DIFFUSION", "CURRENT", "MAGNET", "CIRCUIT", "VOLTAGE", "RESISTOR", "OPTICS"
+        ]
+      };
+
+      // ---------------------------------------------------------
+      // 3. Web Audio Synthesizer (Zero External Dependencies)
+      // ---------------------------------------------------------
+      let audioCtx = null;
+      function getAudioContext() {
+        if (!audioCtx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) audioCtx = new AudioContext();
+        }
+        return audioCtx;
+      }
+
+      function playTone(freq, type, duration) {
+        try {
+          const ctx = getAudioContext();
+          if (!ctx) return;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, ctx.currentTime);
+          gain.gain.setValueAtTime(0.12, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + duration);
+        } catch (e) {}
+      }
+
+      function playTileClick() { playTone(540, "sine", 0.08); }
+      function playCorrectSound() {
+        playTone(523.25, "triangle", 0.12);
+        setTimeout(() => playTone(659.25, "triangle", 0.12), 100);
+        setTimeout(() => playTone(783.99, "triangle", 0.25), 200);
+      }
+      function playWrongSound() {
+        playTone(220, "sawtooth", 0.2);
+        setTimeout(() => playTone(180, "sawtooth", 0.25), 120);
+      }
+
+      // ---------------------------------------------------------
+      // 4. Game State
+      // ---------------------------------------------------------
+      let gameState = {
+        mode: "pass_play",
+        p1Name: "Player 1",
+        p2Name: "Player 2",
+        totalRounds: 5,
+        turnTimerSec: 45,
+        category: "general",
+        currentRound: 1,
+        activePlayer: 1, // 1 or 2
+        p1Score: 0,
+        p2Score: 0,
+        currentMasterWord: "",
+        scrambledLetters: [],
+        currentSlots: [], // array of letter chars or null
+        usedTileIndices: new Set(),
+        timerInterval: null,
+        timeRemaining: 45,
+        wordPool: []
+      };
+
+      // DOM Elements
+      const setupScreen = document.getElementById("game-setup-screen");
+      const playScreen = document.getElementById("game-play-screen");
+      const winnerScreen = document.getElementById("game-winner-screen");
+
+      const p1ScoreEl = document.getElementById("p1-score");
+      const p2ScoreEl = document.getElementById("p2-score");
+      const p1Box = document.getElementById("p1-box");
+      const p2Box = document.getElementById("p2-box");
+      const p1DisplayName = document.getElementById("p1-display-name");
+      const p2DisplayName = document.getElementById("p2-display-name");
+
+      const roundDisplay = document.getElementById("round-display");
+      const timerDisplay = document.getElementById("timer-display");
+      const turnBanner = document.getElementById("turn-banner");
+      const answerSlotsRack = document.getElementById("answer-slots-rack");
+      const sourceTilesTray = document.getElementById("source-tiles-tray");
+      const feedbackEl = document.getElementById("word-feedback");
+
+      // ---------------------------------------------------------
+      // 5. Game Setup & Initialization
+      // ---------------------------------------------------------
+      document.getElementById("btn-start-game").addEventListener("click", () => {
+        gameState.mode = document.getElementById("setup-mode").value;
+        gameState.p1Name = document.getElementById("setup-p1-name").value.trim() || "Player 1";
+        gameState.p2Name = document.getElementById("setup-p2-name").value.trim() || (gameState.mode === "solo_bot" ? "Sitendra Bot" : "Player 2");
+        gameState.totalRounds = parseInt(document.getElementById("setup-rounds").value);
+        gameState.turnTimerSec = parseInt(document.getElementById("setup-timer").value);
+        gameState.category = document.getElementById("setup-category").value;
+
+        gameState.p1Score = 0;
+        gameState.p2Score = 0;
+        gameState.currentRound = 1;
+        gameState.activePlayer = 1;
+
+        // Shuffle word pool
+        const words = [...(WORD_PACKS[gameState.category] || WORD_PACKS.general)];
+        for (let i = words.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [words[i], words[j]] = [words[j], words[i]];
+        }
+        gameState.wordPool = words;
+
+        p1DisplayName.textContent = gameState.p1Name;
+        p2DisplayName.textContent = gameState.p2Name;
+
+        setupScreen.style.display = "none";
+        winnerScreen.style.display = "none";
+        playScreen.style.display = "flex";
+
+        startRound();
+      });
+
+      function startRound() {
+        clearInterval(gameState.timerInterval);
+        feedbackEl.textContent = "";
+        feedbackEl.style.color = "var(--text-main)";
+
+        // Get word from pool
+        const word = gameState.wordPool[(gameState.currentRound - 1) % gameState.wordPool.length] || "SCRAMBLE";
+        gameState.currentMasterWord = word.toUpperCase();
+
+        // Scramble letters
+        let letters = word.toUpperCase().split("");
+        while (letters.join("") === gameState.currentMasterWord && letters.length > 1) {
+          for (let i = letters.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [letters[i], letters[j]] = [letters[j], letters[i]];
+          }
+        }
+        gameState.scrambledLetters = letters;
+        gameState.currentSlots = new Array(letters.length).fill(null);
+        gameState.usedTileIndices.clear();
+
+        updateScoreboardUI();
+        renderAnswerSlots();
+        renderSourceTiles();
+        startTimer();
+
+        // If Solo Bot mode and Player 2 turn, simulate Bot
+        if (gameState.mode === "solo_bot" && gameState.activePlayer === 2) {
+          simulateBotTurn();
+        }
+      }
+
+      function updateScoreboardUI() {
+        p1ScoreEl.textContent = gameState.p1Score;
+        p2ScoreEl.textContent = gameState.p2Score;
+        roundDisplay.textContent = `Round ${gameState.currentRound} / ${gameState.totalRounds}`;
+
+        const isP1 = gameState.activePlayer === 1;
+        p1Box.classList.toggle("active", isP1);
+        p2Box.classList.toggle("active", !isP1);
+
+        const activeName = isP1 ? gameState.p1Name : gameState.p2Name;
+        const colorVar = isP1 ? "var(--p1-color)" : "var(--p2-color)";
+        const bgVar = isP1 ? "var(--p1-bg)" : "var(--p2-bg)";
+
+        turnBanner.style.color = colorVar;
+        turnBanner.style.background = bgVar;
+        turnBanner.innerHTML = `🎯 <strong>${activeName}'s Turn</strong>: Unscramble the ${gameState.currentMasterWord.length}-Letter Word!`;
+      }
+
+      function startTimer() {
+        if (gameState.turnTimerSec <= 0) {
+          timerDisplay.textContent = "∞";
+          return;
+        }
+
+        gameState.timeRemaining = gameState.turnTimerSec;
+        timerDisplay.textContent = `${gameState.timeRemaining}s`;
+
+        gameState.timerInterval = setInterval(() => {
+          gameState.timeRemaining--;
+          timerDisplay.textContent = `${gameState.timeRemaining}s`;
+
+          if (gameState.timeRemaining <= 10) {
+            timerDisplay.style.color = "var(--danger)";
+          } else {
+            timerDisplay.style.color = "var(--warning)";
+          }
+
+          if (gameState.timeRemaining <= 0) {
+            clearInterval(gameState.timerInterval);
+            handleTimeExpired();
+          }
+        }, 1000);
+      }
+
+      function handleTimeExpired() {
+        playWrongSound();
+        feedbackEl.style.color = "var(--danger)";
+        feedbackEl.textContent = `⏰ Time's Up! The word was: ${gameState.currentMasterWord}`;
+        setTimeout(nextTurn, 2500);
+      }
+
+      // ---------------------------------------------------------
+      // 6. Tile Rendering & Interactions
+      // ---------------------------------------------------------
+      function renderAnswerSlots() {
+        answerSlotsRack.innerHTML = "";
+        gameState.currentSlots.forEach((slotData, slotIdx) => {
+          const slot = document.createElement("div");
+          slot.className = `answer-slot ${slotData ? 'filled' : ''}`;
+
+          if (slotData) {
+            const tile = createTileElement(slotData.letter, slotData.tileIdx, true);
+            slot.appendChild(tile);
+            tile.addEventListener("click", () => returnTileToTray(slotIdx));
+          }
+          answerSlotsRack.appendChild(slot);
+        });
+      }
+
+      function renderSourceTiles() {
+        sourceTilesTray.innerHTML = "";
+        gameState.scrambledLetters.forEach((letter, tileIdx) => {
+          const isUsed = gameState.usedTileIndices.has(tileIdx);
+          const tile = createTileElement(letter, tileIdx, false);
+          if (isUsed) tile.classList.add("used");
+
+          tile.addEventListener("click", () => {
+            if (!gameState.usedTileIndices.has(tileIdx)) {
+              placeTileInSlot(letter, tileIdx);
+            }
+          });
+
+          sourceTilesTray.appendChild(tile);
+        });
+      }
+
+      function createTileElement(letter, tileIdx, isInSlot) {
+        const div = document.createElement("div");
+        div.className = "scrabble-tile";
+        const pts = SCRABBLE_POINTS[letter.toUpperCase()] || 1;
+        div.innerHTML = `
+          <span>${letter}</span>
+          <span class="tile-points">${pts}</span>
+        `;
+        return div;
+      }
+
+      function placeTileInSlot(letter, tileIdx) {
+        const firstEmptySlot = gameState.currentSlots.indexOf(null);
+        if (firstEmptySlot !== -1) {
+          playTileClick();
+          gameState.currentSlots[firstEmptySlot] = { letter, tileIdx };
+          gameState.usedTileIndices.add(tileIdx);
+          renderAnswerSlots();
+          renderSourceTiles();
+        }
+      }
+
+      function returnTileToTray(slotIdx) {
+        const slotData = gameState.currentSlots[slotIdx];
+        if (slotData) {
+          playTileClick();
+          gameState.usedTileIndices.delete(slotData.tileIdx);
+          gameState.currentSlots[slotIdx] = null;
+          renderAnswerSlots();
+          renderSourceTiles();
+        }
+      }
+
+      // Keyboard input support
+      document.addEventListener("keydown", (e) => {
+        if (playScreen.style.display !== "flex") return;
+        const key = e.key.toUpperCase();
+
+        if (key === "BACKSPACE") {
+          for (let i = gameState.currentSlots.length - 1; i >= 0; i--) {
+            if (gameState.currentSlots[i] !== null) {
+              returnTileToTray(i);
+              break;
+            }
+          }
+        } else if (key === "ENTER") {
+          submitWord();
+        } else if (/^[A-Z]$/.test(key)) {
+          // Find unused tile matching key
+          for (let idx = 0; idx < gameState.scrambledLetters.length; idx++) {
+            if (gameState.scrambledLetters[idx] === key && !gameState.usedTileIndices.has(idx)) {
+              placeTileInSlot(key, idx);
+              break;
+            }
+          }
+        }
+      });
+
+      // Actions
+      document.getElementById("btn-clear-word").addEventListener("click", () => {
+        gameState.currentSlots.fill(null);
+        gameState.usedTileIndices.clear();
+        renderAnswerSlots();
+        renderSourceTiles();
+      });
+
+      document.getElementById("btn-shuffle").addEventListener("click", () => {
+        playTileClick();
+        for (let i = gameState.scrambledLetters.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [gameState.scrambledLetters[i], gameState.scrambledLetters[j]] = [gameState.scrambledLetters[j], gameState.scrambledLetters[i]];
+        }
+        renderSourceTiles();
+      });
+
+      document.getElementById("btn-skip-turn").addEventListener("click", () => {
+        clearInterval(gameState.timerInterval);
+        feedbackEl.style.color = "var(--text-muted)";
+        feedbackEl.textContent = `💡 Solved Answer: ${gameState.currentMasterWord}`;
+        setTimeout(nextTurn, 2200);
+      });
+
+      document.getElementById("btn-submit-word").addEventListener("click", submitWord);
+
+      function submitWord() {
+        const formedWord = gameState.currentSlots.map(s => s ? s.letter : "").join("");
+
+        if (formedWord.length < gameState.currentMasterWord.length) {
+          feedbackEl.style.color = "var(--warning)";
+          feedbackEl.textContent = "⚠️ Fill all letter slots before submitting!";
+          playWrongSound();
+          return;
+        }
+
+        if (formedWord === gameState.currentMasterWord) {
+          // Calculate Scrabble Points
+          clearInterval(gameState.timerInterval);
+          playCorrectSound();
+
+          let basePoints = 0;
+          for (const char of formedWord) {
+            basePoints += (SCRABBLE_POINTS[char] || 1);
+          }
+
+          // Bonus for speed
+          const speedBonus = Math.max(0, Math.round(gameState.timeRemaining * 1.5));
+          const totalPoints = basePoints * 10 + speedBonus;
+
+          if (gameState.activePlayer === 1) {
+            gameState.p1Score += totalPoints;
+          } else {
+            gameState.p2Score += totalPoints;
+          }
+
+          feedbackEl.style.color = "var(--success)";
+          feedbackEl.innerHTML = `🎉 Correct! <strong>+${totalPoints} Pts</strong> (${basePoints * 10} Base + ${speedBonus} Speed Bonus)`;
+          triggerMiniConfetti();
+
+          updateScoreboardUI();
+          setTimeout(nextTurn, 2000);
+        } else {
+          playWrongSound();
+          feedbackEl.style.color = "var(--danger)";
+          feedbackEl.textContent = `❌ '${formedWord}' is not the correct unscrambled word! Try again.`;
+        }
+      }
+
+      function nextTurn() {
+        if (gameState.activePlayer === 1) {
+          gameState.activePlayer = 2;
+          startRound();
+        } else {
+          gameState.activePlayer = 1;
+          gameState.currentRound++;
+
+          if (gameState.currentRound > gameState.totalRounds) {
+            endMatch();
+          } else {
+            startRound();
+          }
+        }
+      }
+
+      function simulateBotTurn() {
+        setTimeout(() => {
+          if (playScreen.style.display !== "flex") return;
+          // Bot fills slots accurately after thinking
+          const letters = gameState.currentMasterWord.split("");
+          gameState.currentSlots = letters.map((l, i) => ({ letter: l, tileIdx: i }));
+          gameState.usedTileIndices = new Set(letters.map((_, i) => i));
+          renderAnswerSlots();
+          renderSourceTiles();
+          setTimeout(submitWord, 1000);
+        }, 3000);
+      }
+
+      function endMatch() {
+        clearInterval(gameState.timerInterval);
+        playScreen.style.display = "none";
+        winnerScreen.style.display = "block";
+
+        document.getElementById("res-p1-name").textContent = gameState.p1Name;
+        document.getElementById("res-p1-score").textContent = gameState.p1Score;
+        document.getElementById("res-p2-name").textContent = gameState.p2Name;
+        document.getElementById("res-p2-score").textContent = gameState.p2Score;
+
+        const title = document.getElementById("winner-title");
+        const sub = document.getElementById("winner-subtitle");
+
+        if (gameState.p1Score > gameState.p2Score) {
+          title.textContent = `🏆 ${gameState.p1Name} Wins!`;
+          title.style.color = "var(--p1-color)";
+          sub.textContent = `Dominating victory with ${gameState.p1Score} Scrabble points!`;
+          triggerFullConfetti();
+        } else if (gameState.p2Score > gameState.p1Score) {
+          title.textContent = `🏆 ${gameState.p2Name} Wins!`;
+          title.style.color = "var(--p2-color)";
+          sub.textContent = `Spectacular win with ${gameState.p2Score} Scrabble points!`;
+          triggerFullConfetti();
+        } else {
+          title.textContent = "🤝 It's a Tie Match!";
+          title.style.color = "var(--warning)";
+          sub.textContent = `Both players tied at ${gameState.p1Score} points!`;
+        }
+      }
+
+      document.getElementById("btn-play-again").addEventListener("click", () => {
+        gameState.p1Score = 0;
+        gameState.p2Score = 0;
+        gameState.currentRound = 1;
+        gameState.activePlayer = 1;
+        winnerScreen.style.display = "none";
+        playScreen.style.display = "flex";
+        startRound();
+      });
+
+      document.getElementById("btn-new-setup").addEventListener("click", () => {
+        winnerScreen.style.display = "none";
+        playScreen.style.display = "none";
+        setupScreen.style.display = "block";
+      });
+
+      // Fullscreen Toggle
+      document.getElementById("fullscreen-toggle-btn").addEventListener("click", () => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+      });
+
+      // ---------------------------------------------------------
+      // 7. Pure-JS Canvas Confetti Particles
+      // ---------------------------------------------------------
+      const canvas = document.getElementById("confetti-canvas");
+      const ctx = canvas.getContext("2d");
+      let particles = [];
+      let animFrame = null;
+
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      function triggerMiniConfetti() { spawnConfetti(40); }
+      function triggerFullConfetti() { spawnConfetti(120); }
+
+      function spawnConfetti(count) {
+        const colors = ["#38BDF8", "#10B981", "#F59E0B", "#EC4899", "#8B5CF6", "#FDE68A"];
+        for (let i = 0; i < count; i++) {
+          particles.push({
+            x: canvas.width / 2 + (Math.random() * 200 - 100),
+            y: canvas.height * 0.4,
+            vx: (Math.random() - 0.5) * 12,
+            vy: (Math.random() - 0.7) * 14,
+            size: Math.random() * 8 + 4,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            rotation: Math.random() * 360,
+            rotSpeed: (Math.random() - 0.5) * 10,
+            opacity: 1
+          });
+        }
+        if (!animFrame) updateConfetti();
+      }
+
+      function updateConfetti() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((p, idx) => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.35; // gravity
+          p.rotation += p.rotSpeed;
+          p.opacity -= 0.012;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = Math.max(0, p.opacity);
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+          ctx.restore();
+
+          if (p.opacity <= 0 || p.y > canvas.height) {
+            particles.splice(idx, 1);
+          }
+        });
+
+        if (particles.length > 0) {
+          animFrame = requestAnimationFrame(updateConfetti);
+        } else {
+          animFrame = null;
+        }
+      }
+    });
+  </script>
+</body>
+</html>

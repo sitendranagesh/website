@@ -26,6 +26,7 @@
     { title: 'Instagram No-Crop & Grid Slicer', url: '/image-tools', category: 'Image Tool', icon: '✂️' },
     { title: 'Favicon & Multi-Size Icon Maker', url: '/image-tools', category: 'Image Tool', icon: '🖼️' },
     { title: 'Resize Image in Pixels (Exact Width & Height)', url: '/image-tools', category: 'Image Tool', icon: '📏' },
+    { title: '2-Player Word Scramble & Scrabble Duel', url: '/games', category: 'Game', icon: '🔤' },
     { title: 'ATS Resume & CV Builder', url: '/resume', category: 'Career', icon: '📄' },
     { title: 'Beam Stress, Deflection & SFD/BMD Calculator', url: '/tools', category: 'Mechanical Calc', icon: '🏗️' },
     { title: 'Gear Train Ratio, RPM & Torque Multiplier', url: '/tools', category: 'Mechanical Calc', icon: '⚙️' },
