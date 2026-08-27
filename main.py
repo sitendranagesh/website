@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request, HTTPException, Depends, Query, Response
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import RedirectResponse, FileResponse, PlainTextResponse
+from fastapi.responses import RedirectResponse, FileResponse, PlainTextResponse, JSONResponse
 from starlette.middleware.sessions import SessionMiddleware
 from pydantic import BaseModel
 from typing import Optional
@@ -18,6 +18,7 @@ from database.database_operation import (
     delete_note,
     toggle_note_sharing,
     get_shared_note,
+    save_quick_message,
 )
 from database.auth_operation import create_users_table, verify_user, add_user
 from database.blog_operation import (
@@ -528,6 +529,22 @@ def delete_existing_blog(blog_id: int, user_id: int = Depends(require_login)):
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to delete blog: {str(e)}")
+
+
+@app.post("/api/chat/message")
+async def api_post_chat_message(request: Request):
+    """Receive a quick message from the chat assistant widget."""
+    try:
+        data = await request.json()
+        message = (data.get("message") or "").strip()
+        if not message:
+            return JSONResponse({"error": "Message cannot be empty"}, status_code=400)
+        name = (data.get("name") or "Anonymous Visitor").strip()
+        email = (data.get("email") or "").strip()
+        save_quick_message(name, email, message)
+        return JSONResponse({"status": "success", "message": "Message saved successfully!"})
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
 
 
 # =========================================================

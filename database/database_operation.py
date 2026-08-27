@@ -24,6 +24,27 @@ def init_db():
         )
     conn.commit()
 
+    if is_postgres():
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS quick_messages (
+                id SERIAL PRIMARY KEY,
+                name TEXT,
+                email TEXT,
+                message TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+    else:
+        cur.execute(
+            "CREATE TABLE IF NOT EXISTS quick_messages ("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            "name TEXT, "
+            "email TEXT, "
+            "message TEXT NOT NULL, "
+            "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+            ")"
+        )
+
     _migrate_add_user_id(conn)
     _migrate_add_share_id(conn)
     
@@ -261,6 +282,22 @@ def get_shared_note(share_id: str):
     row = cur.fetchone()
     conn.close()
     return dict(row) if row else None
+
+
+def save_quick_message(name: str, email: str, message: str) -> bool:
+    """Save a quick message left by a visitor."""
+    if not message:
+        return False
+    p = placeholder()
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        f"INSERT INTO quick_messages (name, email, message) VALUES ({p}, {p}, {p})",
+        (name or "Anonymous", email or "", message)
+    )
+    conn.commit()
+    conn.close()
+    return True
 
 
 init_db()
