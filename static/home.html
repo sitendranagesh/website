@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sitendra — Mechanical Systems, Software &amp; Engineering Tools</title>
+  <meta name="description" content="Official workspace of Sitendra Kumar Nagesh. Explore free, fast, 100% client-side engineering tools: Beam Deflection, Gear Calculator, Target KB Image Compressor, ATS Resume Builder, and Technical Blog.">
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/blog/blog.css">
+  <link rel="stylesheet" href="/cmd_k.css">
+  <link rel="stylesheet" href="/chat.css">
+
+  <!-- Theme Script -->
+  <script src="/theme.js"></script>
+
+  <style>
+    /* Hero Styling */
+    .home-hero {
+      text-align: center;
+      padding: 4rem 1rem 3rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .home-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.95rem;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: var(--radius-full);
+      color: var(--primary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .home-hero-title {
+      font-size: 3.2rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+      color: var(--text-main);
+    }
+    .home-hero-subtitle {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    /* Live Tool Search & Quick Action Filter */
+    .hero-search-wrapper {
+      position: relative;
+      max-width: 620px;
+      margin: 0 auto 2.5rem;
+    }
+    .hero-search-input {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      color: var(--text-main);
+      padding: 1rem 1.5rem 1rem 3rem;
+      font-size: 1.05rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25), 0 0 15px var(--primary-glow);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .hero-search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 12px 30px rgba(56, 189, 248, 0.25);
+    }
+    .hero-search-icon {
+      position: absolute;
+      left: 1.2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* Category Launchers */
+    .section-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.75rem;
+    }
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 3.5rem;
+    }
+    .tool-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.35rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: var(--shadow-sm);
+    }
+    .tool-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+      box-shadow: var(--shadow-glow);
+    }
+    .tool-card-icon {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+      display: inline-block;
+    }
+    .tool-card-title {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.4rem;
+    }
+    .tool-card-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+    .tool-card-badge {
+      align-self: flex-start;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--radius-full);
+      background: var(--bg-surface-elevated);
+      color: var(--primary);
+      border: 1px solid var(--border);
+    }
+
+    /* Banner Feature */
+    .feature-banner {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem 2rem;
+      margin-bottom: 3.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+    @media (max-width: 768px) {
+      .feature-banner {
+        grid-template-columns: 1fr;
+      }
+      .home-hero-title {
+        font-size: 2.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header class="blog-header">
+    <div class="brand-wrapper">
+      <a href="/" id="brand-link" style="display: flex; align-items: center; gap: 0.85rem; color: inherit;">
+        <div class="brand-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+          </svg>
+        </div>
+        <div class="brand-title">
+          Sitendra <span class="brand-badge">Workspace</span>
+        </div>
+      </a>
+    </div>
+
+    <nav class="nav-links">
+      <a href="/tools" class="nav-item">All Tools</a>
+      <a href="/image-tools" class="nav-item">Image Studio</a>
+      <a href="/resume" class="nav-item">Resume Builder</a>
+      <a href="/projects" class="nav-item">Projects</a>
+      <a href="/blog" class="nav-item">Blog</a>
+      <a href="/about" class="nav-item">About</a>
+      <a href="/login.html" class="btn btn-primary btn-sm">My Notes</a>
+      <button type="button" class="theme-toggle-btn" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">☀️</button>
+      <button type="button" class="btn btn-secondary btn-sm" id="cmdk-btn" title="Quick Search (Cmd+K)">
+        <span style="font-family: var(--font-mono); font-size: 0.75rem;">⌘K</span>
+      </button>
+    </nav>
+  </header>
+
+  <main class="blog-container" style="max-width: 1280px; padding: 0 1.5rem 4rem;">
+    
+    <!-- Hero Section -->
+    <section class="home-hero">
+      <div class="home-hero-badge">
+        <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--success); display: inline-block;"></span>
+        100% In-Browser &bull; Zero Server Latency &bull; Complete Privacy
+      </div>
+      <h1 class="home-hero-title">
+        Build, Calculate &amp; Create with <br>
+        <span class="gradient-text">Modern Engineering Tools</span>
+      </h1>
+      <p class="home-hero-subtitle">
+        The unified engineering platform by <strong>Sitendra Kumar Nagesh</strong>. Explore in-browser mechanical calculators, high-precision image utilities, an ATS resume studio, and systems engineering articles.
+      </p>
+
+      <!-- Instant Tool Search -->
+      <div class="hero-search-wrapper">
+        <svg class="hero-search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="home-tool-search" class="hero-search-input" placeholder="🔍 Search any tool (e.g. 'Beam', 'Passport', 'Resume', 'Bolt', 'PDF', 'JSON')...">
+      </div>
+    </section>
+
+    <!-- =========================================================
+         SECTION 1: QUICK-ACCESS ENGINEERING & DEV TOOLS
+         ========================================================= -->
+    <div class="section-header-row">
+      <h2 class="section-title">
+        <span>⚡ Quickly Accessible Tools</span>
+      </h2>
+      <a href="/tools" class="nav-item" style="font-weight: 600;">View All Tools &rarr;</a>
+    </div>
+
+    <div class="tools-grid" id="home-tools-grid">
+      
+      <!-- Mechanical Calculators -->
+      <a href="/tools" class="tool-card" data-keywords="beam deflection stress sfd bmd bending mechanical">
+        <div>
+          <span class="tool-card-icon">🏗️</span>
+          <h3 class="tool-card-title">Beam Stress &amp; SFD/BMD</h3>
+          <p class="tool-card-desc">Solve beam bending stress, reactions, max deflection, and view real-time interactive SFD/BMD diagrams.</p>
+        </div>
+        <span class="tool-card-badge">Mechanical Tool</span>
+      </a>
+
+      <a href="/tools" class="tool-card" data-keywords="gear ratio rpm torque speed pitch center distance">
+        <div>
+          <span class="tool-card-icon">⚙️</span>
+          <h3 class="tool-card-title">Gear Ratio &amp; Torque Multiplier</h3>
+          <p class="tool-card-desc">Calculate gear reduction ratios, output RPM, output torque, pitch diameters, and shaft center distances.</p>
+        </div>
+        <span class="tool-card-badge">Mechanical Tool</span>
+      </a>
+
+      <a href="/tools" class="tool-card" data-keywords="bolt torque preload clamp force vdi 2230 metric grade fastener">
+        <div>
+          <span class="tool-card-icon">🔩</span>
+          <h3 class="tool-card-title">Bolt Tightening Torque</h3>
+          <p class="tool-card-desc">VDI 2230 calculation for metric bolts (M3-M24), proof loads, clamping tension, and torque values.</p>
+        </div>
+        <span class="tool-card-badge">Mechanical Tool</span>
+      </a>
+
+      <a href="/tools" class="tool-card" data-keywords="iso 286 limits fits tolerance hole shaft clearance interference">
+        <div>
+          <span class="tool-card-icon">📐</span>
+          <h3 class="tool-card-title">ISO 286 Limits &amp; Fits</h3>
+          <p class="tool-card-desc">Determine hole/shaft tolerances, fit classification (Clearance, Transition, Interference), and clearances.</p>
+        </div>
+        <span class="tool-card-badge">Mechanical Tool</span>
+      </a>
+
+      <!-- Image Tools -->
+      <a href="/image-tools" class="tool-card" data-keywords="target kb compressor resize image 20kb 50kb 100kb shrink reduce">
+        <div>
+          <span class="tool-card-icon">🎯</span>
+          <h3 class="tool-card-title">Target KB Image Compressor</h3>
+          <p class="tool-card-desc">Compress photos to exact target sizes (20KB, 50KB, 100KB) for government and exam portal uploads.</p>
+        </div>
+        <span class="tool-card-badge">Image Tool</span>
+      </a>
+
+      <a href="/image-tools" class="tool-card" data-keywords="passport photo maker exam visa india 3.5x4.5 us 2x2 white background">
+        <div>
+          <span class="tool-card-icon">🛂</span>
+          <h3 class="tool-card-title">Official Passport Photo Maker</h3>
+          <p class="tool-card-desc">Generate official Indian Passport (3.5×4.5cm), US Visa (2×2in), and exam photos with white/blue background fills.</p>
+        </div>
+        <span class="tool-card-badge">Image Tool</span>
+      </a>
+
+      <a href="/image-tools" class="tool-card" data-keywords="image to pdf convert jpg png to pdf document converter">
+        <div>
+          <span class="tool-card-icon">📄</span>
+          <h3 class="tool-card-title">Image to PDF Converter</h3>
+          <p class="tool-card-desc">Combine multiple photos, receipts, or notes into a single clean PDF document directly in your browser.</p>
+        </div>
+        <span class="tool-card-badge">PDF Tool</span>
+      </a>
+
+      <a href="/image-tools" class="tool-card" data-keywords="ocr image to text extractor tesseract in-browser">
+        <div>
+          <span class="tool-card-icon">🔍</span>
+          <h3 class="tool-card-title">Image to Text (OCR)</h3>
+          <p class="tool-card-desc">Extract selectable text, codes, and tabular data from images instantly using in-browser Tesseract.js.</p>
+        </div>
+        <span class="tool-card-badge">Image Tool</span>
+      </a>
+
+      <!-- Career & Resume -->
+      <a href="/resume" class="tool-card" data-keywords="ats resume cv builder curriculum vitae engineer vector pdf">
+        <div>
+          <span class="tool-card-icon">📝</span>
+          <h3 class="tool-card-title">ATS Resume &amp; CV Builder</h3>
+          <p class="tool-card-desc">Build ATS-optimized engineering resumes with real-time vector live preview, 3 templates, and 1-click PDF download.</p>
+        </div>
+        <span class="tool-card-badge">Career Tool</span>
+      </a>
+
+      <!-- Developer Tools -->
+      <a href="/tools" class="tool-card" data-keywords="json formatter validator beautify minify pretty print">
+        <div>
+          <span class="tool-card-icon">{ }</span>
+          <h3 class="tool-card-title">JSON Formatter &amp; Validator</h3>
+          <p class="tool-card-desc">Format, beautify, minify, validate, and debug JSON payloads with instant error highlighting.</p>
+        </div>
+        <span class="tool-card-badge">Developer Tool</span>
+      </a>
+
+      <a href="/tools" class="tool-card" data-keywords="unit converter pressure torque force power length metric imperial">
+        <div>
+          <span class="tool-card-icon">📏</span>
+          <h3 class="tool-card-title">Engineering Unit Converter</h3>
+          <p class="tool-card-desc">Convert between pressure (bar, psi, MPa), torque (N·m, lb·ft), force, and power units with high precision.</p>
+        </div>
+        <span class="tool-card-badge">Developer Tool</span>
+      </a>
+
+      <a href="/tools" class="tool-card" data-keywords="regex tester matcher expression regular expressions debugger">
+        <div>
+          <span class="tool-card-icon">.*</span>
+          <h3 class="tool-card-title">Regex Matcher &amp; Tester</h3>
+          <p class="tool-card-desc">Test regular expressions against sample text with live group capture and syntax validation.</p>
+        </div>
+        <span class="tool-card-badge">Developer Tool</span>
+      </a>
+
+    </div>
+
+    <!-- =========================================================
+         SECTION 2: FEATURED ATS RESUME & IMAGE BANNER
+         ========================================================= -->
+    <div class="feature-banner">
+      <div>
+        <div style="font-size: 0.85rem; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-bottom: 0.5rem;">Interactive Studio</div>
+        <h3 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 0.85rem; color: var(--text-main);">ATS Resume &amp; CV Studio</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
+          Stand out to recruiters and pass ATS filters effortlessly. Fill in your mechanical or software experience, select between Modern Engineer, Minimalist, or Executive layouts, and download a vector-crisp PDF.
+        </p>
+        <a href="/resume" class="btn btn-primary">Launch Resume Builder &rarr;</a>
+      </div>
+      <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem;">
+        <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-main);">✨ Features Included:</div>
+        <div style="font-size: 0.88rem; color: var(--text-muted);">&bull; Real-time synchronized live paper preview</div>
+        <div style="font-size: 0.88rem; color: var(--text-muted);">&bull; 3 ATS-compatible layout templates</div>
+        <div style="font-size: 0.88rem; color: var(--text-muted);">&bull; Auto-saves draft locally in your browser</div>
+        <div style="font-size: 0.88rem; color: var(--text-muted);">&bull; JSON backup &amp; 1-click restore</div>
+        <div style="font-size: 0.88rem; color: var(--text-muted);">&bull; Watermark-free clean print PDF download</div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         SECTION 3: PROJECTS & BLOG SHOWCASE
+         ========================================================= -->
+    <div class="section-header-row">
+      <h2 class="section-title">
+        <span>🚀 Featured Systems &amp; Projects</span>
+      </h2>
+      <a href="/projects" class="nav-item" style="font-weight: 600;">Explore All Projects &rarr;</a>
+    </div>
+
+    <div class="tools-grid">
+      <div class="tool-card">
+        <div>
+          <span class="tool-card-icon">⚙️</span>
+          <h3 class="tool-card-title">Multi-Subdomain Cloud Platform</h3>
+          <p class="tool-card-desc">High-throughput Python/FastAPI unified host-header routing dispatching traffic dynamically across 6 subdomains.</p>
+        </div>
+        <a href="/projects" class="btn btn-secondary btn-sm" style="align-self: flex-start;">Learn More &rarr;</a>
+      </div>
+
+      <div class="tool-card">
+        <div>
+          <span class="tool-card-icon">🏎️</span>
+          <h3 class="tool-card-title">Mechanical CAD &amp; Kinematic Systems</h3>
+          <p class="tool-card-desc">SolidWorks multi-linkage mechanism models, GD&amp;T tolerance stack-up analysis, and finite element stress simulations.</p>
+        </div>
+        <a href="/projects" class="btn btn-secondary btn-sm" style="align-self: flex-start;">Learn More &rarr;</a>
+      </div>
+
+      <div class="tool-card">
+        <div>
+          <span class="tool-card-icon">📝</span>
+          <h3 class="tool-card-title">Private Markdown Notes Workspace</h3>
+          <p class="tool-card-desc">Fast markdown notes manager with encrypted session auth, tag filters, unique public share tokens, and PDF printing.</p>
+        </div>
+        <a href="/login.html" class="btn btn-secondary btn-sm" style="align-self: flex-start;">Open Notes App &rarr;</a>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="blog-footer">
+    <p>&copy; 2026 Sitendra Kumar Nagesh &bull; <a href="/tools">All Tools</a> &bull; <a href="/image-tools">Image Studio</a> &bull; <a href="/resume">Resume Builder</a> &bull; <a href="/projects">Projects</a> &bull; <a href="/blog">Blog</a> &bull; <a href="/about">About</a> &bull; <a href="/login.html">Notes</a></p>
+  </footer>
+
+  <script src="/cmd_k.js"></script>
+  <script src="/chat.js"></script>
+
+  <!-- Live Tool Search Filter Script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const searchInput = document.getElementById("home-tool-search");
+      const toolCards = document.querySelectorAll("#home-tools-grid .tool-card");
+
+      searchInput.addEventListener("input", (e) => {
+        const q = e.target.value.toLowerCase().trim();
+        toolCards.forEach(card => {
+          const text = card.textContent.toLowerCase();
+          const keywords = card.dataset.keywords || "";
+          const match = text.includes(q) || keywords.includes(q);
+          card.style.display = match ? "flex" : "none";
+        });
+      });
+    });
+  </script>
+</body>
+</html>

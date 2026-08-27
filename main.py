@@ -151,15 +151,33 @@ def dynamic_root_dispatcher(request: Request):
         if intro_file.exists():
             return FileResponse(intro_file)
 
-    # 6. Notes App / Main Root Domain (sitendra.store or app.sitendra.store)
-    if not request.session.get("user_id"):
-        return RedirectResponse(url="/login.html")
-    return RedirectResponse(url="/index.html")
+    # 6. Notes App Subdomain (app.sitendra.store / notes.sitendra.store)
+    if subdomain in ("app", "notes", "my"):
+        if not request.session.get("user_id"):
+            return RedirectResponse(url="/login.html")
+        return RedirectResponse(url="/index.html")
+
+    # 7. Main Root Domain Homepage (sitendra.store)
+    return FileResponse(STATIC_DIR / "home.html")
 
 
 # =========================================================
 # Universal Navigation Pages
 # =========================================================
+@app.get("/home")
+@app.get("/welcome")
+def home_page():
+    return FileResponse(STATIC_DIR / "home.html")
+
+
+@app.get("/app")
+@app.get("/notes")
+def notes_app_entry(request: Request):
+    if not request.session.get("user_id"):
+        return RedirectResponse(url="/login.html")
+    return RedirectResponse(url="/index.html")
+
+
 @app.get("/about")
 def about_page():
     intro_file = INTRO_DIR / "index.html"
