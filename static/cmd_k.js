@@ -26,12 +26,16 @@
     { title: 'Instagram No-Crop & Grid Slicer', url: '/image-tools', category: 'Image Tool', icon: '✂️' },
     { title: 'Favicon & Multi-Size Icon Maker', url: '/image-tools', category: 'Image Tool', icon: '🖼️' },
     { title: 'ATS Resume & CV Builder', url: '/resume', category: 'Career', icon: '📄' },
+    { title: 'Beam Stress, Deflection & SFD/BMD Calculator', url: '/tools', category: 'Mechanical Calc', icon: '🏗️' },
+    { title: 'Gear Train Ratio, RPM & Torque Multiplier', url: '/tools', category: 'Mechanical Calc', icon: '⚙️' },
+    { title: 'Bolt Tightening Torque & Preload Force Estimator', url: '/tools', category: 'Mechanical Calc', icon: '🔩' },
+    { title: 'ISO 286 Limits & Fits Tolerance Analyzer', url: '/tools', category: 'Mechanical Calc', icon: '📐' },
     { title: 'Developer & Engineering Tools', url: '/tools', category: 'Tools', icon: '⚙️' },
     { title: 'Projects Portfolio', url: '/projects', category: 'Projects', icon: '🚀' },
     { title: 'My Notes App', url: '/', category: 'Notes', icon: '📝' },
     { title: 'About Sitendra', url: '/about', category: 'About', icon: '👤' },
     { title: 'JSON Formatter & Validator', url: '/tools', category: 'Tool', icon: '{ }' },
-    { title: 'Engineering Unit Converter', url: '/tools', category: 'Tool', icon: '📐' },
+    { title: 'Engineering Unit Converter', url: '/tools', category: 'Tool', icon: '📏' },
     { title: 'Regex Tester', url: '/tools', category: 'Tool', icon: '.*' },
   ];
 

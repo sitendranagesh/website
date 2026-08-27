@@ -15,7 +15,11 @@
       response: "🖼️ Our **Image Studio** offers 14 privacy-first, client-side utilities including: <br>• 🎯 Exact Target KB Compressor (20KB, 50KB)<br>• 🛂 Official Passport & Exam Photo Maker (with Name/DOB)<br>• 📄 Image to PDF & PDF to JPG<br>• 🔍 In-Browser OCR Text Extraction<br>• ✍️ Digital Signature Pad<br><br>👉 <a href='/image-tools'>Open Image Studio &rarr;</a>"
     },
     {
-      keywords: ["dev tool", "json", "unit", "converter", "regex", "engineering"],
+      keywords: ["mech", "beam", "gear", "bolt", "torque", "deflection", "sfd", "bmd", "tolerance", "fits", "calculator", "calc"],
+      response: "🧮 Explore our **Mechanical Engineering Calculators Suite**: <br>• 🏗️ Beam Deflection &amp; Bending Stress (Live SFD/BMD plots)<br>• ⚙️ Gear Train Ratio &amp; Torque Multiplier<br>• 🔩 Fastener Bolt Tightening Torque &amp; Preload<br>• 📐 ISO 286 Limits, Fits &amp; Tolerances<br><br>👉 <a href='/tools'>Open Mechanical Calculators &rarr;</a>"
+    },
+    {
+      keywords: ["dev tool", "json", "unit", "converter", "regex"],
       response: "⚙️ Check out our **Developer & Engineering Tools Hub** for JSON Formatting, Engineering Unit Conversions (Pressure, Torque, Force, Power), and Regex Testing. <br><br>👉 <a href='/tools'>Open Dev Tools &rarr;</a>"
     },
     {

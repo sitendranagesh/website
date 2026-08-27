@@ -135,10 +135,10 @@ def dynamic_root_dispatcher(request: Request):
     if subdomain == "blog":
         return FileResponse(STATIC_DIR / "blog" / "index.html")
 
-    # 2. Tools & Image Subdomains
+    # 2. Tools & Calculators Subdomains
     if subdomain in ("image", "img", "images"):
         return FileResponse(STATIC_DIR / "image_tools.html")
-    if subdomain == "tools":
+    if subdomain in ("tools", "calc", "calculator", "calculators"):
         return FileResponse(STATIC_DIR / "tools.html")
 
     # 4. Resume / CV Subdomain (resume.sitendra.store / cv.sitendra.store)
@@ -169,6 +169,8 @@ def about_page():
 
 
 @app.get("/tools")
+@app.get("/calc")
+@app.get("/calculators")
 def tools_page():
     return FileResponse(STATIC_DIR / "tools.html")
 
