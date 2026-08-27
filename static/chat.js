@@ -19,6 +19,10 @@
       response: "🧮 Explore our **Mechanical Engineering Calculators Suite**: <br>• 🏗️ Beam Deflection &amp; Bending Stress (Live SFD/BMD plots)<br>• ⚙️ Gear Train Ratio &amp; Torque Multiplier<br>• 🔩 Fastener Bolt Tightening Torque &amp; Preload<br>• 📐 ISO 286 Limits, Fits &amp; Tolerances<br><br>👉 <a href='/tools'>Open Mechanical Calculators &rarr;</a>"
     },
     {
+      keywords: ["security", "qr", "qrcode", "hash", "checksum", "sha256", "md5", "password", "passphrase", "diff"],
+      response: "🔐 Check out our **Security &amp; Everyday Web Utilities**: <br>• 📱 QR Code &amp; Wi-Fi Connect Studio<br>• 🔐 Cryptographic Hash &amp; File Checksum (SHA-256, MD5)<br>• 🔑 Secure Password &amp; Passphrase Generator<br>• 🔀 Side-by-Side Visual Text &amp; Code Diff<br><br>👉 <a href='/tools'>Open Security Tools &rarr;</a>"
+    },
+    {
       keywords: ["dev tool", "json", "unit", "converter", "regex"],
       response: "⚙️ Check out our **Developer & Engineering Tools Hub** for JSON Formatting, Engineering Unit Conversions (Pressure, Torque, Force, Power), and Regex Testing. <br><br>👉 <a href='/tools'>Open Dev Tools &rarr;</a>"
     },
