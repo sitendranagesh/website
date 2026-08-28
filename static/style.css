@@ -1,36 +1,36 @@
 /* ===== Base & Typography ===== */
 :root, [data-theme="dark"] {
-  --bg-deep: #0B1120;
-  --bg-main: #0F172A;
-  --bg-surface: #1E293B;
-  --bg-surface-elevated: #243248;
-  --bg-surface-hover: #334155;
-  --bg-glass: rgba(15, 23, 42, 0.85);
+  --bg-deep: #080C14;
+  --bg-main: #0D1322;
+  --bg-surface: #131D31;
+  --bg-surface-elevated: #18253E;
+  --bg-surface-hover: #1F304F;
+  --bg-glass: rgba(13, 19, 34, 0.82);
   --text-main: #F8FAFC;
   --text-muted: #94A3B8;
   --text-subtle: #64748B;
   --primary: #38BDF8;
   --primary-hover: #0EA5E9;
-  --primary-gradient: linear-gradient(135deg, #38BDF8 0%, #6366F1 100%);
+  --primary-gradient: linear-gradient(135deg, #38BDF8 0%, #6366F1 50%, #A855F7 100%);
   --danger: #EF4444;
   --danger-hover: #DC2626;
   --success: #10B981;
   --success-hover: #059669;
-  --border: #334155;
-  --border-light: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-light: rgba(255, 255, 255, 0.05);
   --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-full: 9999px;
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
-  --shadow-glow: 0 0 25px rgba(56, 189, 248, 0.15);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 10px 30px -5px rgba(0, 0, 0, 0.45);
+  --shadow-glow: 0 0 30px rgba(56, 189, 248, 0.18);
 }
 
 [data-theme="light"] {
-  --bg-deep: #F1F5F9;
-  --bg-main: #F8FAFC;
+  --bg-deep: #F8FAFC;
+  --bg-main: #FFFFFF;
   --bg-surface: #FFFFFF;
   --bg-surface-elevated: #F8FAFC;
   --bg-surface-hover: #F1F5F9;
@@ -40,15 +40,15 @@
   --text-subtle: #64748B;
   --primary: #0284C7;
   --primary-hover: #0369A1;
-  --primary-gradient: linear-gradient(135deg, #0284C7 0%, #4F46E5 100%);
+  --primary-gradient: linear-gradient(135deg, #0284C7 0%, #4F46E5 50%, #7C3AED 100%);
   --danger: #DC2626;
   --danger-hover: #B91C1C;
   --success: #059669;
   --success-hover: #047857;
   --border: #E2E8F0;
-  --border-light: rgba(0, 0, 0, 0.06);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.07);
-  --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --border-light: rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 12px 30px -6px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
   --shadow-glow: 0 0 25px rgba(2, 132, 199, 0.12);
 }
 
