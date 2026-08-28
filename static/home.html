@@ -199,11 +199,13 @@
     </div>
 
     <nav class="nav-links">
-      <a href="/tools" class="nav-item">All Tools</a>
+      <a href="/calc" class="nav-item">Mechanical Calc</a>
+      <a href="/security" class="nav-item">Security Suite</a>
+      <a href="/dev" class="nav-item">Dev Tools</a>
       <a href="/image-tools" class="nav-item">Image Studio</a>
       <a href="/resume" class="nav-item">Resume Builder</a>
       <a href="/games" class="nav-item">🎮 Games</a>
-      <a href="/projects" class="nav-item">Projects</a>
+      <a href="/tools" class="nav-item">All Services</a>
       <a href="/blog" class="nav-item">Blog</a>
       <a href="/about" class="nav-item">About</a>
       <a href="/login.html" class="btn btn-primary btn-sm">My Notes</a>
@@ -227,7 +229,7 @@
         <span class="gradient-text">Modern Engineering Tools</span>
       </h1>
       <p class="home-hero-subtitle">
-        The unified engineering platform by <strong>Sitendra Kumar Nagesh</strong>. Explore in-browser mechanical calculators, high-precision image utilities, an ATS resume studio, and systems engineering articles.
+        The unified engineering platform by <strong>Sitendra Kumar Nagesh</strong>. Explore specialized in-browser mechanical calculators, security utilities, image studios, an ATS resume builder, and systems engineering articles.
       </p>
 
       <!-- Instant Tool Search -->
@@ -236,179 +238,80 @@
           <circle cx="11" cy="11" r="8"/>
           <line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
-        <input type="text" id="home-tool-search" class="hero-search-input" placeholder="🔍 Search any tool (e.g. 'Beam', 'Passport', 'Resume', 'Bolt', 'PDF', 'JSON')...">
+        <input type="text" id="home-tool-search" class="hero-search-input" placeholder="🔍 Search any tool (e.g. 'Beam', 'Passport', 'Resume', 'Bolt', 'PDF', 'JSON', 'QR', 'Diff')...">
       </div>
     </section>
 
     <!-- =========================================================
-         SECTION 1: QUICK-ACCESS ENGINEERING & DEV TOOLS
+         SECTION 1: QUICK-ACCESS STANDALONE SERVICES
          ========================================================= -->
     <div class="section-header-row">
       <h2 class="section-title">
-        <span>⚡ Quickly Accessible Tools</span>
+        <span>⚡ Specialized Service Applications</span>
       </h2>
-      <a href="/tools" class="nav-item" style="font-weight: 600;">View All Tools &rarr;</a>
+      <a href="/tools" class="nav-item" style="font-weight: 600;">Services Directory &rarr;</a>
     </div>
 
     <div class="tools-grid" id="home-tools-grid">
       
-      <!-- Mechanical Calculators -->
-      <a href="/tools" class="tool-card" data-keywords="beam deflection stress sfd bmd bending mechanical">
+      <!-- 1. Mechanical Engineering Suite -->
+      <a href="/calc" class="tool-card" data-keywords="beam deflection stress sfd bmd bending mechanical calculator gear bolt torque tolerance fits">
         <div>
-          <span class="tool-card-icon">🏗️</span>
-          <h3 class="tool-card-title">Beam Stress &amp; SFD/BMD</h3>
-          <p class="tool-card-desc">Solve beam bending stress, reactions, max deflection, and view real-time interactive SFD/BMD diagrams.</p>
+          <span class="tool-card-icon">🧮</span>
+          <h3 class="tool-card-title">Mechanical Engineering Calculators</h3>
+          <p class="tool-card-desc">Dedicated solvers for beam bending stress &amp; deflection (SFD/BMD), gear train reduction, bolt tightening torque (VDI 2230), and ISO 286 fits.</p>
         </div>
-        <span class="tool-card-badge">Mechanical Tool</span>
+        <span class="tool-card-badge">Mechanical Suite</span>
       </a>
 
-      <a href="/tools" class="tool-card" data-keywords="gear ratio rpm torque speed pitch center distance">
-        <div>
-          <span class="tool-card-icon">⚙️</span>
-          <h3 class="tool-card-title">Gear Ratio &amp; Torque Multiplier</h3>
-          <p class="tool-card-desc">Calculate gear reduction ratios, output RPM, output torque, pitch diameters, and shaft center distances.</p>
-        </div>
-        <span class="tool-card-badge">Mechanical Tool</span>
-      </a>
-
-      <a href="/tools" class="tool-card" data-keywords="bolt torque preload clamp force vdi 2230 metric grade fastener">
-        <div>
-          <span class="tool-card-icon">🔩</span>
-          <h3 class="tool-card-title">Bolt Tightening Torque</h3>
-          <p class="tool-card-desc">VDI 2230 calculation for metric bolts (M3-M24), proof loads, clamping tension, and torque values.</p>
-        </div>
-        <span class="tool-card-badge">Mechanical Tool</span>
-      </a>
-
-      <a href="/tools" class="tool-card" data-keywords="iso 286 limits fits tolerance hole shaft clearance interference">
-        <div>
-          <span class="tool-card-icon">📐</span>
-          <h3 class="tool-card-title">ISO 286 Limits &amp; Fits</h3>
-          <p class="tool-card-desc">Determine hole/shaft tolerances, fit classification (Clearance, Transition, Interference), and clearances.</p>
-        </div>
-        <span class="tool-card-badge">Mechanical Tool</span>
-      </a>
-
-      <!-- Image Tools -->
-      <a href="/image-tools" class="tool-card" data-keywords="target kb compressor resize image 20kb 50kb 100kb shrink reduce">
-        <div>
-          <span class="tool-card-icon">🎯</span>
-          <h3 class="tool-card-title">Target KB Image Compressor</h3>
-          <p class="tool-card-desc">Compress photos to exact target sizes (20KB, 50KB, 100KB) for government and exam portal uploads.</p>
-        </div>
-        <span class="tool-card-badge">Image Tool</span>
-      </a>
-
-      <a href="/image-tools" class="tool-card" data-keywords="passport photo maker exam visa india 3.5x4.5 us 2x2 white background">
-        <div>
-          <span class="tool-card-icon">🛂</span>
-          <h3 class="tool-card-title">Official Passport Photo Maker</h3>
-          <p class="tool-card-desc">Generate official Indian Passport (3.5×4.5cm), US Visa (2×2in), and exam photos with white/blue background fills.</p>
-        </div>
-        <span class="tool-card-badge">Image Tool</span>
-      </a>
-
-      <a href="/image-tools" class="tool-card" data-keywords="image to pdf convert jpg png to pdf document converter">
-        <div>
-          <span class="tool-card-icon">📄</span>
-          <h3 class="tool-card-title">Image to PDF Converter</h3>
-          <p class="tool-card-desc">Combine multiple photos, receipts, or notes into a single clean PDF document directly in your browser.</p>
-        </div>
-        <span class="tool-card-badge">PDF Tool</span>
-      </a>
-
-      <a href="/image-tools" class="tool-card" data-keywords="ocr image to text extractor tesseract in-browser">
-        <div>
-          <span class="tool-card-icon">🔍</span>
-          <h3 class="tool-card-title">Image to Text (OCR)</h3>
-          <p class="tool-card-desc">Extract selectable text, codes, and tabular data from images instantly using in-browser Tesseract.js.</p>
-        </div>
-        <span class="tool-card-badge">Image Tool</span>
-      </a>
-
-      <!-- Career & Resume -->
-      <a href="/resume" class="tool-card" data-keywords="ats resume cv builder curriculum vitae engineer vector pdf">
-        <div>
-          <span class="tool-card-icon">📝</span>
-          <h3 class="tool-card-title">ATS Resume &amp; CV Builder</h3>
-          <p class="tool-card-desc">Build ATS-optimized engineering resumes with real-time vector live preview, 3 templates, and 1-click PDF download.</p>
-        </div>
-        <span class="tool-card-badge">Career Tool</span>
-      </a>
-
-      <!-- Games & Brain Teasers -->
-      <a href="/games" class="tool-card" data-keywords="word scramble scrabble 2 player game duel multiplayer brain teaser word puzzle">
-        <div>
-          <span class="tool-card-icon">🔤</span>
-          <h3 class="tool-card-title">2-Player Word Scramble Duel</h3>
-          <p class="tool-card-desc">Head-to-head word battle for two players or vs AI. Scrabble tile points, turn timers, and victory celebrations.</p>
-        </div>
-        <span class="tool-card-badge" style="background: rgba(245, 158, 11, 0.15); color: #F59E0B; border-color: rgba(245, 158, 11, 0.3);">🎮 Multiplayer Game</span>
-      </a>
-
-      <!-- Security & Everyday Utilities -->
-      <a href="/tools" class="tool-card" data-keywords="qr code generator barcode wifi connect vcard link">
-        <div>
-          <span class="tool-card-icon">📱</span>
-          <h3 class="tool-card-title">QR Code &amp; Wi-Fi Studio</h3>
-          <p class="tool-card-desc">Generate custom colored QR codes for websites, Wi-Fi auto-connections, vCard contacts, or email messages.</p>
-        </div>
-        <span class="tool-card-badge">Security Tool</span>
-      </a>
-
-      <a href="/tools" class="tool-card" data-keywords="cryptographic hash file checksum sha256 sha512 md5 integrity verify">
+      <!-- 2. Security & Privacy Suite -->
+      <a href="/security" class="tool-card" data-keywords="security qr code wifi cryptographic hash checksum sha256 md5 password passphrase diff privacy">
         <div>
           <span class="tool-card-icon">🔐</span>
-          <h3 class="tool-card-title">Cryptographic File Hasher</h3>
-          <p class="tool-card-desc">Generate SHA-256, SHA-512, and MD5 file checksums directly in your browser with zero server uploads.</p>
+          <h3 class="tool-card-title">Security &amp; Privacy Suite</h3>
+          <p class="tool-card-desc">Generate custom QR codes &amp; Wi-Fi cards, in-browser cryptographic file checksums (SHA-256, MD5), secure passwords, and visual text diffs.</p>
         </div>
-        <span class="tool-card-badge">Security Tool</span>
+        <span class="tool-card-badge">Security Suite</span>
       </a>
 
-      <a href="/tools" class="tool-card" data-keywords="password generator passphrase diceware random secure entropy">
+      <!-- 3. Developer Tools Suite -->
+      <a href="/dev" class="tool-card" data-keywords="dev developer json formatter validator unit converter regex expression tester pretty print minify">
         <div>
-          <span class="tool-card-icon">🔑</span>
-          <h3 class="tool-card-title">Password &amp; Passphrase Generator</h3>
-          <p class="tool-card-desc">Generate cryptographically secure random passwords or memorable Diceware passphrases with live entropy scores.</p>
+          <span class="tool-card-icon">⚙️</span>
+          <h3 class="tool-card-title">Developer Utilities Hub</h3>
+          <p class="tool-card-desc">Format, minify, and validate JSON payloads, convert multi-domain engineering units (Pressure, Torque, Power), and test regular expressions.</p>
         </div>
-        <span class="tool-card-badge">Security Tool</span>
+        <span class="tool-card-badge">Developer Suite</span>
       </a>
 
-      <a href="/tools" class="tool-card" data-keywords="diff checker text compare code compare side by side">
+      <!-- 4. Image Studio & PDF Suite -->
+      <a href="/image-tools" class="tool-card" data-keywords="image studio compressor target kb passport photo name dob signature watermark ocr pdf convert pixel resize">
         <div>
-          <span class="tool-card-icon">🔀</span>
-          <h3 class="tool-card-title">Visual Text &amp; Code Diff</h3>
-          <p class="tool-card-desc">Compare two code or text files side-by-side with highlighted character additions, deletions, and modifications.</p>
+          <span class="tool-card-icon">🖼️</span>
+          <h3 class="tool-card-title">Image Manipulation &amp; PDF Studio</h3>
+          <p class="tool-card-desc">Compress to exact target sizes (20KB, 50KB), create official passport photos, add exam Name/DOB strips, and resize exact pixels.</p>
         </div>
-        <span class="tool-card-badge">Developer Tool</span>
+        <span class="tool-card-badge">Image Suite</span>
       </a>
 
-      <!-- Developer Tools -->
-      <a href="/tools" class="tool-card" data-keywords="json formatter validator beautify minify pretty print">
+      <!-- 5. ATS Resume & CV Builder -->
+      <a href="/resume" class="tool-card" data-keywords="ats resume cv builder curriculum vitae engineer vector pdf template">
         <div>
-          <span class="tool-card-icon">{ }</span>
-          <h3 class="tool-card-title">JSON Formatter &amp; Validator</h3>
-          <p class="tool-card-desc">Format, beautify, minify, validate, and debug JSON payloads with instant error highlighting.</p>
+          <span class="tool-card-icon">📄</span>
+          <h3 class="tool-card-title">ATS Resume &amp; CV Studio</h3>
+          <p class="tool-card-desc">Build ATS-optimized engineering resumes with real-time vector live preview, 3 templates, auto-save, and 1-click clean PDF export.</p>
         </div>
-        <span class="tool-card-badge">Developer Tool</span>
+        <span class="tool-card-badge">Career Suite</span>
       </a>
 
-      <a href="/tools" class="tool-card" data-keywords="unit converter pressure torque force power length metric imperial">
+      <!-- 6. 2-Player Word Scramble Game -->
+      <a href="/games" class="tool-card" data-keywords="word scramble scrabble 2 player game duel multiplayer brain teaser word puzzle">
         <div>
-          <span class="tool-card-icon">📏</span>
-          <h3 class="tool-card-title">Engineering Unit Converter</h3>
-          <p class="tool-card-desc">Convert between pressure (bar, psi, MPa), torque (N·m, lb·ft), force, and power units with high precision.</p>
+          <span class="tool-card-icon">🎮</span>
+          <h3 class="tool-card-title">2-Player Word Scramble Duel</h3>
+          <p class="tool-card-desc">Head-to-head word battle for two players or vs AI. Scrabble tile points, turn timers, mobile touch support, and confetti celebrations.</p>
         </div>
-        <span class="tool-card-badge">Developer Tool</span>
-      </a>
-
-      <a href="/tools" class="tool-card" data-keywords="regex tester matcher expression regular expressions debugger">
-        <div>
-          <span class="tool-card-icon">.*</span>
-          <h3 class="tool-card-title">Regex Matcher &amp; Tester</h3>
-          <p class="tool-card-desc">Test regular expressions against sample text with live group capture and syntax validation.</p>
-        </div>
-        <span class="tool-card-badge">Developer Tool</span>
+        <span class="tool-card-badge" style="background: rgba(245, 158, 11, 0.15); color: #F59E0B; border-color: rgba(245, 158, 11, 0.3);">Multiplayer Game</span>
       </a>
 
     </div>

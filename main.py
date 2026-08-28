@@ -135,33 +135,47 @@ def dynamic_root_dispatcher(request: Request):
     if subdomain == "blog":
         return FileResponse(STATIC_DIR / "blog" / "index.html")
 
-    # 2. Tools & Calculators Subdomains
+    # 2. Mechanical Calculators Subdomain (calc.sitendra.store / mechanical.sitendra.store)
+    if subdomain in ("calc", "calculator", "calculators", "mechanical", "engineering"):
+        return FileResponse(STATIC_DIR / "calc.html")
+
+    # 3. Security & Privacy Subdomain (security.sitendra.store / crypto.sitendra.store)
+    if subdomain in ("security", "crypto", "checksum"):
+        return FileResponse(STATIC_DIR / "security.html")
+
+    # 4. Developer Tools Subdomain (dev.sitendra.store / devtools.sitendra.store)
+    if subdomain in ("dev", "devtools", "developer"):
+        return FileResponse(STATIC_DIR / "dev_tools.html")
+
+    # 5. Image Studio Subdomain (image.sitendra.store)
     if subdomain in ("image", "img", "images"):
         return FileResponse(STATIC_DIR / "image_tools.html")
-    if subdomain in ("tools", "calc", "calculator", "calculators"):
+
+    # 6. Tools & Services Directory Subdomain (tools.sitendra.store / services.sitendra.store)
+    if subdomain in ("tools", "services"):
         return FileResponse(STATIC_DIR / "tools.html")
 
-    # 4. Resume / CV Subdomain (resume.sitendra.store / cv.sitendra.store)
+    # 7. Resume / CV Subdomain (resume.sitendra.store / cv.sitendra.store)
     if subdomain in ("resume", "cv"):
         return FileResponse(STATIC_DIR / "resume.html")
 
-    # 5. About / Profile Subdomain (about.sitendra.store / me.sitendra.store)
+    # 8. Games Subdomain (games.sitendra.store / game.sitendra.store / scrabble.sitendra.store)
+    if subdomain in ("games", "game", "scrabble", "play"):
+        return FileResponse(STATIC_DIR / "games.html")
+
+    # 9. About / Profile Subdomain (about.sitendra.store / me.sitendra.store)
     if subdomain in ("about", "me", "intro"):
         intro_file = INTRO_DIR / "index.html"
         if intro_file.exists():
             return FileResponse(intro_file)
 
-    # 6. Games Subdomain (games.sitendra.store / game.sitendra.store / scrabble.sitendra.store)
-    if subdomain in ("games", "game", "scrabble", "play"):
-        return FileResponse(STATIC_DIR / "games.html")
-
-    # 7. Notes App Subdomain (app.sitendra.store / notes.sitendra.store)
+    # 10. Notes App Subdomain (app.sitendra.store / notes.sitendra.store)
     if subdomain in ("app", "notes", "my"):
         if not request.session.get("user_id"):
             return RedirectResponse(url="/login.html")
         return RedirectResponse(url="/index.html")
 
-    # 8. Main Root Domain Homepage (sitendra.store)
+    # 11. Main Root Domain Homepage (sitendra.store)
     return FileResponse(STATIC_DIR / "home.html")
 
 
@@ -191,10 +205,31 @@ def about_page():
 
 
 @app.get("/tools")
-@app.get("/calc")
-@app.get("/calculators")
-def tools_page():
+@app.get("/services")
+def tools_directory_page():
     return FileResponse(STATIC_DIR / "tools.html")
+
+
+@app.get("/calc")
+@app.get("/mechanical")
+@app.get("/calculators")
+@app.get("/engineering")
+def mechanical_calc_page():
+    return FileResponse(STATIC_DIR / "calc.html")
+
+
+@app.get("/security")
+@app.get("/crypto")
+@app.get("/checksum")
+def security_suite_page():
+    return FileResponse(STATIC_DIR / "security.html")
+
+
+@app.get("/dev")
+@app.get("/devtools")
+@app.get("/developer")
+def dev_tools_page():
+    return FileResponse(STATIC_DIR / "dev_tools.html")
 
 
 @app.get("/image-tools")
@@ -312,10 +347,13 @@ def sitemap_xml():
         {"loc": "https://sitendra.store/", "priority": "1.0", "changefreq": "daily"},
         {"loc": "https://sitendra.store/about", "priority": "0.9", "changefreq": "monthly"},
         {"loc": "https://blog.sitendra.store/", "priority": "0.95", "changefreq": "daily"},
-        {"loc": "https://sitendra.store/tools", "priority": "0.85", "changefreq": "weekly"},
+        {"loc": "https://sitendra.store/calc", "priority": "0.9", "changefreq": "weekly"},
+        {"loc": "https://sitendra.store/security", "priority": "0.9", "changefreq": "weekly"},
+        {"loc": "https://sitendra.store/dev", "priority": "0.9", "changefreq": "weekly"},
         {"loc": "https://sitendra.store/image-tools", "priority": "0.9", "changefreq": "weekly"},
         {"loc": "https://sitendra.store/resume", "priority": "0.9", "changefreq": "monthly"},
         {"loc": "https://sitendra.store/games", "priority": "0.9", "changefreq": "weekly"},
+        {"loc": "https://sitendra.store/tools", "priority": "0.85", "changefreq": "weekly"},
         {"loc": "https://sitendra.store/projects", "priority": "0.85", "changefreq": "monthly"},
     ]
 

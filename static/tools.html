@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Unified Engineering &amp; Developer Tools Portal | Sitendra</title>
-  <meta name="description" content="All-in-one suite of free, fast, 100% client-side engineering tools: Beam Stress & Deflection Calculator, Gear Ratio Calculator, Bolt Torque Estimator, ISO 286 Fits, QR Code Studio, Cryptographic Hasher, Password Generator, Visual Diff, Image Studio, ATS Resume Builder, and Developer Utilities.">
+  <title>Services &amp; Tools Directory | Sitendra</title>
+  <meta name="description" content="Master directory for Sitendra services: Mechanical Engineering Calculators, Security & Privacy Suite, Developer Utilities, Image Manipulation Studio, ATS Resume Builder, and Word Scramble Games.">
 
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
@@ -22,230 +22,119 @@
   <!-- Theme Script -->
   <script src="/theme.js"></script>
 
-  <!-- External Libraries (QR Code) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-  <!-- Engines -->
-  <script src="/mech_engine.js"></script>
-  <script src="/security_engine.js"></script>
-
   <style>
-    /* Category Filter & Search Bar */
-    .portal-control-bar {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-    .category-pills {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    .category-pill {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 0.55rem 1.15rem;
-      border-radius: var(--radius-full);
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .category-pill:hover {
-      background: var(--bg-surface-hover);
-      color: var(--text-main);
-    }
-    .category-pill.active {
-      background: var(--primary-gradient);
-      color: #0B1120;
-      border-color: transparent;
-      font-weight: 700;
-    }
-    .tool-search-input {
-      width: 100%;
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      color: var(--text-main);
-      padding: 0.8rem 1.25rem;
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color 0.2s ease;
-    }
-    .tool-search-input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
-    }
-
-    /* Tools Navigation Grid */
-    .tools-nav-grid {
+    /* Services Directory Architecture */
+    .services-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-      gap: 0.85rem;
-      margin-bottom: 2.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 1.75rem;
+      margin-bottom: 3.5rem;
     }
-    .tool-nav-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.85rem 1.1rem;
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      color: var(--text-main);
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-align: left;
-    }
-    .tool-nav-item:hover {
-      background: var(--bg-surface-hover);
-      border-color: var(--primary);
-      transform: translateY(-2px);
-    }
-    .tool-nav-item.active {
-      background: rgba(56, 189, 248, 0.12);
-      border-color: var(--primary);
-      color: var(--primary);
-      box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
-    }
-    .tool-nav-icon {
-      font-size: 1.3rem;
-      flex-shrink: 0;
-    }
-
-    /* Featured Hub Cards */
-    .featured-hubs-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2.5rem;
-    }
-    .hub-card {
+    .service-card {
       background: var(--bg-surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 1.5rem;
+      padding: 2rem 1.75rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: all 0.25s ease;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       box-shadow: var(--shadow-sm);
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      overflow: hidden;
     }
-    .hub-card:hover {
-      transform: translateY(-3px);
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--card-accent, var(--primary-gradient));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .service-card:hover {
+      transform: translateY(-4px);
       border-color: var(--primary);
       box-shadow: var(--shadow-glow);
     }
-
-    /* Tool Pane */
-    .tool-pane {
-      display: none;
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 2.25rem 2rem;
-      box-shadow: var(--shadow-md);
-      margin-bottom: 3rem;
+    .service-card:hover::before {
+      opacity: 1;
     }
-    .tool-pane.active {
-      display: block;
-      animation: fadeIn 0.25s ease-out;
+    .service-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      display: inline-block;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Diagrams & Plots */
-    .diagram-container {
-      background: #090D16;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 1rem;
-      margin-bottom: 1.25rem;
+    .service-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      color: var(--text-main);
       display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .diagram-canvas {
-      width: 100%;
-      height: 180px;
-      background: #0B1120;
-      border-radius: 4px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-    }
-    .diagram-title {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      display: flex;
+      align-items: center;
       justify-content: space-between;
     }
-
-    /* Stat Cards */
-    .stat-badge-group {
-      padding: 1.25rem;
-      background: #090D16;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
+    .service-desc {
+      color: var(--text-muted);
+      font-size: 0.93rem;
+      line-height: 1.6;
       margin-bottom: 1.5rem;
+    }
+    .service-features-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1.75rem 0;
       display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
-      gap: 1rem;
+      flex-direction: column;
+      gap: 0.5rem;
     }
-    .stat-badge-title {
-      font-size: 0.78rem;
+    .service-feature-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.88rem;
       color: var(--text-muted);
-      text-transform: uppercase;
-      margin-bottom: 0.2rem;
     }
-    .stat-badge-val {
-      font-size: 1.25rem;
+    .service-feature-item svg {
+      color: var(--success);
+      flex-shrink: 0;
+    }
+    .service-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.25rem;
       font-weight: 700;
-    }
-
-    /* Diff styling */
-    .diff-line {
-      padding: 0.2rem 0.5rem;
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      border-radius: 2px;
-      margin-bottom: 2px;
-      white-space: pre-wrap;
-      word-break: break-all;
-    }
-    .diff-added {
-      background: rgba(16, 185, 129, 0.15);
-      color: #34D399;
-      border-left: 3px solid #10B981;
-    }
-    .diff-removed {
-      background: rgba(239, 68, 68, 0.15);
-      color: #F87171;
-      border-left: 3px solid #EF4444;
-    }
-    .diff-unchanged {
-      color: var(--text-muted);
-    }
-
-    /* Dropzone box */
-    .dropzone-box {
-      border: 2px dashed var(--border);
       border-radius: var(--radius-md);
-      padding: 2rem;
-      text-align: center;
-      cursor: pointer;
-      background: var(--bg-surface-elevated);
+      font-size: 0.95rem;
+      text-decoration: none;
       transition: all 0.2s ease;
     }
-    .dropzone-box:hover {
+
+    /* Live Search & Filter Bar */
+    .portal-search-bar {
+      margin-bottom: 2.5rem;
+    }
+    .portal-search-input {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      padding: 0.9rem 1.35rem;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    .portal-search-input:focus {
       border-color: var(--primary);
-      background: rgba(56, 189, 248, 0.05);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
     }
   </style>
 </head>
@@ -257,23 +146,26 @@
       <a href="/" id="brand-link" style="display: flex; align-items: center; gap: 0.85rem; color: inherit;">
         <div class="brand-logo">
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+            <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+            <line x1="3" y1="9" x2="21" y2="9"/>
+            <line x1="9" y1="21" x2="9" y2="9"/>
           </svg>
         </div>
         <div class="brand-title">
-          Sitendra <span class="brand-badge">Tools Hub</span>
+          Sitendra <span class="brand-badge">Services Directory</span>
         </div>
       </a>
     </div>
 
     <nav class="nav-links">
-      <a href="/blog" class="nav-item">Blog</a>
+      <a href="/calc" class="nav-item">Mechanical Calc</a>
+      <a href="/security" class="nav-item">Security Suite</a>
+      <a href="/dev" class="nav-item">Dev Tools</a>
       <a href="/image-tools" class="nav-item">Image Studio</a>
       <a href="/resume" class="nav-item">Resume Builder</a>
-      <a href="/tools" class="nav-item active">All Tools</a>
-      <a href="/projects" class="nav-item">Projects</a>
+      <a href="/games" class="nav-item">Games</a>
+      <a href="/blog" class="nav-item">Blog</a>
       <a href="/about" class="nav-item">About</a>
-      <a href="/login.html" class="btn btn-primary btn-sm">Notes</a>
       <button type="button" class="theme-toggle-btn" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">☀️</button>
       <button type="button" class="btn btn-secondary btn-sm" id="cmdk-btn" title="Quick Search (Cmd+K)">
         <span style="font-family: var(--font-mono); font-size: 0.75rem;">⌘K</span>
@@ -281,1242 +173,247 @@
     </nav>
   </header>
 
-  <main class="blog-container" style="max-width: 1280px; padding: 1.5rem 1.5rem 3rem;">
+  <main class="blog-container" style="max-width: 1280px; padding: 1.5rem 1.5rem 3.5rem;">
     <!-- Hero Section -->
     <div class="hero-section" style="padding: 1.5rem 0 2rem;">
       <div class="hero-eyebrow">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="16 18 22 12 16 6"/>
-          <polyline points="8 6 2 12 8 18"/>
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
         </svg>
-        Universal Engineering &amp; Utility Suite
+        Standalone Engineering &amp; Web Applications
       </div>
-      <h1 class="hero-title" style="font-size: 2.4rem;">
-        Unified <span class="gradient-text">Tools Command Center</span>
+      <h1 class="hero-title" style="font-size: 2.6rem;">
+        Master <span class="gradient-text">Services Directory</span>
       </h1>
       <p class="hero-desc">
-        Fast, lightweight, 100% in-browser engineering calculators, security utilities, image tools, ATS resume builder, and developer utilities. Zero tracking, zero latency, completely private.
+        Explore each specialized service application independently. All tools run 100% in your browser for zero latency, complete privacy, and zero server computing costs.
       </p>
     </div>
 
-    <!-- Featured Studio Launchpads -->
-    <div class="featured-hubs-grid">
-      <div class="hub-card">
+    <!-- Search Directory -->
+    <div class="portal-search-bar">
+      <input type="text" id="service-search-input" class="portal-search-input" placeholder="🔍 Search standalone services (e.g., 'Mechanical', 'Security', 'Image', 'Resume', 'Games', 'JSON', 'QR', 'Beam')...">
+    </div>
+
+    <!-- Standalone Services Grid -->
+    <div class="services-grid" id="services-grid">
+
+      <!-- 1. Mechanical Engineering Calculators -->
+      <div class="service-card" data-keywords="mechanical beam deflection sfd bmd gear torque bolt iso 286 tolerance engineering calculator" style="--card-accent: #38BDF8;">
         <div>
-          <div style="font-size: 2rem; margin-bottom: 0.5rem;">🖼️</div>
-          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.4rem;">Image Manipulation &amp; PDF Studio</h3>
-          <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1.25rem;">
-            14 client-side utilities: Target KB compressor (20KB, 50KB), official passport maker, name/DOB exam banners, signature pad, OCR, and PDF converters.
+          <span class="service-icon">🧮</span>
+          <h3 class="service-title">
+            <span>Mechanical Engineering Calculators</span>
+            <span style="font-size: 0.75rem; background: rgba(56, 189, 248, 0.15); color: #38BDF8; padding: 0.25rem 0.6rem; border-radius: var(--radius-full); font-weight: 700;">4 Tools</span>
+          </h3>
+          <p class="service-desc">
+            Dedicated solvers for structural beam bending stress &amp; deflection with interactive SFD/BMD diagrams, gear train ratios, fastener bolt torque (VDI 2230), and ISO 286 fits.
           </p>
+          <ul class="service-features-list">
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Beam Deflection &amp; SFD/BMD Interactive Plots</span>
+            </li>
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Gear Ratio, RPM &amp; Torque Multiplier</span>
+            </li>
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Bolt Tightening Torque &amp; Preload Tension</span>
+            </li>
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>ISO 286 Limits, Fits &amp; Tolerances</span>
+            </li>
+          </ul>
         </div>
-        <a href="/image-tools" class="btn btn-primary" style="font-size: 0.92rem;">Open Image Studio &rarr;</a>
+        <a href="/calc" class="service-btn btn-primary">Open Mechanical Calculators &rarr;</a>
       </div>
 
-      <div class="hub-card">
+      <!-- 2. Security & Privacy Utilities -->
+      <div class="service-card" data-keywords="security qr code wifi cryptographic hash checksum sha256 md5 password passphrase diff privacy" style="--card-accent: #10B981;">
         <div>
-          <div style="font-size: 2rem; margin-bottom: 0.5rem;">📄</div>
-          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.4rem;">ATS Resume &amp; CV Studio</h3>
-          <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1.25rem;">
-            Craft modern, ATS-parseable developer and engineering resumes with real-time vector live preview, 3 professional templates, and 1-click clean PDF export.
+          <span class="service-icon">🔐</span>
+          <h3 class="service-title">
+            <span>Security &amp; Privacy Suite</span>
+            <span style="font-size: 0.75rem; background: rgba(16, 185, 129, 0.15); color: #10B981; padding: 0.25rem 0.6rem; border-radius: var(--radius-full); font-weight: 700;">4 Tools</span>
+          </h3>
+          <p class="service-desc">
+            Client-side cryptographic hashing, drag-and-drop file integrity checksums, customizable QR code &amp; Wi-Fi cards, secure password generators, and visual diffing.
           </p>
+          <ul class="service-features-list">
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>QR Code Studio (URL, Wi-Fi, vCard, Custom Colors)</span>
+            </li>
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Local File Hasher (SHA-256, SHA-512, MD5)</span>
+            </li>
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Crypto Random Password &amp; Diceware Generator</span>
+            </li>
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Side-by-Side Visual Text &amp; Code Diff Checker</span>
+            </li>
+          </ul>
         </div>
-        <a href="/resume" class="btn btn-primary" style="font-size: 0.92rem;">Open Resume Builder &rarr;</a>
+        <a href="/security" class="service-btn btn-primary">Open Security Suite &rarr;</a>
       </div>
+
+      <!-- 3. Image Manipulation & PDF Studio -->
+      <div class="service-card" data-keywords="image studio compressor target kb passport photo name dob signature watermark ocr pdf convert pixel resize" style="--card-accent: #EC4899;">
+        <div>
+          <span class="service-icon">🖼️</span>
+          <h3 class="service-title">
+            <span>Image Studio &amp; PDF Suite</span>
+            <span style="font-size: 0.75rem; background: rgba(236, 72, 153, 0.15); color: #EC4899; padding: 0.25rem 0.6rem; border-radius: var(--radius-full); font-weight: 700;">15 Tools</span>
+          </h3>
+          <p class="service-desc">
+            Complete Pi7-inspired image suite. Compress to exact target sizes (20KB, 50KB), create passport photos, add exam Name/DOB strips, resize by exact pixels, extract text via OCR, and convert PDFs.
+          </p>
+          <ul class="service-features-list">
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Exact Target KB Compressor (20KB, 50KB, 100KB)</span>
+            </li>
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Official Passport Photo Maker &amp; Background Fill</span>
+            </li>
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Bold Name &amp; Date on Exam Photos (DOB/DOP)</span>
+            </li>
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Exact Pixel Dimension Resizer &amp; Aspect Ratio Lock</span>
+            </li>
+          </ul>
+        </div>
+        <a href="/image-tools" class="service-btn btn-primary">Open Image Studio &rarr;</a>
+      </div>
+
+      <!-- 4. ATS Resume & CV Builder -->
+      <div class="service-card" data-keywords="resume cv builder ats curriculum vitae template engineer pdf vector export" style="--card-accent: #8B5CF6;">
+        <div>
+          <span class="service-icon">📄</span>
+          <h3 class="service-title">
+            <span>ATS Resume &amp; CV Builder</span>
+            <span style="font-size: 0.75rem; background: rgba(139, 92, 246, 0.15); color: #8B5CF6; padding: 0.25rem 0.6rem; border-radius: var(--radius-full); font-weight: 700;">Interactive Studio</span>
+          </h3>
+          <p class="service-desc">
+            Build ATS-parseable resumes and CVs tailored for engineers and developers. Live vector paper preview, 3 professional templates, local storage auto-save, and 1-click clean PDF export.
+          </p>
+          <ul class="service-features-list">
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Real-time Live Vector Document Preview</span>
+            </li>
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>3 ATS Templates (Modern, Minimalist, Executive)</span>
+            </li>
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>JSON Backup, Restore &amp; Auto-Save</span>
+            </li>
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>1-Click Multi-page Vector PDF Download</span>
+            </li>
+          </ul>
+        </div>
+        <a href="/resume" class="service-btn btn-primary">Open Resume Builder &rarr;</a>
+      </div>
+
+      <!-- 5. Developer Tools Suite -->
+      <div class="service-card" data-keywords="dev developer json formatter validator unit converter regex expression tester pretty print minify" style="--card-accent: #F59E0B;">
+        <div>
+          <span class="service-icon">⚙️</span>
+          <h3 class="service-title">
+            <span>Developer Utilities Hub</span>
+            <span style="font-size: 0.75rem; background: rgba(245, 158, 11, 0.15); color: #F59E0B; padding: 0.25rem 0.6rem; border-radius: var(--radius-full); font-weight: 700;">3 Tools</span>
+          </h3>
+          <p class="service-desc">
+            Essential developer utilities for daily engineering tasks: format and debug JSON payloads, convert multi-domain units, and test regular expressions.
+          </p>
+          <ul class="service-features-list">
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>JSON Formatter, Minifier &amp; Validator</span>
+            </li>
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Multi-domain Engineering Unit Converter</span>
+            </li>
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Regex Matcher &amp; Expression Debugger</span>
+            </li>
+          </ul>
+        </div>
+        <a href="/dev" class="service-btn btn-primary">Open Dev Tools &rarr;</a>
+      </div>
+
+      <!-- 6. 2-Player Word Scramble Game -->
+      <div class="service-card" data-keywords="games word scramble scrabble duel 2 player multiplayer puzzle brain teaser" style="--card-accent: #06B6D4;">
+        <div>
+          <span class="service-icon">🎮</span>
+          <h3 class="service-title">
+            <span>2-Player Word Scramble &amp; Games</span>
+            <span style="font-size: 0.75rem; background: rgba(6, 182, 212, 0.15); color: #06B6D4; padding: 0.25rem 0.6rem; border-radius: var(--radius-full); font-weight: 700;">Multiplayer Game</span>
+          </h3>
+          <p class="service-desc">
+            Head-to-head word duel for two players or solo vs AI. Scrabble tile points, turn clocks, mobile app touch support, and confetti particle victory celebrations.
+          </p>
+          <ul class="service-features-list">
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>2-Player Pass &amp; Play &amp; Solo vs AI Bot</span>
+            </li>
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Scrabble Letter Subscript Point Weights</span>
+            </li>
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Full-Screen Mobile &amp; Tablet App Experience</span>
+            </li>
+            <li class="service-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Canvas Particle Confetti Celebrations</span>
+            </li>
+          </ul>
+        </div>
+        <a href="/games" class="service-btn btn-primary">Play Word Duel &rarr;</a>
+      </div>
+
     </div>
-
-    <!-- Category Control & Search Bar -->
-    <div class="portal-control-bar">
-      <div class="category-pills" id="category-pills">
-        <button type="button" class="category-pill active" data-cat="all">All Tools</button>
-        <button type="button" class="category-pill" data-cat="mechanical">🧮 Mechanical Calculators</button>
-        <button type="button" class="category-pill" data-cat="security">🔐 Security &amp; Web Utilities</button>
-        <button type="button" class="category-pill" data-cat="dev">⚙️ Developer Utilities</button>
-      </div>
-
-      <input type="text" id="tool-search" class="tool-search-input" placeholder="🔍 Search any tool (e.g. 'QR', 'Hash', 'Password', 'Diff', 'Beam', 'Gear', 'Bolt', 'JSON', 'Unit')...">
-    </div>
-
-    <!-- Navigation Tool Cards Grid -->
-    <div class="tools-nav-grid" id="tools-nav-grid">
-      <!-- Mechanical Calculators -->
-      <button type="button" class="tool-nav-item active" data-tool="beam" data-cat="mechanical">
-        <span class="tool-nav-icon">🏗️</span>
-        <span>Beam Deflection &amp; SFD/BMD</span>
-      </button>
-
-      <button type="button" class="tool-nav-item" data-tool="gear" data-cat="mechanical">
-        <span class="tool-nav-icon">⚙️</span>
-        <span>Gear Ratio &amp; Torque</span>
-      </button>
-
-      <button type="button" class="tool-nav-item" data-tool="bolt" data-cat="mechanical">
-        <span class="tool-nav-icon">🔩</span>
-        <span>Bolt Tightening Torque</span>
-      </button>
-
-      <button type="button" class="tool-nav-item" data-tool="fits" data-cat="mechanical">
-        <span class="tool-nav-icon">📐</span>
-        <span>ISO 286 Fits &amp; Tolerances</span>
-      </button>
-
-      <!-- Security & Privacy Tools -->
-      <button type="button" class="tool-nav-item" data-tool="qrcode" data-cat="security">
-        <span class="tool-nav-icon">📱</span>
-        <span>QR Code &amp; Wi-Fi Studio</span>
-      </button>
-
-      <button type="button" class="tool-nav-item" data-tool="hasher" data-cat="security">
-        <span class="tool-nav-icon">🔐</span>
-        <span>Cryptographic File Hasher</span>
-      </button>
-
-      <button type="button" class="tool-nav-item" data-tool="password" data-cat="security">
-        <span class="tool-nav-icon">🔑</span>
-        <span>Password &amp; Passphrase Gen</span>
-      </button>
-
-      <button type="button" class="tool-nav-item" data-tool="diff" data-cat="security">
-        <span class="tool-nav-icon">🔀</span>
-        <span>Visual Text &amp; Code Diff</span>
-      </button>
-
-      <!-- Developer Tools -->
-      <button type="button" class="tool-nav-item" data-tool="json" data-cat="dev">
-        <span class="tool-nav-icon">{ }</span>
-        <span>JSON Formatter &amp; Validator</span>
-      </button>
-
-      <button type="button" class="tool-nav-item" data-tool="unit" data-cat="dev">
-        <span class="tool-nav-icon">📏</span>
-        <span>Engineering Unit Converter</span>
-      </button>
-
-      <button type="button" class="tool-nav-item" data-tool="regex" data-cat="dev">
-        <span class="tool-nav-icon">.*</span>
-        <span>Regex Matcher &amp; Tester</span>
-      </button>
-    </div>
-
-    <!-- =========================================================
-         TOOL 1: BEAM STRESS & DEFLECTION (SFD/BMD)
-         ========================================================= -->
-    <div class="tool-pane active" id="pane-beam">
-      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">🏗️ Beam Bending Stress, Deflection &amp; SFD/BMD Diagrams</h2>
-      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
-        Solve beam shear force, bending moments, cross-sectional stress, and maximum deflection with real-time interactive diagrams.
-      </p>
-
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; background: var(--bg-surface-elevated); padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
-        <div class="form-group">
-          <label class="form-label">Beam Support Type</label>
-          <select id="beam-type" class="form-control">
-            <option value="simply_supported" selected>Simply Supported (Pin &amp; Roller)</option>
-            <option value="cantilever">Cantilever (Fixed at Left)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Loading Type</label>
-          <select id="beam-load-type" class="form-control">
-            <option value="point" selected>Point Load (P)</option>
-            <option value="udl">Uniformly Distributed Load (w)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Beam Span Length (L in meters)</label>
-          <input type="number" id="beam-length" class="form-control" value="2.0" step="0.1" min="0.1">
-        </div>
-        <div class="form-group" id="beam-load-val-group">
-          <label class="form-label" id="beam-load-label">Load P (kN)</label>
-          <input type="number" id="beam-load-val" class="form-control" value="10.0" step="0.5">
-        </div>
-        <div class="form-group" id="beam-pos-group">
-          <label class="form-label">Load Position 'a' from Left (m)</label>
-          <input type="number" id="beam-load-pos" class="form-control" value="1.0" step="0.1">
-        </div>
-      </div>
-
-      <!-- Cross Section & Material -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; background: var(--bg-surface-elevated); padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
-        <div class="form-group">
-          <label class="form-label">Material Preset</label>
-          <select id="beam-material" class="form-control">
-            <option value="steel" selected>Structural Steel (E = 200 GPa)</option>
-            <option value="aluminum">Aluminum 6061-T6 (E = 69 GPa)</option>
-            <option value="titanium">Titanium Ti-6Al-4V (E = 114 GPa)</option>
-            <option value="cast_iron">Gray Cast Iron (E = 100 GPa)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Cross-Section Shape</label>
-          <select id="beam-shape" class="form-control">
-            <option value="rect" selected>Solid Rectangle (b × h)</option>
-            <option value="circle">Solid Circle (Diameter)</option>
-            <option value="pipe">Hollow Pipe (OD × ID)</option>
-          </select>
-        </div>
-        <div class="form-group" id="dim1-group">
-          <label class="form-label" id="dim1-label">Width 'b' (mm)</label>
-          <input type="number" id="beam-dim1" class="form-control" value="50" min="1">
-        </div>
-        <div class="form-group" id="dim2-group">
-          <label class="form-label" id="dim2-label">Height 'h' (mm)</label>
-          <input type="number" id="beam-dim2" class="form-control" value="100" min="1">
-        </div>
-      </div>
-
-      <!-- Results Badges -->
-      <div class="stat-badge-group">
-        <div>
-          <div class="stat-badge-title">Max Bending Moment (Mmax)</div>
-          <div id="beam-res-mmax" class="stat-badge-val" style="color: var(--primary);">-</div>
-        </div>
-        <div>
-          <div class="stat-badge-title">Max Bending Stress (σmax)</div>
-          <div id="beam-res-stress" class="stat-badge-val" style="color: var(--warning);">-</div>
-        </div>
-        <div>
-          <div class="stat-badge-title">Max Deflection (δmax)</div>
-          <div id="beam-res-deflection" class="stat-badge-val" style="color: var(--success);">-</div>
-        </div>
-        <div>
-          <div class="stat-badge-title">Reaction Force RA / RB</div>
-          <div id="beam-res-reactions" class="stat-badge-val" style="color: var(--text-main);">-</div>
-        </div>
-      </div>
-
-      <!-- Interactive Plots -->
-      <div class="diagram-container">
-        <div>
-          <div class="diagram-title">
-            <span>✂️ Shear Force Diagram (SFD)</span>
-            <span id="sfd-unit-label" style="font-family: var(--font-mono); font-size: 0.8rem;">Force (kN)</span>
-          </div>
-          <canvas id="canvas-sfd" class="diagram-canvas" width="800" height="180"></canvas>
-        </div>
-        <div>
-          <div class="diagram-title">
-            <span>📈 Bending Moment Diagram (BMD)</span>
-            <span id="bmd-unit-label" style="font-family: var(--font-mono); font-size: 0.8rem;">Moment (kN·m)</span>
-          </div>
-          <canvas id="canvas-bmd" class="diagram-canvas" width="800" height="180"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <!-- =========================================================
-         TOOL 2: GEAR TRAIN & TORQUE CALCULATOR
-         ========================================================= -->
-    <div class="tool-pane" id="pane-gear">
-      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">⚙️ Gear Train Ratio, Speed &amp; Torque Multiplier</h2>
-      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
-        Calculate gear reduction ratios, output RPM, output torque, pitch diameters, and shaft center distances.
-      </p>
-
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; background: var(--bg-surface-elevated); padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
-        <div class="form-group">
-          <label class="form-label">Pinion Teeth (N1)</label>
-          <input type="number" id="gear-n1" class="form-control" value="20" min="5">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Driven Gear Teeth (N2)</label>
-          <input type="number" id="gear-n2" class="form-control" value="60" min="5">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Idler / 3rd Gear (Optional N3)</label>
-          <input type="number" id="gear-n3" class="form-control" value="0" min="0" placeholder="0 if 2-gear pair">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Gear Module 'm' (mm)</label>
-          <input type="number" id="gear-module" class="form-control" value="2.5" step="0.25" min="0.5">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Input Speed (RPM)</label>
-          <input type="number" id="gear-rpm" class="form-control" value="1500" step="50" min="1">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Input Power (kW)</label>
-          <input type="number" id="gear-power" class="form-control" value="5.0" step="0.5" min="0.1">
-        </div>
-      </div>
-
-      <div class="stat-badge-group">
-        <div>
-          <div class="stat-badge-title">Total Gear Ratio (i)</div>
-          <div id="gear-res-ratio" class="stat-badge-val" style="color: var(--primary);">-</div>
-        </div>
-        <div>
-          <div class="stat-badge-title">Output Speed (RPM)</div>
-          <div id="gear-res-out-rpm" class="stat-badge-val" style="color: var(--success);">-</div>
-        </div>
-        <div>
-          <div class="stat-badge-title">Output Torque (N·m)</div>
-          <div id="gear-res-out-torque" class="stat-badge-val" style="color: var(--warning);">-</div>
-        </div>
-        <div>
-          <div class="stat-badge-title">Center Distance (mm)</div>
-          <div id="gear-res-center" class="stat-badge-val" style="color: var(--text-main);">-</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- =========================================================
-         TOOL 3: BOLT TIGHTENING TORQUE & PRELOAD
-         ========================================================= -->
-    <div class="tool-pane" id="pane-bolt">
-      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">🔩 Fastener Bolt Tightening Torque &amp; Preload Clamping Force</h2>
-      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
-        Standard VDI 2230 / ISO 898 calculation for metric high-tensile fasteners, recommended tightening torques, and preload clamp tensions.
-      </p>
-
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; background: var(--bg-surface-elevated); padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
-        <div class="form-group">
-          <label class="form-label">Metric Bolt Size</label>
-          <select id="bolt-size" class="form-control">
-            <option value="M3">M3 × 0.5</option>
-            <option value="M4">M4 × 0.7</option>
-            <option value="M5">M5 × 0.8</option>
-            <option value="M6">M6 × 1.0</option>
-            <option value="M8">M8 × 1.25</option>
-            <option value="M10" selected>M10 × 1.5</option>
-            <option value="M12">M12 × 1.75</option>
-            <option value="M14">M14 × 2.0</option>
-            <option value="M16">M16 × 2.0</option>
-            <option value="M20">M20 × 2.5</option>
-            <option value="M24">M24 × 3.0</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Bolt Strength Grade</label>
-          <select id="bolt-grade" class="form-control">
-            <option value="4.8">Grade 4.8 (Low Carbon)</option>
-            <option value="8.8" selected>Grade 8.8 (Standard High Tensile)</option>
-            <option value="10.9">Grade 10.9 (Alloy Steel)</option>
-            <option value="12.9">Grade 12.9 (Heavy Duty Socket Head)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Friction &amp; Surface Lubrication</label>
-          <select id="bolt-friction" class="form-control">
-            <option value="0.14" selected>Lightly Oiled / Zinc Plated (μ = 0.14)</option>
-            <option value="0.10">Moly / Anti-Seize Paste (μ = 0.10)</option>
-            <option value="0.20">Dry / Degreased Steel (μ = 0.20)</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="stat-badge-group">
-        <div>
-          <div class="stat-badge-title">Recommended Torque (N·m)</div>
-          <div id="bolt-res-torque-nm" class="stat-badge-val" style="color: var(--primary);">-</div>
-        </div>
-        <div>
-          <div class="stat-badge-title">Recommended Torque (lb·ft)</div>
-          <div id="bolt-res-torque-lbft" class="stat-badge-val" style="color: var(--success);">-</div>
-        </div>
-        <div>
-          <div class="stat-badge-title">Preload Clamping Force (kN)</div>
-          <div id="bolt-res-clamp" class="stat-badge-val" style="color: var(--warning);">-</div>
-        </div>
-        <div>
-          <div class="stat-badge-title">Tensile Stress Area (mm²)</div>
-          <div id="bolt-res-area" class="stat-badge-val" style="color: var(--text-main);">-</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- =========================================================
-         TOOL 4: ISO 286 LIMITS & FITS
-         ========================================================= -->
-    <div class="tool-pane" id="pane-fits">
-      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">📐 ISO 286 Limits, Fits &amp; Engineering Tolerance Analyzer</h2>
-      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
-        Determine hole and shaft tolerance limits, fit classification (Clearance, Transition, Interference), and min/max clearances in micrometers.
-      </p>
-
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; background: var(--bg-surface-elevated); padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
-        <div class="form-group">
-          <label class="form-label">Nominal Dimension (mm)</label>
-          <input type="number" id="fits-nominal" class="form-control" value="25.0" step="1.0" min="1.0">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Hole Basis Tolerance</label>
-          <select id="fits-hole" class="form-control">
-            <option value="H7" selected>H7 (Precision Standard)</option>
-            <option value="H8">H8 (General Fit)</option>
-            <option value="H9">H9 (Commercial)</option>
-            <option value="JS7">JS7 (Symmetrical)</option>
-            <option value="P7">P7 (Press Fit)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Shaft Basis Tolerance</label>
-          <select id="fits-shaft" class="form-control">
-            <option value="g6" selected>g6 (Sliding Clearance Fit)</option>
-            <option value="h6">h6 (Locating Clearance Fit)</option>
-            <option value="f7">f7 (Rotational Free Fit)</option>
-            <option value="k6">k6 (True Transition Fit)</option>
-            <option value="p6">p6 (Light Press Fit)</option>
-            <option value="s6">s6 (Permanent Interference Fit)</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="stat-badge-group">
-        <div>
-          <div class="stat-badge-title">Fit Classification</div>
-          <div id="fits-res-type" class="stat-badge-val" style="color: var(--primary);">-</div>
-        </div>
-        <div>
-          <div class="stat-badge-title">Hole Limits (mm)</div>
-          <div id="fits-res-hole" class="stat-badge-val" style="color: var(--success);">-</div>
-        </div>
-        <div>
-          <div class="stat-badge-title">Shaft Limits (mm)</div>
-          <div id="fits-res-shaft" class="stat-badge-val" style="color: var(--warning);">-</div>
-        </div>
-        <div>
-          <div class="stat-badge-title">Clearance / Interference (μm)</div>
-          <div id="fits-res-clearance" class="stat-badge-val" style="color: var(--text-main);">-</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- =========================================================
-         TOOL 5: QR CODE STUDIO
-         ========================================================= -->
-    <div class="tool-pane" id="pane-qrcode">
-      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">📱 QR Code &amp; Wi-Fi Connect Studio</h2>
-      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
-        Generate customizable, high-resolution QR codes for websites, Wi-Fi automatic connections, vCard contacts, or email. 100% private.
-      </p>
-
-      <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 2rem; align-items: start;">
-        <div style="background: var(--bg-surface-elevated); padding: 1.5rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label class="form-label">QR Code Type</label>
-            <select id="qr-type" class="form-control">
-              <option value="url" selected>Website URL / Link</option>
-              <option value="wifi">Wi-Fi Network Auto-Connect</option>
-              <option value="text">Plain Text</option>
-              <option value="email">Email Message</option>
-            </select>
-          </div>
-
-          <!-- URL Inputs -->
-          <div id="qr-url-fields" class="form-group">
-            <label class="form-label">Target Website URL</label>
-            <input type="text" id="qr-url-val" class="form-control" value="https://sitendra.store" placeholder="https://example.com">
-          </div>
-
-          <!-- Wi-Fi Inputs -->
-          <div id="qr-wifi-fields" style="display: none;">
-            <div class="form-group">
-              <label class="form-label">Network Name (SSID)</label>
-              <input type="text" id="qr-wifi-ssid" class="form-control" placeholder="Home_WiFi">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Password</label>
-              <input type="text" id="qr-wifi-pass" class="form-control" placeholder="SecretPassword">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Security Type</label>
-              <select id="qr-wifi-type" class="form-control">
-                <option value="WPA">WPA/WPA2/WPA3</option>
-                <option value="WEP">WEP</option>
-                <option value="nopass">None (Open)</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Text / Email -->
-          <div id="qr-text-fields" style="display: none;" class="form-group">
-            <label class="form-label">Text Content</label>
-            <textarea id="qr-text-val" class="editor-textarea" rows="3" placeholder="Enter text..."></textarea>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
-            <div class="form-group">
-              <label class="form-label">Foreground Color</label>
-              <input type="color" id="qr-fg-color" value="#0F172A" style="width: 100%; height: 38px; border: none; background: transparent; cursor: pointer;">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Background Color</label>
-              <input type="color" id="qr-bg-color" value="#FFFFFF" style="width: 100%; height: 38px; border: none; background: transparent; cursor: pointer;">
-            </div>
-          </div>
-        </div>
-
-        <!-- Preview & Download -->
-        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg-surface-elevated); padding: 1.5rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
-          <div id="qrcode-render" style="padding: 1rem; background: #FFFFFF; border-radius: 8px; box-shadow: var(--shadow-sm); margin-bottom: 1.25rem;"></div>
-          <button type="button" class="btn btn-primary" id="btn-download-qr">📥 Download PNG Image</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- =========================================================
-         TOOL 6: CRYPTOGRAPHIC HASHER & FILE CHECKSUM
-         ========================================================= -->
-    <div class="tool-pane" id="pane-hasher">
-      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">🔐 Cryptographic Hash &amp; File Checksum Generator</h2>
-      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
-        Generate SHA-256, SHA-512, SHA-384, SHA-1, and MD5 checksums for text or drag-and-drop local files. 100% in-browser.
-      </p>
-
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
-        <div>
-          <label class="form-label">Input Text</label>
-          <textarea id="hash-input-text" class="editor-textarea" rows="4" placeholder="Type or paste text to hash..."></textarea>
-        </div>
-        <div>
-          <label class="form-label">Or Drag &amp; Drop Local File</label>
-          <div class="dropzone-box" id="hash-dropzone">
-            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📁</div>
-            <div style="font-weight: 600;">Click to select or drop a file</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.35rem;">Calculates checksums locally without uploading</div>
-            <input type="file" id="hash-file-input" style="display: none;">
-          </div>
-          <div id="hash-file-info" style="font-size: 0.85rem; color: var(--success); margin-top: 0.5rem; font-weight: 600;"></div>
-        </div>
-      </div>
-
-      <!-- Hash Results -->
-      <div style="background: #090D16; padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 0.88rem; display: flex; flex-direction: column; gap: 0.75rem;">
-        <div>
-          <div style="color: var(--primary); font-weight: 700; font-size: 0.8rem;">SHA-256</div>
-          <div id="res-sha256" style="word-break: break-all; color: var(--text-main);">-</div>
-        </div>
-        <div>
-          <div style="color: var(--success); font-weight: 700; font-size: 0.8rem;">SHA-512</div>
-          <div id="res-sha512" style="word-break: break-all; color: var(--text-main);">-</div>
-        </div>
-        <div>
-          <div style="color: var(--warning); font-weight: 700; font-size: 0.8rem;">MD5</div>
-          <div id="res-md5" style="word-break: break-all; color: var(--text-main);">-</div>
-        </div>
-        <div>
-          <div style="color: var(--text-muted); font-weight: 700; font-size: 0.8rem;">SHA-1</div>
-          <div id="res-sha1" style="word-break: break-all; color: var(--text-main);">-</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- =========================================================
-         TOOL 7: PASSWORD & PASSPHRASE GENERATOR
-         ========================================================= -->
-    <div class="tool-pane" id="pane-password">
-      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">🔑 Cryptographically Secure Password &amp; Passphrase Generator</h2>
-      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
-        Generate random passwords powered by <code>crypto.getRandomValues</code> or memorable Diceware multi-word passphrases with entropy scores.
-      </p>
-
-      <div style="background: var(--bg-surface-elevated); padding: 1.5rem; border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 1.5rem;">
-        <div style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 1.25rem;">
-          <input type="text" id="pwd-output" class="form-control" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 700; color: var(--primary);" readonly>
-          <button type="button" class="btn btn-primary" id="btn-copy-pwd">📋 Copy</button>
-          <button type="button" class="btn btn-secondary" id="btn-regen-pwd">🔄 Regenerate</button>
-        </div>
-
-        <div class="stat-badge-group" style="margin-bottom: 1.25rem;">
-          <div>
-            <div class="stat-badge-title">Entropy</div>
-            <div id="pwd-entropy-bits" class="stat-badge-val" style="color: var(--primary);">-</div>
-          </div>
-          <div>
-            <div class="stat-badge-title">Strength</div>
-            <div id="pwd-strength" class="stat-badge-val" style="color: var(--success);">-</div>
-          </div>
-          <div>
-            <div class="stat-badge-title">Crack Time Estimate</div>
-            <div id="pwd-crack-time" class="stat-badge-val" style="color: var(--warning);">-</div>
-          </div>
-        </div>
-
-        <!-- Controls -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem;">
-          <div class="form-group">
-            <label class="form-label">Password Length: <span id="pwd-len-val" style="font-weight: 700;">16</span></label>
-            <input type="range" id="pwd-len" min="8" max="64" value="16" style="width: 100%;">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Character Sets</label>
-            <div style="display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.88rem;">
-              <label><input type="checkbox" id="pwd-upper" checked> Uppercase (A-Z)</label>
-              <label><input type="checkbox" id="pwd-lower" checked> Lowercase (a-z)</label>
-              <label><input type="checkbox" id="pwd-num" checked> Numbers (0-9)</label>
-              <label><input type="checkbox" id="pwd-sym" checked> Symbols (!@#$%^&*)</label>
-              <label><input type="checkbox" id="pwd-ambiguous" checked> Avoid Ambiguous (0, O, 1, l)</label>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Or Memorable Passphrase</label>
-            <button type="button" class="btn btn-secondary btn-sm" id="btn-gen-passphrase" style="width: 100%; margin-top: 0.25rem;">
-              Generate 4-Word Passphrase
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- =========================================================
-         TOOL 8: VISUAL TEXT DIFF
-         ========================================================= -->
-    <div class="tool-pane" id="pane-diff">
-      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">🔀 Side-by-Side Visual Text &amp; Code Diff Checker</h2>
-      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
-        Compare two text or code files line-by-line with highlighted additions, deletions, and modifications.
-      </p>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1rem;">
-        <div>
-          <label class="form-label">Original Text (A)</label>
-          <textarea id="diff-text-a" class="editor-textarea" rows="6" placeholder="Original code or text...">function greet(name) {
-  console.log("Hello, " + name);
-  return true;
-}</textarea>
-        </div>
-        <div>
-          <label class="form-label">Modified Text (B)</label>
-          <textarea id="diff-text-b" class="editor-textarea" rows="6" placeholder="Modified code or text...">function greet(name, title = "Engineer") {
-  console.log(`Hello, ${title} ${name}!`);
-  return true;
-}</textarea>
-        </div>
-      </div>
-
-      <div style="display: flex; gap: 0.75rem; margin-bottom: 1.25rem;">
-        <button type="button" class="btn btn-primary btn-sm" id="btn-run-diff">Compare Differences</button>
-        <button type="button" class="btn btn-secondary btn-sm" id="btn-swap-diff">🔄 Swap A &amp; B</button>
-        <button type="button" class="btn btn-danger btn-sm" id="btn-clear-diff">Clear</button>
-      </div>
-
-      <div id="diff-results-box" style="background: #090D16; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; min-height: 120px;"></div>
-    </div>
-
-    <!-- =========================================================
-         TOOL 9: JSON FORMATTER
-         ========================================================= -->
-    <div class="tool-pane" id="pane-json">
-      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">{ } JSON Formatter &amp; Validator</h2>
-      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
-        Format, beautify, minify, validate, and debug JSON payloads instantly.
-      </p>
-
-      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem;">
-        <button type="button" class="btn btn-primary btn-sm" id="json-format-2">Beautify (2 Spaces)</button>
-        <button type="button" class="btn btn-secondary btn-sm" id="json-format-4">Beautify (4 Spaces)</button>
-        <button type="button" class="btn btn-secondary btn-sm" id="json-minify">Minify Compact</button>
-        <button type="button" class="btn btn-secondary btn-sm" id="json-copy">📋 Copy JSON</button>
-        <button type="button" class="btn btn-danger btn-sm" id="json-clear">Clear</button>
-      </div>
-
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
-        <div>
-          <label class="form-label">Input Raw JSON</label>
-          <textarea id="json-input" class="editor-textarea" style="width: 100%; min-height: 320px; font-family: var(--font-mono); font-size: 0.9rem;" placeholder="Paste JSON here..."></textarea>
-        </div>
-        <div>
-          <label class="form-label">Formatted Output</label>
-          <textarea id="json-output" class="editor-textarea" style="width: 100%; min-height: 320px; font-family: var(--font-mono); font-size: 0.9rem; background: #090D16;" readonly placeholder="Formatted output will appear here..."></textarea>
-        </div>
-      </div>
-      <div id="json-status" style="margin-top: 0.75rem; font-size: 0.9rem; font-weight: 600;"></div>
-    </div>
-
-    <!-- =========================================================
-         TOOL 10: UNIT CONVERTER
-         ========================================================= -->
-    <div class="tool-pane" id="pane-unit">
-      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">📏 Engineering Unit Converter</h2>
-      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
-        Convert between pressure, torque, force, power, temperature, and length units.
-      </p>
-
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
-        <div class="form-group">
-          <label class="form-label">Category</label>
-          <select id="unit-category" class="form-control">
-            <option value="pressure" selected>Pressure (bar, psi, Pa, MPa)</option>
-            <option value="torque">Torque (N·m, lb·ft, kg·m)</option>
-            <option value="force">Force (N, kN, lbf, kgf)</option>
-            <option value="power">Power (kW, HP, W, BTU/hr)</option>
-            <option value="length">Length (mm, cm, m, in, ft)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Input Value</label>
-          <input type="number" id="unit-input-val" class="form-control" value="100">
-        </div>
-        <div class="form-group">
-          <label class="form-label">From Unit</label>
-          <select id="unit-from" class="form-control"></select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">To Unit</label>
-          <select id="unit-to" class="form-control"></select>
-        </div>
-      </div>
-
-      <div class="stat-badge-group">
-        <div>
-          <div class="stat-badge-title">Converted Result</div>
-          <div id="unit-result" class="stat-badge-val" style="color: var(--primary); font-size: 1.6rem;">-</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- =========================================================
-         TOOL 11: REGEX TESTER
-         ========================================================= -->
-    <div class="tool-pane" id="pane-regex">
-      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">.* Regex Matcher &amp; Expression Tester</h2>
-      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
-        Test and debug regular expressions with live matching, flag selectors, and capture groups.
-      </p>
-
-      <div class="form-group" style="margin-bottom: 1rem;">
-        <label class="form-label">Regular Expression Pattern</label>
-        <div style="display: flex; gap: 0.5rem;">
-          <input type="text" id="regex-pattern" class="form-control" value="([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})" style="font-family: var(--font-mono);">
-          <input type="text" id="regex-flags" class="form-control" value="gm" style="width: 80px; font-family: var(--font-mono);" placeholder="flags">
-        </div>
-      </div>
-
-      <div class="form-group" style="margin-bottom: 1rem;">
-        <label class="form-label">Test String</label>
-        <textarea id="regex-test-str" class="editor-textarea" rows="5" style="width: 100%; font-family: var(--font-mono);">Contact us at sitendranagesh@gmail.com or support@sitendra.store for inquiries.</textarea>
-      </div>
-
-      <div class="stat-badge-group">
-        <div>
-          <div class="stat-badge-title">Matches Found</div>
-          <div id="regex-match-count" class="stat-badge-val" style="color: var(--success);">0</div>
-        </div>
-      </div>
-
-      <div id="regex-matches-list" style="background: #090D16; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; font-family: var(--font-mono); font-size: 0.88rem;"></div>
-    </div>
-
   </main>
 
   <footer class="blog-footer">
-    <p>&copy; 2026 Sitendra Kumar Nagesh &bull; <a href="/blog">Blog</a> &bull; <a href="/image-tools">Image Studio</a> &bull; <a href="/resume">Resume Builder</a> &bull; <a href="/projects">Projects</a> &bull; <a href="/about">About</a> &bull; <a href="/login.html">Notes</a></p>
+    <p>&copy; 2026 Sitendra Kumar Nagesh &bull; <a href="/calc">Mechanical Calc</a> &bull; <a href="/security">Security Suite</a> &bull; <a href="/dev">Dev Tools</a> &bull; <a href="/image-tools">Image Studio</a> &bull; <a href="/resume">Resume Builder</a> &bull; <a href="/games">Games</a></p>
   </footer>
 
   <script src="/cmd_k.js"></script>
   <script src="/chat.js"></script>
 
-  <!-- Portal Logic -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      // Navigation & Category Filters
-      const navItems = document.querySelectorAll(".tool-nav-item");
-      const panes = document.querySelectorAll(".tool-pane");
-      const categoryPills = document.querySelectorAll(".category-pills .category-pill");
-      const searchInput = document.getElementById("tool-search");
-
-      function activateTool(toolId) {
-        navItems.forEach(i => i.classList.toggle("active", i.dataset.tool === toolId));
-        panes.forEach(p => p.classList.toggle("active", p.id === `pane-${toolId}`));
-      }
-
-      navItems.forEach(i => i.addEventListener("click", () => activateTool(i.dataset.tool)));
-
-      categoryPills.forEach(p => {
-        p.addEventListener("click", () => {
-          categoryPills.forEach(x => x.classList.remove("active"));
-          p.classList.add("active");
-          const cat = p.dataset.cat;
-          navItems.forEach(item => {
-            item.style.display = (cat === "all" || item.dataset.cat === cat) ? "flex" : "none";
-          });
-        });
-      });
+      const searchInput = document.getElementById("service-search-input");
+      const serviceCards = document.querySelectorAll(".service-card");
 
       searchInput.addEventListener("input", (e) => {
         const q = e.target.value.toLowerCase().trim();
-        navItems.forEach(item => {
-          const text = item.textContent.toLowerCase();
-          item.style.display = text.includes(q) ? "flex" : "none";
+        serviceCards.forEach(card => {
+          const text = (card.textContent + " " + (card.dataset.keywords || "")).toLowerCase();
+          card.style.display = text.includes(q) ? "flex" : "none";
         });
       });
-
-      // =========================================================
-      // 1. BEAM STRESS & DEFLECTION
-      // =========================================================
-      const beamType = document.getElementById("beam-type");
-      const beamLoadType = document.getElementById("beam-load-type");
-      const beamLength = document.getElementById("beam-length");
-      const beamLoadVal = document.getElementById("beam-load-val");
-      const beamLoadPos = document.getElementById("beam-load-pos");
-      const beamLoadLabel = document.getElementById("beam-load-label");
-      const beamPosGroup = document.getElementById("beam-pos-group");
-      const beamMaterial = document.getElementById("beam-material");
-      const beamShape = document.getElementById("beam-shape");
-      const beamDim1 = document.getElementById("beam-dim1");
-      const beamDim2 = document.getElementById("beam-dim2");
-      const dim1Label = document.getElementById("dim1-label");
-      const dim2Label = document.getElementById("dim2-label");
-      const dim2Group = document.getElementById("dim2-group");
-
-      const canvasSfd = document.getElementById("canvas-sfd");
-      const ctxSfd = canvasSfd.getContext("2d");
-      const canvasBmd = document.getElementById("canvas-bmd");
-      const ctxBmd = canvasBmd.getContext("2d");
-
-      function updateBeamUI() {
-        const isUdl = beamLoadType.value === "udl";
-        beamLoadLabel.textContent = isUdl ? "UDL Load 'w' (kN/m)" : "Point Load 'P' (kN)";
-        beamPosGroup.style.display = isUdl ? "none" : "block";
-
-        const shape = beamShape.value;
-        if (shape === "rect") {
-          dim1Label.textContent = "Width 'b' (mm)";
-          dim2Label.textContent = "Height 'h' (mm)";
-          dim2Group.style.display = "block";
-        } else if (shape === "circle") {
-          dim1Label.textContent = "Diameter 'd' (mm)";
-          dim2Group.style.display = "none";
-        } else if (shape === "pipe") {
-          dim1Label.textContent = "Outer Dia 'Do' (mm)";
-          dim2Label.textContent = "Inner Dia 'Di' (mm)";
-          dim2Group.style.display = "block";
-        }
-
-        solveAndPlotBeam();
-      }
-
-      function solveAndPlotBeam() {
-        const L = parseFloat(beamLength.value) || 2.0;
-        const loadVal = (parseFloat(beamLoadVal.value) || 10.0) * 1000;
-        const aPos = Math.min(L, Math.max(0, parseFloat(beamLoadPos.value) || L / 2));
-        const mat = MechEngine.Materials[beamMaterial.value] || MechEngine.Materials.steel;
-
-        const d1 = (parseFloat(beamDim1.value) || 50) / 1000;
-        const d2 = (parseFloat(beamDim2.value) || 100) / 1000;
-
-        let dims = {};
-        if (beamShape.value === "rect") dims = { width: d1, height: d2 };
-        else if (beamShape.value === "circle") dims = { diameter: d1 };
-        else if (beamShape.value === "pipe") dims = { outerDiameter: d1, innerDiameter: d2 };
-
-        const sec = MechEngine.calculateSectionProperties(beamShape.value, dims);
-
-        const sol = MechEngine.solveBeam({
-          type: beamType.value,
-          loadType: beamLoadType.value,
-          L: L,
-          P: loadVal,
-          w: loadVal,
-          a: aPos,
-          E: mat.E,
-          I: sec.I,
-          Z: sec.Z
-        });
-
-        document.getElementById("beam-res-mmax").textContent = `${(sol.M_max / 1000).toFixed(2)} kN·m`;
-        document.getElementById("beam-res-stress").textContent = `${(sol.maxBendingStress / 1e6).toFixed(1)} MPa`;
-        document.getElementById("beam-res-deflection").textContent = `${(sol.maxDeflection * 1000).toFixed(2)} mm`;
-        document.getElementById("beam-res-reactions").textContent = `RA: ${(sol.R_A / 1000).toFixed(1)} kN | RB: ${(sol.R_B / 1000).toFixed(1)} kN`;
-
-        plotDiagram(canvasSfd, ctxSfd, sol.xPoints, sol.sfd, "#38BDF8", "kN", 1000);
-        plotDiagram(canvasBmd, ctxBmd, sol.xPoints, sol.bmd, "#10B981", "kN·m", 1000);
-      }
-
-      function plotDiagram(canvas, ctx, xArr, yArr, color, unit, divisor = 1) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const padX = 40;
-        const padY = 25;
-        const w = canvas.width - padX * 2;
-        const h = canvas.height - padY * 2;
-
-        const maxVal = Math.max(...yArr.map(Math.abs), 1);
-        const zeroY = padY + h / 2;
-
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(padX, zeroY);
-        ctx.lineTo(padX + w, zeroY);
-        ctx.stroke();
-
-        ctx.fillStyle = color === "#38BDF8" ? "rgba(56, 189, 248, 0.15)" : "rgba(16, 185, 129, 0.15)";
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2.5;
-
-        ctx.beginPath();
-        ctx.moveTo(padX, zeroY);
-
-        for (let i = 0; i < xArr.length; i++) {
-          const px = padX + (i / (xArr.length - 1)) * w;
-          const py = zeroY - (yArr[i] / maxVal) * (h / 2 - 5);
-          ctx.lineTo(px, py);
-        }
-
-        ctx.lineTo(padX + w, zeroY);
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-
-        ctx.fillStyle = "#94A3B8";
-        ctx.font = "10px Inter, sans-serif";
-        ctx.fillText(`+${(maxVal / divisor).toFixed(1)} ${unit}`, 5, padY + 5);
-        ctx.fillText(`-${(maxVal / divisor).toFixed(1)} ${unit}`, 5, canvas.height - 10);
-        ctx.fillText("0", 15, zeroY + 3);
-      }
-
-      [beamType, beamLoadType, beamLength, beamLoadVal, beamLoadPos, beamMaterial, beamShape, beamDim1, beamDim2].forEach(el => {
-        el.addEventListener("input", updateBeamUI);
-      });
-
-      // =========================================================
-      // 2. GEAR TRAIN CALCULATOR
-      // =========================================================
-      function solveGears() {
-        const sol = MechEngine.solveGearTrain({
-          N1: parseInt(document.getElementById("gear-n1").value) || 20,
-          N2: parseInt(document.getElementById("gear-n2").value) || 60,
-          N3: parseInt(document.getElementById("gear-n3").value) || 0,
-          module: parseFloat(document.getElementById("gear-module").value) || 2.5,
-          inputRPM: parseFloat(document.getElementById("gear-rpm").value) || 1500,
-          inputPowerKW: parseFloat(document.getElementById("gear-power").value) || 5.0
-        });
-
-        document.getElementById("gear-res-ratio").textContent = `${sol.ratio}:1`;
-        document.getElementById("gear-res-out-rpm").textContent = `${sol.outputRPM} RPM`;
-        document.getElementById("gear-res-out-torque").textContent = `${sol.outputTorqueNm} N·m`;
-        document.getElementById("gear-res-center").textContent = `${sol.centerDist} mm`;
-      }
-      document.querySelectorAll("#pane-gear input").forEach(el => el.addEventListener("input", solveGears));
-
-      // =========================================================
-      // 3. BOLT TORQUE CALCULATOR
-      // =========================================================
-      function solveBolts() {
-        const sol = MechEngine.solveBoltTorque({
-          size: document.getElementById("bolt-size").value,
-          grade: document.getElementById("bolt-grade").value,
-          frictionCoeff: parseFloat(document.getElementById("bolt-friction").value) || 0.14
-        });
-
-        document.getElementById("bolt-res-torque-nm").textContent = `${sol.torqueNm} N·m`;
-        document.getElementById("bolt-res-torque-lbft").textContent = `${sol.torqueLbFt} lb·ft`;
-        document.getElementById("bolt-res-clamp").textContent = `${sol.clampForceKN} kN`;
-        document.getElementById("bolt-res-area").textContent = `${sol.stressAreaMm2} mm²`;
-      }
-      document.querySelectorAll("#pane-bolt select").forEach(el => el.addEventListener("change", solveBolts));
-
-      // =========================================================
-      // 4. ISO 286 LIMITS & FITS
-      // =========================================================
-      function solveFits() {
-        const nom = parseFloat(document.getElementById("fits-nominal").value) || 25.0;
-        const hole = document.getElementById("fits-hole").value;
-        const shaft = document.getElementById("fits-shaft").value;
-
-        const sol = MechEngine.solveLimitsAndFits(nom, hole, shaft);
-
-        document.getElementById("fits-res-type").textContent = sol.fitType;
-        document.getElementById("fits-res-hole").textContent = `${sol.holeMinMm} - ${sol.holeMaxMm}`;
-        document.getElementById("fits-res-shaft").textContent = `${sol.shaftMinMm} - ${sol.shaftMaxMm}`;
-        document.getElementById("fits-res-clearance").textContent = `Min: ${sol.minClearanceUm} μm | Max: ${sol.maxClearanceUm} μm`;
-      }
-      document.querySelectorAll("#pane-fits select, #pane-fits input").forEach(el => el.addEventListener("input", solveFits));
-
-      // =========================================================
-      // 5. QR CODE STUDIO
-      // =========================================================
-      let qrObj = null;
-      const qrType = document.getElementById("qr-type");
-      const qrUrlVal = document.getElementById("qr-url-val");
-      const qrWifiSsid = document.getElementById("qr-wifi-ssid");
-      const qrWifiPass = document.getElementById("qr-wifi-pass");
-      const qrWifiType = document.getElementById("qr-wifi-type");
-      const qrTextVal = document.getElementById("qr-text-val");
-      const qrFg = document.getElementById("qr-fg-color");
-      const qrBg = document.getElementById("qr-bg-color");
-      const qrContainer = document.getElementById("qrcode-render");
-
-      function updateQRFields() {
-        const t = qrType.value;
-        document.getElementById("qr-url-fields").style.display = t === "url" ? "block" : "none";
-        document.getElementById("qr-wifi-fields").style.display = t === "wifi" ? "block" : "none";
-        document.getElementById("qr-text-fields").style.display = (t === "text" || t === "email") ? "block" : "none";
-        renderQR();
-      }
-
-      function getQRDataString() {
-        const t = qrType.value;
-        if (t === "url") return qrUrlVal.value || "https://sitendra.store";
-        if (t === "wifi") return `WIFI:S:${qrWifiSsid.value};T:${qrWifiType.value};P:${qrWifiPass.value};;`;
-        if (t === "email") return `mailto:${qrTextVal.value}`;
-        return qrTextVal.value || "Sitendra Engineering";
-      }
-
-      function renderQR() {
-        qrContainer.innerHTML = "";
-        const data = getQRDataString();
-        if (typeof QRCode !== "undefined") {
-          qrObj = new QRCode(qrContainer, {
-            text: data,
-            width: 200,
-            height: 200,
-            colorDark: qrFg.value,
-            colorLight: qrBg.value,
-            correctLevel: QRCode.CorrectLevel.H
-          });
-        }
-      }
-
-      qrType.addEventListener("change", updateQRFields);
-      [qrUrlVal, qrWifiSsid, qrWifiPass, qrWifiType, qrTextVal, qrFg, qrBg].forEach(el => {
-        el.addEventListener("input", renderQR);
-      });
-
-      document.getElementById("btn-download-qr").addEventListener("click", () => {
-        const img = qrContainer.querySelector("img");
-        if (img) {
-          const a = document.createElement("a");
-          a.download = "sitendra_qrcode.png";
-          a.href = img.src;
-          a.click();
-        }
-      });
-
-      // =========================================================
-      // 6. CRYPTOGRAPHIC HASHER & CHECKSUM
-      // =========================================================
-      const hashInputText = document.getElementById("hash-input-text");
-      const hashDropzone = document.getElementById("hash-dropzone");
-      const hashFileInput = document.getElementById("hash-file-input");
-      const hashFileInfo = document.getElementById("hash-file-info");
-
-      async function updateTextHashes() {
-        const txt = hashInputText.value;
-        document.getElementById("res-sha256").textContent = await SecurityEngine.hashText("SHA-256", txt);
-        document.getElementById("res-sha512").textContent = await SecurityEngine.hashText("SHA-512", txt);
-        document.getElementById("res-md5").textContent = SecurityEngine.md5(txt);
-        document.getElementById("res-sha1").textContent = await SecurityEngine.hashText("SHA-1", txt);
-      }
-
-      async function hashFile(file) {
-        hashFileInfo.textContent = `Processing: ${file.name} (${(file.size / 1024).toFixed(1)} KB)...`;
-        const buffer = await file.arrayBuffer();
-        document.getElementById("res-sha256").textContent = await SecurityEngine.hashBuffer("SHA-256", buffer);
-        document.getElementById("res-sha512").textContent = await SecurityEngine.hashBuffer("SHA-512", buffer);
-        document.getElementById("res-md5").textContent = await SecurityEngine.hashBuffer("MD5", buffer);
-        document.getElementById("res-sha1").textContent = await SecurityEngine.hashBuffer("SHA-1", buffer);
-        hashFileInfo.textContent = `✅ Calculated Checksums for: ${file.name}`;
-      }
-
-      hashInputText.addEventListener("input", updateTextHashes);
-      hashDropzone.addEventListener("click", () => hashFileInput.click());
-      hashFileInput.addEventListener("change", (e) => {
-        if (e.target.files && e.target.files[0]) hashFile(e.target.files[0]);
-      });
-      hashDropzone.addEventListener("dragover", (e) => e.preventDefault());
-      hashDropzone.addEventListener("drop", (e) => {
-        e.preventDefault();
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) hashFile(e.dataTransfer.files[0]);
-      });
-
-      // =========================================================
-      // 7. PASSWORD & PASSPHRASE GENERATOR
-      // =========================================================
-      const pwdOutput = document.getElementById("pwd-output");
-      const pwdLen = document.getElementById("pwd-len");
-      const pwdLenVal = document.getElementById("pwd-len-val");
-      const pwdUpper = document.getElementById("pwd-upper");
-      const pwdLower = document.getElementById("pwd-lower");
-      const pwdNum = document.getElementById("pwd-num");
-      const pwdSym = document.getElementById("pwd-sym");
-      const pwdAmbiguous = document.getElementById("pwd-ambiguous");
-
-      function generateAndScorePassword() {
-        const len = parseInt(pwdLen.value);
-        pwdLenVal.textContent = len;
-        const pwd = SecurityEngine.generatePassword(len, {
-          uppercase: pwdUpper.checked,
-          lowercase: pwdLower.checked,
-          numbers: pwdNum.checked,
-          symbols: pwdSym.checked,
-          avoidAmbiguous: pwdAmbiguous.checked
-        });
-        pwdOutput.value = pwd;
-        updateEntropy(pwd);
-      }
-
-      function updateEntropy(pwd) {
-        const ent = SecurityEngine.calculateEntropy(pwd);
-        document.getElementById("pwd-entropy-bits").textContent = `${ent.bits} bits`;
-        document.getElementById("pwd-strength").textContent = ent.strength;
-        document.getElementById("pwd-crack-time").textContent = ent.crackTime;
-      }
-
-      document.getElementById("btn-regen-pwd").addEventListener("click", generateAndScorePassword);
-      [pwdLen, pwdUpper, pwdLower, pwdNum, pwdSym, pwdAmbiguous].forEach(el => {
-        el.addEventListener("input", generateAndScorePassword);
-      });
-
-      document.getElementById("btn-copy-pwd").addEventListener("click", () => {
-        navigator.clipboard.writeText(pwdOutput.value);
-        const btn = document.getElementById("btn-copy-pwd");
-        btn.textContent = "✅ Copied!";
-        setTimeout(() => btn.textContent = "📋 Copy", 1500);
-      });
-
-      document.getElementById("btn-gen-passphrase").addEventListener("click", () => {
-        const phrase = SecurityEngine.generatePassphrase(4, "-", true);
-        pwdOutput.value = phrase;
-        updateEntropy(phrase);
-      });
-
-      // =========================================================
-      // 8. VISUAL TEXT DIFF
-      // =========================================================
-      const diffA = document.getElementById("diff-text-a");
-      const diffB = document.getElementById("diff-text-b");
-      const diffBox = document.getElementById("diff-results-box");
-
-      function runDiff() {
-        const diff = SecurityEngine.computeLineDiff(diffA.value, diffB.value);
-        diffBox.innerHTML = diff.map(d => {
-          if (d.type === "added") {
-            return `<div class="diff-line diff-added">+ ${escapeHtml(d.content)}</div>`;
-          } else if (d.type === "removed") {
-            return `<div class="diff-line diff-removed">- ${escapeHtml(d.content)}</div>`;
-          }
-          return `<div class="diff-line diff-unchanged">  ${escapeHtml(d.content)}</div>`;
-        }).join("");
-      }
-
-      function escapeHtml(str) {
-        if (!str) return "";
-        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-      }
-
-      document.getElementById("btn-run-diff").addEventListener("click", runDiff);
-      document.getElementById("btn-swap-diff").addEventListener("click", () => {
-        const temp = diffA.value;
-        diffA.value = diffB.value;
-        diffB.value = temp;
-        runDiff();
-      });
-      document.getElementById("btn-clear-diff").addEventListener("click", () => {
-        diffA.value = ""; diffB.value = ""; diffBox.innerHTML = "";
-      });
-
-      // =========================================================
-      // 9. JSON FORMATTER
-      // =========================================================
-      const jsonInput = document.getElementById("json-input");
-      const jsonOutput = document.getElementById("json-output");
-      const jsonStatus = document.getElementById("json-status");
-
-      document.getElementById("json-format-2").addEventListener("click", () => formatJSON(2));
-      document.getElementById("json-format-4").addEventListener("click", () => formatJSON(4));
-      document.getElementById("json-minify").addEventListener("click", () => formatJSON(0));
-      document.getElementById("json-clear").addEventListener("click", () => {
-        jsonInput.value = ""; jsonOutput.value = ""; jsonStatus.textContent = "";
-      });
-      document.getElementById("json-copy").addEventListener("click", () => {
-        navigator.clipboard.writeText(jsonOutput.value);
-        jsonStatus.textContent = "✅ Copied formatted JSON to clipboard!";
-        jsonStatus.style.color = "var(--success)";
-      });
-
-      function formatJSON(space) {
-        try {
-          const parsed = JSON.parse(jsonInput.value);
-          jsonOutput.value = JSON.stringify(parsed, null, space);
-          jsonStatus.textContent = "✅ Valid JSON syntax!";
-          jsonStatus.style.color = "var(--success)";
-        } catch (e) {
-          jsonStatus.textContent = `❌ Invalid JSON: ${e.message}`;
-          jsonStatus.style.color = "var(--danger)";
-        }
-      }
-
-      // =========================================================
-      // 10. UNIT CONVERTER
-      // =========================================================
-      const units = {
-        pressure: { "bar": 1e5, "psi": 6894.76, "Pa": 1, "MPa": 1e6, "atm": 101325 },
-        torque: { "N·m": 1, "lb·ft": 1.35582, "kg·m": 9.80665, "N·cm": 0.01 },
-        force: { "N": 1, "kN": 1000, "lbf": 4.44822, "kgf": 9.80665 },
-        power: { "kW": 1000, "HP": 745.7, "W": 1, "BTU/hr": 0.293071 },
-        length: { "mm": 0.001, "cm": 0.01, "m": 1, "in": 0.0254, "ft": 0.3048 }
-      };
-
-      const unitCat = document.getElementById("unit-category");
-      const unitFrom = document.getElementById("unit-from");
-      const unitTo = document.getElementById("unit-to");
-      const unitVal = document.getElementById("unit-input-val");
-      const unitRes = document.getElementById("unit-result");
-
-      function populateUnits() {
-        const cat = unitCat.value;
-        const options = Object.keys(units[cat]);
-        unitFrom.innerHTML = options.map(u => `<option value="${u}">${u}</option>`).join("");
-        unitTo.innerHTML = options.map((u, i) => `<option value="${u}" ${i === 1 ? 'selected' : ''}>${u}</option>`).join("");
-        runUnitConversion();
-      }
-
-      function runUnitConversion() {
-        const cat = unitCat.value;
-        const v = parseFloat(unitVal.value) || 0;
-        const fromFactor = units[cat][unitFrom.value];
-        const toFactor = units[cat][unitTo.value];
-        const base = v * fromFactor;
-        const converted = base / toFactor;
-        unitRes.textContent = `${converted.toLocaleString(undefined, { maximumFractionDigits: 6 })} ${unitTo.value}`;
-      }
-
-      unitCat.addEventListener("change", populateUnits);
-      unitFrom.addEventListener("change", runUnitConversion);
-      unitTo.addEventListener("change", runUnitConversion);
-      unitVal.addEventListener("input", runUnitConversion);
-
-      // =========================================================
-      // 11. REGEX TESTER
-      // =========================================================
-      const regPattern = document.getElementById("regex-pattern");
-      const regFlags = document.getElementById("regex-flags");
-      const regStr = document.getElementById("regex-test-str");
-      const regCount = document.getElementById("regex-match-count");
-      const regList = document.getElementById("regex-matches-list");
-
-      function testRegex() {
-        try {
-          const re = new RegExp(regPattern.value, regFlags.value);
-          const matches = [...regStr.value.matchAll(re)];
-          regCount.textContent = matches.length;
-          regList.innerHTML = matches.map((m, idx) => `
-            <div style="margin-bottom: 0.35rem; color: var(--primary);">
-              Match ${idx + 1}: <strong>"${m[0]}"</strong> at index ${m.index}
-            </div>
-          `).join("") || `<span style="color: var(--text-muted);">No matches found.</span>`;
-        } catch (e) {
-          regCount.textContent = "Error";
-          regList.innerHTML = `<span style="color: var(--danger);">Regex Syntax Error: ${e.message}</span>`;
-        }
-      }
-
-      regPattern.addEventListener("input", testRegex);
-      regFlags.addEventListener("input", testRegex);
-      regStr.addEventListener("input", testRegex);
-
-      // Initial Bootstrap
-      updateBeamUI();
-      solveGears();
-      solveBolts();
-      solveFits();
-      updateQRFields();
-      updateTextHashes();
-      generateAndScorePassword();
-      runDiff();
-      populateUnits();
-      testRegex();
     });
   </script>
 </body>

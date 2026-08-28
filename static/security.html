@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security &amp; Privacy Utilities Suite | Sitendra</title>
+  <meta name="description" content="Dedicated client-side Security & Privacy Utilities: QR Code Studio with Wi-Fi connect, In-Browser Cryptographic File Hasher & Checksum (SHA-256, SHA-512, MD5), Secure Password Generator with entropy meter, and Visual Diff.">
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/blog/blog.css">
+  <link rel="stylesheet" href="/cmd_k.css">
+  <link rel="stylesheet" href="/chat.css">
+
+  <!-- Theme Script -->
+  <script src="/theme.js"></script>
+
+  <!-- External Libraries (QR Code) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- Security Engine -->
+  <script src="/security_engine.js"></script>
+
+  <style>
+    /* Security Navigation Pills */
+    .sec-nav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.85rem;
+      margin-bottom: 2rem;
+    }
+    .sec-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.9rem 1.15rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+    .sec-nav-item:hover {
+      background: var(--bg-surface-hover);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+    .sec-nav-item.active {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+    }
+    .sec-nav-icon {
+      font-size: 1.35rem;
+      flex-shrink: 0;
+    }
+
+    /* Panes */
+    .sec-pane {
+      display: none;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2.25rem 2rem;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 3rem;
+    }
+    .sec-pane.active {
+      display: block;
+      animation: fadeIn 0.25s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Stat Cards */
+    .stat-badge-group {
+      padding: 1.25rem;
+      background: #090D16;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .stat-badge-title {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 0.2rem;
+    }
+    .stat-badge-val {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    /* Diff styling */
+    .diff-line {
+      padding: 0.2rem 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      border-radius: 2px;
+      margin-bottom: 2px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .diff-added {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34D399;
+      border-left: 3px solid #10B981;
+    }
+    .diff-removed {
+      background: rgba(239, 68, 68, 0.15);
+      color: #F87171;
+      border-left: 3px solid #EF4444;
+    }
+    .diff-unchanged {
+      color: var(--text-muted);
+    }
+
+    /* Dropzone box */
+    .dropzone-box {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-md);
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      background: var(--bg-surface-elevated);
+      transition: all 0.2s ease;
+    }
+    .dropzone-box:hover {
+      border-color: var(--primary);
+      background: rgba(56, 189, 248, 0.05);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header class="blog-header">
+    <div class="brand-wrapper">
+      <a href="/" id="brand-link" style="display: flex; align-items: center; gap: 0.85rem; color: inherit;">
+        <div class="brand-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+        <div class="brand-title">
+          Sitendra <span class="brand-badge">Security Suite</span>
+        </div>
+      </a>
+    </div>
+
+    <nav class="nav-links">
+      <a href="/security" class="nav-item active">Security Suite</a>
+      <a href="/calc" class="nav-item">Mechanical Calc</a>
+      <a href="/dev" class="nav-item">Dev Tools</a>
+      <a href="/image-tools" class="nav-item">Image Studio</a>
+      <a href="/resume" class="nav-item">Resume Builder</a>
+      <a href="/games" class="nav-item">Games</a>
+      <a href="/blog" class="nav-item">Blog</a>
+      <a href="/about" class="nav-item">About</a>
+      <button type="button" class="theme-toggle-btn" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">☀️</button>
+      <button type="button" class="btn btn-secondary btn-sm" id="cmdk-btn" title="Quick Search (Cmd+K)">
+        <span style="font-family: var(--font-mono); font-size: 0.75rem;">⌘K</span>
+      </button>
+    </nav>
+  </header>
+
+  <main class="blog-container" style="max-width: 1200px; padding: 1.5rem 1.5rem 3rem;">
+    <!-- Hero Section -->
+    <div class="hero-section" style="padding: 1.5rem 0 2rem;">
+      <div class="hero-eyebrow">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        100% In-Browser &amp; Zero Tracking
+      </div>
+      <h1 class="hero-title" style="font-size: 2.4rem;">
+        Security &amp; Everyday <span class="gradient-text">Utilities Suite</span>
+      </h1>
+      <p class="hero-desc">
+        Fast, private, client-side tools for generating customized QR codes &amp; Wi-Fi cards, computing cryptographic file checksums without server uploads, generating high-entropy passwords, and comparing visual text diffs.
+      </p>
+    </div>
+
+    <!-- Navigation Pills -->
+    <div class="sec-nav-grid">
+      <button type="button" class="sec-nav-item active" data-target="qrcode">
+        <span class="sec-nav-icon">📱</span>
+        <span>QR Code &amp; Wi-Fi Studio</span>
+      </button>
+      <button type="button" class="sec-nav-item" data-target="hasher">
+        <span class="sec-nav-icon">🔐</span>
+        <span>Cryptographic File Hasher</span>
+      </button>
+      <button type="button" class="sec-nav-item" data-target="password">
+        <span class="sec-nav-icon">🔑</span>
+        <span>Password &amp; Passphrase Gen</span>
+      </button>
+      <button type="button" class="sec-nav-item" data-target="diff">
+        <span class="sec-nav-icon">🔀</span>
+        <span>Visual Text &amp; Code Diff</span>
+      </button>
+    </div>
+
+    <!-- =========================================================
+         TOOL 1: QR CODE STUDIO
+         ========================================================= -->
+    <div class="sec-pane active" id="pane-qrcode">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">📱 QR Code &amp; Wi-Fi Connect Studio</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
+        Generate customizable, high-resolution QR codes for websites, Wi-Fi automatic connections, vCard contacts, or email. 100% private.
+      </p>
+
+      <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 2rem; align-items: start;">
+        <div style="background: var(--bg-surface-elevated); padding: 1.5rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label">QR Code Type</label>
+            <select id="qr-type" class="form-control">
+              <option value="url" selected>Website URL / Link</option>
+              <option value="wifi">Wi-Fi Network Auto-Connect</option>
+              <option value="text">Plain Text</option>
+              <option value="email">Email Message</option>
+            </select>
+          </div>
+
+          <!-- URL Inputs -->
+          <div id="qr-url-fields" class="form-group">
+            <label class="form-label">Target Website URL</label>
+            <input type="text" id="qr-url-val" class="form-control" value="https://sitendra.store" placeholder="https://example.com">
+          </div>
+
+          <!-- Wi-Fi Inputs -->
+          <div id="qr-wifi-fields" style="display: none;">
+            <div class="form-group">
+              <label class="form-label">Network Name (SSID)</label>
+              <input type="text" id="qr-wifi-ssid" class="form-control" placeholder="Home_WiFi">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input type="text" id="qr-wifi-pass" class="form-control" placeholder="SecretPassword">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Security Type</label>
+              <select id="qr-wifi-type" class="form-control">
+                <option value="WPA">WPA/WPA2/WPA3</option>
+                <option value="WEP">WEP</option>
+                <option value="nopass">None (Open)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Text / Email -->
+          <div id="qr-text-fields" style="display: none;" class="form-group">
+            <label class="form-label">Text Content</label>
+            <textarea id="qr-text-val" class="editor-textarea" rows="3" placeholder="Enter text..."></textarea>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Foreground Color</label>
+              <input type="color" id="qr-fg-color" value="#0F172A" style="width: 100%; height: 38px; border: none; background: transparent; cursor: pointer;">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Background Color</label>
+              <input type="color" id="qr-bg-color" value="#FFFFFF" style="width: 100%; height: 38px; border: none; background: transparent; cursor: pointer;">
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview & Download -->
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg-surface-elevated); padding: 1.5rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
+          <div id="qrcode-render" style="padding: 1rem; background: #FFFFFF; border-radius: 8px; box-shadow: var(--shadow-sm); margin-bottom: 1.25rem;"></div>
+          <button type="button" class="btn btn-primary" id="btn-download-qr">📥 Download PNG Image</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         TOOL 2: CRYPTOGRAPHIC HASHER & FILE CHECKSUM
+         ========================================================= -->
+    <div class="sec-pane" id="pane-hasher">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">🔐 Cryptographic Hash &amp; File Checksum Generator</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
+        Generate SHA-256, SHA-512, SHA-384, SHA-1, and MD5 checksums for text or drag-and-drop local files. 100% in-browser.
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+        <div>
+          <label class="form-label">Input Text</label>
+          <textarea id="hash-input-text" class="editor-textarea" rows="4" placeholder="Type or paste text to hash..."></textarea>
+        </div>
+        <div>
+          <label class="form-label">Or Drag &amp; Drop Local File</label>
+          <div class="dropzone-box" id="hash-dropzone">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📁</div>
+            <div style="font-weight: 600;">Click to select or drop a file</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.35rem;">Calculates checksums locally without uploading</div>
+            <input type="file" id="hash-file-input" style="display: none;">
+          </div>
+          <div id="hash-file-info" style="font-size: 0.85rem; color: var(--success); margin-top: 0.5rem; font-weight: 600;"></div>
+        </div>
+      </div>
+
+      <!-- Hash Results -->
+      <div style="background: #090D16; padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 0.88rem; display: flex; flex-direction: column; gap: 0.75rem;">
+        <div>
+          <div style="color: var(--primary); font-weight: 700; font-size: 0.8rem;">SHA-256</div>
+          <div id="res-sha256" style="word-break: break-all; color: var(--text-main);">-</div>
+        </div>
+        <div>
+          <div style="color: var(--success); font-weight: 700; font-size: 0.8rem;">SHA-512</div>
+          <div id="res-sha512" style="word-break: break-all; color: var(--text-main);">-</div>
+        </div>
+        <div>
+          <div style="color: var(--warning); font-weight: 700; font-size: 0.8rem;">MD5</div>
+          <div id="res-md5" style="word-break: break-all; color: var(--text-main);">-</div>
+        </div>
+        <div>
+          <div style="color: var(--text-muted); font-weight: 700; font-size: 0.8rem;">SHA-1</div>
+          <div id="res-sha1" style="word-break: break-all; color: var(--text-main);">-</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         TOOL 3: PASSWORD & PASSPHRASE GENERATOR
+         ========================================================= -->
+    <div class="sec-pane" id="pane-password">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">🔑 Cryptographically Secure Password &amp; Passphrase Generator</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
+        Generate random passwords powered by <code>crypto.getRandomValues</code> or memorable Diceware multi-word passphrases with entropy scores.
+      </p>
+
+      <div style="background: var(--bg-surface-elevated); padding: 1.5rem; border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+        <div style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 1.25rem;">
+          <input type="text" id="pwd-output" class="form-control" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 700; color: var(--primary);" readonly>
+          <button type="button" class="btn btn-primary" id="btn-copy-pwd">📋 Copy</button>
+          <button type="button" class="btn btn-secondary" id="btn-regen-pwd">🔄 Regenerate</button>
+        </div>
+
+        <div class="stat-badge-group" style="margin-bottom: 1.25rem;">
+          <div>
+            <div class="stat-badge-title">Entropy</div>
+            <div id="pwd-entropy-bits" class="stat-badge-val" style="color: var(--primary);">-</div>
+          </div>
+          <div>
+            <div class="stat-badge-title">Strength</div>
+            <div id="pwd-strength" class="stat-badge-val" style="color: var(--success);">-</div>
+          </div>
+          <div>
+            <div class="stat-badge-title">Crack Time Estimate</div>
+            <div id="pwd-crack-time" class="stat-badge-val" style="color: var(--warning);">-</div>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem;">
+          <div class="form-group">
+            <label class="form-label">Password Length: <span id="pwd-len-val" style="font-weight: 700;">16</span></label>
+            <input type="range" id="pwd-len" min="8" max="64" value="16" style="width: 100%;">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Character Sets</label>
+            <div style="display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.88rem;">
+              <label><input type="checkbox" id="pwd-upper" checked> Uppercase (A-Z)</label>
+              <label><input type="checkbox" id="pwd-lower" checked> Lowercase (a-z)</label>
+              <label><input type="checkbox" id="pwd-num" checked> Numbers (0-9)</label>
+              <label><input type="checkbox" id="pwd-sym" checked> Symbols (!@#$%^&*)</label>
+              <label><input type="checkbox" id="pwd-ambiguous" checked> Avoid Ambiguous (0, O, 1, l)</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Or Memorable Passphrase</label>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-gen-passphrase" style="width: 100%; margin-top: 0.25rem;">
+              Generate 4-Word Passphrase
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         TOOL 4: VISUAL TEXT DIFF
+         ========================================================= -->
+    <div class="sec-pane" id="pane-diff">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">🔀 Side-by-Side Visual Text &amp; Code Diff Checker</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
+        Compare two text or code files line-by-line with highlighted additions, deletions, and modifications.
+      </p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1rem;">
+        <div>
+          <label class="form-label">Original Text (A)</label>
+          <textarea id="diff-text-a" class="editor-textarea" rows="6" placeholder="Original code or text...">function greet(name) {
+  console.log("Hello, " + name);
+  return true;
+}</textarea>
+        </div>
+        <div>
+          <label class="form-label">Modified Text (B)</label>
+          <textarea id="diff-text-b" class="editor-textarea" rows="6" placeholder="Modified code or text...">function greet(name, title = "Engineer") {
+  console.log(`Hello, ${title} ${name}!`);
+  return true;
+}</textarea>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; margin-bottom: 1.25rem;">
+        <button type="button" class="btn btn-primary btn-sm" id="btn-run-diff">Compare Differences</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-swap-diff">🔄 Swap A &amp; B</button>
+        <button type="button" class="btn btn-danger btn-sm" id="btn-clear-diff">Clear</button>
+      </div>
+
+      <div id="diff-results-box" style="background: #090D16; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; min-height: 120px;"></div>
+    </div>
+
+  </main>
+
+  <footer class="blog-footer">
+    <p>&copy; 2026 Sitendra Kumar Nagesh &bull; <a href="/security">Security Suite</a> &bull; <a href="/calc">Mechanical Calc</a> &bull; <a href="/dev">Dev Tools</a> &bull; <a href="/image-tools">Image Studio</a> &bull; <a href="/resume">Resume Builder</a> &bull; <a href="/games">Games</a></p>
+  </footer>
+
+  <script src="/cmd_k.js"></script>
+  <script src="/chat.js"></script>
+
+  <!-- Security Engine Logic -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Nav Tabs
+      const navItems = document.querySelectorAll(".sec-nav-item");
+      const panes = document.querySelectorAll(".sec-pane");
+
+      navItems.forEach(item => {
+        item.addEventListener("click", () => {
+          navItems.forEach(n => n.classList.remove("active"));
+          panes.forEach(p => p.classList.remove("active"));
+          item.classList.add("active");
+          const target = document.getElementById(`pane-${item.dataset.target}`);
+          if (target) target.classList.add("active");
+        });
+      });
+
+      // 1. QR CODE STUDIO
+      let qrObj = null;
+      const qrType = document.getElementById("qr-type");
+      const qrUrlVal = document.getElementById("qr-url-val");
+      const qrWifiSsid = document.getElementById("qr-wifi-ssid");
+      const qrWifiPass = document.getElementById("qr-wifi-pass");
+      const qrWifiType = document.getElementById("qr-wifi-type");
+      const qrTextVal = document.getElementById("qr-text-val");
+      const qrFg = document.getElementById("qr-fg-color");
+      const qrBg = document.getElementById("qr-bg-color");
+      const qrContainer = document.getElementById("qrcode-render");
+
+      function updateQRFields() {
+        const t = qrType.value;
+        document.getElementById("qr-url-fields").style.display = t === "url" ? "block" : "none";
+        document.getElementById("qr-wifi-fields").style.display = t === "wifi" ? "block" : "none";
+        document.getElementById("qr-text-fields").style.display = (t === "text" || t === "email") ? "block" : "none";
+        renderQR();
+      }
+
+      function getQRDataString() {
+        const t = qrType.value;
+        if (t === "url") return qrUrlVal.value || "https://sitendra.store";
+        if (t === "wifi") return `WIFI:S:${qrWifiSsid.value};T:${qrWifiType.value};P:${qrWifiPass.value};;`;
+        if (t === "email") return `mailto:${qrTextVal.value}`;
+        return qrTextVal.value || "Sitendra Engineering";
+      }
+
+      function renderQR() {
+        qrContainer.innerHTML = "";
+        const data = getQRDataString();
+        if (typeof QRCode !== "undefined") {
+          qrObj = new QRCode(qrContainer, {
+            text: data,
+            width: 200,
+            height: 200,
+            colorDark: qrFg.value,
+            colorLight: qrBg.value,
+            correctLevel: QRCode.CorrectLevel.H
+          });
+        }
+      }
+
+      qrType.addEventListener("change", updateQRFields);
+      [qrUrlVal, qrWifiSsid, qrWifiPass, qrWifiType, qrTextVal, qrFg, qrBg].forEach(el => {
+        el.addEventListener("input", renderQR);
+      });
+
+      document.getElementById("btn-download-qr").addEventListener("click", () => {
+        const img = qrContainer.querySelector("img");
+        if (img) {
+          const a = document.createElement("a");
+          a.download = "sitendra_qrcode.png";
+          a.href = img.src;
+          a.click();
+        }
+      });
+
+      // 2. CRYPTOGRAPHIC HASHER
+      const hashInputText = document.getElementById("hash-input-text");
+      const hashDropzone = document.getElementById("hash-dropzone");
+      const hashFileInput = document.getElementById("hash-file-input");
+      const hashFileInfo = document.getElementById("hash-file-info");
+
+      async function updateTextHashes() {
+        const txt = hashInputText.value;
+        document.getElementById("res-sha256").textContent = await SecurityEngine.hashText("SHA-256", txt);
+        document.getElementById("res-sha512").textContent = await SecurityEngine.hashText("SHA-512", txt);
+        document.getElementById("res-md5").textContent = SecurityEngine.md5(txt);
+        document.getElementById("res-sha1").textContent = await SecurityEngine.hashText("SHA-1", txt);
+      }
+
+      async function hashFile(file) {
+        hashFileInfo.textContent = `Processing: ${file.name} (${(file.size / 1024).toFixed(1)} KB)...`;
+        const buffer = await file.arrayBuffer();
+        document.getElementById("res-sha256").textContent = await SecurityEngine.hashBuffer("SHA-256", buffer);
+        document.getElementById("res-sha512").textContent = await SecurityEngine.hashBuffer("SHA-512", buffer);
+        document.getElementById("res-md5").textContent = await SecurityEngine.hashBuffer("MD5", buffer);
+        document.getElementById("res-sha1").textContent = await SecurityEngine.hashBuffer("SHA-1", buffer);
+        hashFileInfo.textContent = `✅ Calculated Checksums for: ${file.name}`;
+      }
+
+      hashInputText.addEventListener("input", updateTextHashes);
+      hashDropzone.addEventListener("click", () => hashFileInput.click());
+      hashFileInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) hashFile(e.target.files[0]);
+      });
+      hashDropzone.addEventListener("dragover", (e) => e.preventDefault());
+      hashDropzone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) hashFile(e.dataTransfer.files[0]);
+      });
+
+      // 3. PASSWORD GENERATOR
+      const pwdOutput = document.getElementById("pwd-output");
+      const pwdLen = document.getElementById("pwd-len");
+      const pwdLenVal = document.getElementById("pwd-len-val");
+      const pwdUpper = document.getElementById("pwd-upper");
+      const pwdLower = document.getElementById("pwd-lower");
+      const pwdNum = document.getElementById("pwd-num");
+      const pwdSym = document.getElementById("pwd-sym");
+      const pwdAmbiguous = document.getElementById("pwd-ambiguous");
+
+      function generateAndScorePassword() {
+        const len = parseInt(pwdLen.value);
+        pwdLenVal.textContent = len;
+        const pwd = SecurityEngine.generatePassword(len, {
+          uppercase: pwdUpper.checked,
+          lowercase: pwdLower.checked,
+          numbers: pwdNum.checked,
+          symbols: pwdSym.checked,
+          avoidAmbiguous: pwdAmbiguous.checked
+        });
+        pwdOutput.value = pwd;
+        updateEntropy(pwd);
+      }
+
+      function updateEntropy(pwd) {
+        const ent = SecurityEngine.calculateEntropy(pwd);
+        document.getElementById("pwd-entropy-bits").textContent = `${ent.bits} bits`;
+        document.getElementById("pwd-strength").textContent = ent.strength;
+        document.getElementById("pwd-crack-time").textContent = ent.crackTime;
+      }
+
+      document.getElementById("btn-regen-pwd").addEventListener("click", generateAndScorePassword);
+      [pwdLen, pwdUpper, pwdLower, pwdNum, pwdSym, pwdAmbiguous].forEach(el => {
+        el.addEventListener("input", generateAndScorePassword);
+      });
+
+      document.getElementById("btn-copy-pwd").addEventListener("click", () => {
+        navigator.clipboard.writeText(pwdOutput.value);
+        const btn = document.getElementById("btn-copy-pwd");
+        btn.textContent = "✅ Copied!";
+        setTimeout(() => btn.textContent = "📋 Copy", 1500);
+      });
+
+      document.getElementById("btn-gen-passphrase").addEventListener("click", () => {
+        const phrase = SecurityEngine.generatePassphrase(4, "-", true);
+        pwdOutput.value = phrase;
+        updateEntropy(phrase);
+      });
+
+      // 4. VISUAL DIFF
+      const diffA = document.getElementById("diff-text-a");
+      const diffB = document.getElementById("diff-text-b");
+      const diffBox = document.getElementById("diff-results-box");
+
+      function runDiff() {
+        const diff = SecurityEngine.computeLineDiff(diffA.value, diffB.value);
+        diffBox.innerHTML = diff.map(d => {
+          if (d.type === "added") {
+            return `<div class="diff-line diff-added">+ ${escapeHtml(d.content)}</div>`;
+          } else if (d.type === "removed") {
+            return `<div class="diff-line diff-removed">- ${escapeHtml(d.content)}</div>`;
+          }
+          return `<div class="diff-line diff-unchanged">  ${escapeHtml(d.content)}</div>`;
+        }).join("");
+      }
+
+      function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      }
+
+      document.getElementById("btn-run-diff").addEventListener("click", runDiff);
+      document.getElementById("btn-swap-diff").addEventListener("click", () => {
+        const temp = diffA.value;
+        diffA.value = diffB.value;
+        diffB.value = temp;
+        runDiff();
+      });
+      document.getElementById("btn-clear-diff").addEventListener("click", () => {
+        diffA.value = ""; diffB.value = ""; diffBox.innerHTML = "";
+      });
+
+      // Initial Run
+      updateQRFields();
+      updateTextHashes();
+      generateAndScorePassword();
+      runDiff();
+    });
+  </script>
+</body>
+</html>
