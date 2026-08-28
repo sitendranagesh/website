@@ -314,7 +314,7 @@
     <!-- Category Filters & Live Search -->
     <div class="studio-control-bar">
       <div class="category-pills" id="category-pills">
-        <button type="button" class="category-pill active" data-cat="all">All Tools (15)</button>
+        <button type="button" class="category-pill active" data-cat="all">All Tools (16)</button>
         <button type="button" class="category-pill" data-cat="compression">Compression &amp; Size</button>
         <button type="button" class="category-pill" data-cat="passport">Govt Exams &amp; Passports</button>
         <button type="button" class="category-pill" data-cat="signature">Signatures &amp; Watermarks</button>
@@ -322,11 +322,17 @@
         <button type="button" class="category-pill" data-cat="editing">Editing &amp; Utilities</button>
       </div>
 
-      <input type="text" id="tool-search" class="tool-search-input" placeholder="🔍 Search tool by name (e.g., '20KB', 'Passport', 'DOB', 'Signature', 'OCR', 'PDF', 'Censor', 'Pixel', 'Batch')...">
+      <input type="text" id="tool-search" class="tool-search-input" placeholder="🔍 Search tool by name (e.g., 'Custom Editor', 'Brightness', 'Crop', 'DOB', 'Signature', 'OCR', 'PDF', 'Pixel')...">
     </div>
 
     <!-- Navigation Tool Cards Grid -->
     <div class="tools-nav-grid" id="tools-nav-grid">
+      <!-- 16. Custom Image Editor & Precision Cropper (Flagship) -->
+      <button type="button" class="tool-nav-item" data-tool="custom-editor" data-cat="editing">
+        <span class="tool-nav-icon">🎨</span>
+        <span>Custom Editor &amp; Cropper</span>
+      </button>
+
       <!-- 1. Target KB Compressor -->
       <button type="button" class="tool-nav-item active" data-tool="target-compress" data-cat="compression">
         <span class="tool-nav-icon">🎯</span>
@@ -1184,6 +1190,266 @@
         <button type="button" class="btn btn-primary" id="rp-download-btn">
           📥 Download Resized Image
         </button>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         TOOL 16: CUSTOM IMAGE EDITOR & PRECISION CROPPER
+         ========================================================= -->
+    <div class="tool-pane" id="pane-custom-editor">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.4rem;">🎨 Custom Image Editor &amp; Precision Unit Cropper</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem;">
+        Professional in-browser studio: Adjust brightness, contrast, hue &amp; saturation, precision-crop by <strong>Pixels, Inches, Centimeters, or Millimeters</strong> with standard DPI scaling, and overlay candidate names &amp; dates in bold at the bottom.
+      </p>
+
+      <!-- Drop Zone -->
+      <div class="drop-zone" id="ce-drop-zone">
+        <span class="drop-zone-icon">🖼️</span>
+        <div class="drop-zone-text">Click to browse or drag &amp; drop an image (JPEG, PNG, WebP)</div>
+        <div class="drop-zone-hint">Paste from clipboard (Ctrl+V / Cmd+V) supported &bull; 100% In-Browser</div>
+        <input type="file" id="ce-file-input" accept="image/*" style="display: none;">
+      </div>
+
+      <!-- Editor Workbench (Hidden until image loaded) -->
+      <div id="ce-workbench" style="display: none; margin-top: 1.5rem;">
+        <div style="display: grid; grid-template-columns: minmax(320px, 420px) 1fr; gap: 1.75rem; align-items: start;">
+          
+          <!-- Controls Column -->
+          <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
+            
+            <!-- Subtab Navigation inside Custom Editor -->
+            <div style="display: flex; gap: 0.35rem; background: var(--bg-surface); padding: 0.3rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+              <button type="button" class="btn btn-sm ce-subtab-btn active" data-subtab="adjust" style="flex: 1; font-size: 0.8rem; padding: 0.35rem 0.2rem;">☀️ Filters</button>
+              <button type="button" class="btn btn-sm ce-subtab-btn" data-subtab="crop" style="flex: 1; font-size: 0.8rem; padding: 0.35rem 0.2rem;">✂️ Crop</button>
+              <button type="button" class="btn btn-sm ce-subtab-btn" data-subtab="text" style="flex: 1; font-size: 0.8rem; padding: 0.35rem 0.2rem;">📝 Name Strip</button>
+              <button type="button" class="btn btn-sm ce-subtab-btn" data-subtab="transform" style="flex: 1; font-size: 0.8rem; padding: 0.35rem 0.2rem;">🔄 Rotate</button>
+            </div>
+
+            <!-- SUBTAB 1: Color Adjustments & Filters -->
+            <div id="ce-subpane-adjust" class="ce-subpane">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <label class="form-label" style="margin: 0; font-weight: 700;">Color &amp; Light Balance</label>
+                <button type="button" class="btn btn-secondary btn-sm" id="ce-reset-filters-btn" style="padding: 0.2rem 0.6rem; font-size: 0.75rem;">🔄 Reset</button>
+              </div>
+
+              <!-- Brightness -->
+              <div class="form-group" style="margin-bottom: 0.85rem;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                  <span>☀️ Brightness</span>
+                  <span id="ce-brightness-val" style="font-family: var(--font-mono); font-weight: 700; color: var(--primary);">100%</span>
+                </div>
+                <input type="range" id="ce-brightness" min="0" max="200" value="100" style="width: 100%;">
+              </div>
+
+              <!-- Contrast -->
+              <div class="form-group" style="margin-bottom: 0.85rem;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                  <span>🌓 Contrast</span>
+                  <span id="ce-contrast-val" style="font-family: var(--font-mono); font-weight: 700; color: var(--primary);">100%</span>
+                </div>
+                <input type="range" id="ce-contrast" min="0" max="200" value="100" style="width: 100%;">
+              </div>
+
+              <!-- Hue Rotate -->
+              <div class="form-group" style="margin-bottom: 0.85rem;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                  <span>🌈 Hue Rotation</span>
+                  <span id="ce-hue-val" style="font-family: var(--font-mono); font-weight: 700; color: var(--primary);">0°</span>
+                </div>
+                <input type="range" id="ce-hue" min="-180" max="180" value="0" style="width: 100%;">
+              </div>
+
+              <!-- Saturation -->
+              <div class="form-group" style="margin-bottom: 0.85rem;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                  <span>💧 Saturation</span>
+                  <span id="ce-saturation-val" style="font-family: var(--font-mono); font-weight: 700; color: var(--primary);">100%</span>
+                </div>
+                <input type="range" id="ce-saturation" min="0" max="200" value="100" style="width: 100%;">
+              </div>
+
+              <!-- Blur -->
+              <div class="form-group" style="margin-bottom: 0.85rem;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                  <span>🌫️ Blur Effect</span>
+                  <span id="ce-blur-val" style="font-family: var(--font-mono); font-weight: 700; color: var(--primary);">0px</span>
+                </div>
+                <input type="range" id="ce-blur" min="0" max="10" value="0" step="0.5" style="width: 100%;">
+              </div>
+
+              <!-- Quick Filter Toggles -->
+              <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.75rem; padding-top: 0.5rem; border-top: 1px solid var(--border);">
+                <label style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.82rem; cursor: pointer;">
+                  <input type="checkbox" id="ce-filter-grayscale"> Grayscale
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.82rem; cursor: pointer;">
+                  <input type="checkbox" id="ce-filter-sepia"> Sepia
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.82rem; cursor: pointer;">
+                  <input type="checkbox" id="ce-filter-invert"> Invert
+                </label>
+              </div>
+            </div>
+
+            <!-- SUBTAB 2: Crop by Units (px, in, cm, mm) -->
+            <div id="ce-subpane-crop" class="ce-subpane" style="display: none;">
+              <div class="form-group" style="margin-bottom: 0.85rem;">
+                <label class="form-label">Crop Dimension Unit</label>
+                <select id="ce-crop-unit" class="form-control">
+                  <option value="px" selected>Pixels (px) - Exact Screen Resolution</option>
+                  <option value="cm">Centimeters (cm) - Metric Print &amp; ID</option>
+                  <option value="in">Inches (in) - US Visa &amp; Photo Print</option>
+                  <option value="mm">Millimeters (mm) - Precision Technical</option>
+                </select>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 0.85rem;" id="ce-dpi-group">
+                <label class="form-label">Print Resolution (DPI / PPI)</label>
+                <select id="ce-dpi" class="form-control">
+                  <option value="300" selected>300 DPI (High-Quality Print &amp; Passport Standard)</option>
+                  <option value="200">200 DPI (Standard Exam Upload)</option>
+                  <option value="150">150 DPI (Medium Web Quality)</option>
+                  <option value="72">72 DPI (Standard Screen / Web)</option>
+                </select>
+              </div>
+
+              <!-- Presets -->
+              <div class="form-group" style="margin-bottom: 0.85rem;">
+                <label class="form-label">Aspect Ratio &amp; Standard Presets</label>
+                <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                  <button type="button" class="preset-pill ce-crop-preset" data-preset="free">🌟 Free Crop</button>
+                  <button type="button" class="preset-pill ce-crop-preset" data-preset="1:1">1:1 Square</button>
+                  <button type="button" class="preset-pill ce-crop-preset" data-preset="passport_in">3.5×4.5 cm (Passport)</button>
+                  <button type="button" class="preset-pill ce-crop-preset" data-preset="visa_us">2×2 in (US Visa)</button>
+                  <button type="button" class="preset-pill ce-crop-preset" data-preset="4:3">4:3 Photo</button>
+                  <button type="button" class="preset-pill ce-crop-preset" data-preset="16:9">16:9 Banner</button>
+                </div>
+              </div>
+
+              <!-- Crop Dimensions Input Row -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div class="form-group">
+                  <label class="form-label">Crop Width (<span class="ce-unit-label">px</span>)</label>
+                  <input type="number" id="ce-crop-w" class="form-control" min="1" step="any">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Crop Height (<span class="ce-unit-label">px</span>)</label>
+                  <input type="number" id="ce-crop-h" class="form-control" min="1" step="any">
+                </div>
+              </div>
+
+              <!-- Crop Position Offset Row -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div class="form-group">
+                  <label class="form-label">X Offset (<span class="ce-unit-label">px</span>)</label>
+                  <input type="number" id="ce-crop-x" class="form-control" min="0" value="0" step="any">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Y Offset (<span class="ce-unit-label">px</span>)</label>
+                  <input type="number" id="ce-crop-y" class="form-control" min="0" value="0" step="any">
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; cursor: pointer;">
+                  <input type="checkbox" id="ce-lock-aspect"> 🔒 Lock Ratio
+                </label>
+                <button type="button" class="btn btn-secondary btn-sm" id="ce-center-crop-btn" style="font-size: 0.78rem;">
+                  🎯 Center Crop Box
+                </button>
+              </div>
+            </div>
+
+            <!-- SUBTAB 3: Bottom Name & Caption Strip -->
+            <div id="ce-subpane-text" class="ce-subpane" style="display: none;">
+              <div class="form-group" style="margin-bottom: 0.85rem;">
+                <label style="display: flex; align-items: center; gap: 0.45rem; font-weight: 700; cursor: pointer;">
+                  <input type="checkbox" id="ce-banner-enable"> ✨ Add Bottom Name &amp; Date Banner
+                </label>
+              </div>
+
+              <div id="ce-banner-controls" style="opacity: 0.5; pointer-events: none; transition: opacity 0.2s ease;">
+                <div class="form-group" style="margin-bottom: 0.75rem;">
+                  <label class="form-label">Candidate Name / Title (Bold)</label>
+                  <input type="text" id="ce-banner-name" class="form-control" placeholder="e.g. SITENDRA KUMAR NAGESH" value="SITENDRA KUMAR NAGESH">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0.75rem;">
+                  <label class="form-label">Date of Photo (DOP) / Subtitle (Bold)</label>
+                  <input type="text" id="ce-banner-date" class="form-control" placeholder="e.g. DOP: 28.08.2026" value="DOP: 28.08.2026">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                  <div class="form-group">
+                    <label class="form-label">Banner Background</label>
+                    <input type="color" id="ce-banner-bg" value="#FFFFFF" style="width: 100%; height: 38px; border: none; background: transparent; cursor: pointer;">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Text Color</label>
+                    <input type="color" id="ce-banner-color" value="#000000" style="width: 100%; height: 38px; border: none; background: transparent; cursor: pointer;">
+                  </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0.75rem;">
+                  <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                    <span>Banner Height (%)</span>
+                    <span id="ce-banner-height-val" style="font-family: var(--font-mono); font-weight: 700; color: var(--primary);">20%</span>
+                  </div>
+                  <input type="range" id="ce-banner-height" min="10" max="35" value="20" style="width: 100%;">
+                </div>
+              </div>
+            </div>
+
+            <!-- SUBTAB 4: Rotation & Orientation -->
+            <div id="ce-subpane-transform" class="ce-subpane" style="display: none;">
+              <label class="form-label" style="font-weight: 700; margin-bottom: 0.75rem;">Orientation &amp; Flipping</label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
+                <button type="button" class="btn btn-secondary btn-sm" id="ce-rotate-cw">↷ Rotate 90° CW</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="ce-rotate-ccw">↶ Rotate 90° CCW</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="ce-flip-h">⇄ Flip Horizontal</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="ce-flip-v">⇅ Flip Vertical</button>
+              </div>
+            </div>
+
+            <!-- Export & Download Strip -->
+            <div style="border-top: 1px solid var(--border); padding-top: 1.25rem;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+                <div class="form-group">
+                  <label class="form-label">Export Format</label>
+                  <select id="ce-export-format" class="form-control">
+                    <option value="image/jpeg" selected>JPEG (.jpg)</option>
+                    <option value="image/png">PNG (.png)</option>
+                    <option value="image/webp">WebP (.webp)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Quality (<span id="ce-quality-val">95%</span>)</label>
+                  <input type="range" id="ce-export-quality" min="50" max="100" value="95" style="width: 100%;">
+                </div>
+              </div>
+
+              <button type="button" class="btn btn-primary" id="ce-download-btn" style="width: 100%;">
+                📥 Download Custom Edited Image
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Canvas Preview Column -->
+          <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.5rem; display: flex; flex-direction: column; align-items: center;">
+            <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <span style="font-weight: 700; font-size: 0.95rem;">Live Real-Time Studio Preview</span>
+              <span id="ce-dims-badge" style="font-family: var(--font-mono); font-size: 0.8rem; background: var(--bg-surface); padding: 0.25rem 0.6rem; border-radius: var(--radius-sm); border: 1px solid var(--border); color: var(--primary); font-weight: 600;">-</span>
+            </div>
+
+            <div style="position: relative; max-width: 100%; max-height: 520px; overflow: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); background: #000000; display: flex; align-items: center; justify-content: center; padding: 0.5rem;">
+              <canvas id="ce-preview-canvas" style="max-width: 100%; max-height: 500px; display: block; object-fit: contain;"></canvas>
+            </div>
+            
+            <div id="ce-physical-badge" style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted); text-align: center;"></div>
+          </div>
+
+        </div>
       </div>
     </div>
   </main>
@@ -2438,6 +2704,519 @@
           link.href = URL.createObjectURL(blob);
           link.click();
         }, fmt, 0.95);
+      });
+      // ---------------------------------------------------------
+      // TOOL 16: CUSTOM IMAGE EDITOR & PRECISION CROPPER
+      // ---------------------------------------------------------
+      const ceDropZone = document.getElementById("ce-drop-zone");
+      const ceFileInput = document.getElementById("ce-file-input");
+      const ceWorkbench = document.getElementById("ce-workbench");
+      const cePreviewCanvas = document.getElementById("ce-preview-canvas");
+      const ceDimsBadge = document.getElementById("ce-dims-badge");
+      const cePhysicalBadge = document.getElementById("ce-physical-badge");
+
+      // Subtabs
+      const ceSubtabBtns = document.querySelectorAll(".ce-subtab-btn");
+      const ceSubpanes = document.querySelectorAll(".ce-subpane");
+
+      ceSubtabBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          ceSubtabBtns.forEach(b => b.classList.remove("active"));
+          ceSubpanes.forEach(p => p.style.display = "none");
+          btn.classList.add("active");
+          const target = document.getElementById(`ce-subpane-${btn.dataset.subtab}`);
+          if (target) target.style.display = "block";
+        });
+      });
+
+      // Filter Controls
+      const ceBrightness = document.getElementById("ce-brightness");
+      const ceBrightnessVal = document.getElementById("ce-brightness-val");
+      const ceContrast = document.getElementById("ce-contrast");
+      const ceContrastVal = document.getElementById("ce-contrast-val");
+      const ceHue = document.getElementById("ce-hue");
+      const ceHueVal = document.getElementById("ce-hue-val");
+      const ceSaturation = document.getElementById("ce-saturation");
+      const ceSaturationVal = document.getElementById("ce-saturation-val");
+      const ceBlur = document.getElementById("ce-blur");
+      const ceBlurVal = document.getElementById("ce-blur-val");
+      const ceFilterGrayscale = document.getElementById("ce-filter-grayscale");
+      const ceFilterSepia = document.getElementById("ce-filter-sepia");
+      const ceFilterInvert = document.getElementById("ce-filter-invert");
+      const ceResetFiltersBtn = document.getElementById("ce-reset-filters-btn");
+
+      // Crop & Unit Controls
+      const ceCropUnit = document.getElementById("ce-crop-unit");
+      const ceDpi = document.getElementById("ce-dpi");
+      const ceCropW = document.getElementById("ce-crop-w");
+      const ceCropH = document.getElementById("ce-crop-h");
+      const ceCropX = document.getElementById("ce-crop-x");
+      const ceCropY = document.getElementById("ce-crop-y");
+      const ceLockAspect = document.getElementById("ce-lock-aspect");
+      const ceCenterCropBtn = document.getElementById("ce-center-crop-btn");
+      const ceCropPresets = document.querySelectorAll(".ce-crop-preset");
+      const ceUnitLabels = document.querySelectorAll(".ce-unit-label");
+
+      // Banner Text Controls
+      const ceBannerEnable = document.getElementById("ce-banner-enable");
+      const ceBannerControls = document.getElementById("ce-banner-controls");
+      const ceBannerName = document.getElementById("ce-banner-name");
+      const ceBannerDate = document.getElementById("ce-banner-date");
+      const ceBannerBg = document.getElementById("ce-banner-bg");
+      const ceBannerColor = document.getElementById("ce-banner-color");
+      const ceBannerHeight = document.getElementById("ce-banner-height");
+      const ceBannerHeightVal = document.getElementById("ce-banner-height-val");
+
+      // Orientation Controls
+      const ceRotateCw = document.getElementById("ce-rotate-cw");
+      const ceRotateCcw = document.getElementById("ce-rotate-ccw");
+      const ceFlipH = document.getElementById("ce-flip-h");
+      const ceFlipV = document.getElementById("ce-flip-v");
+
+      // Export Controls
+      const ceExportFormat = document.getElementById("ce-export-format");
+      const ceExportQuality = document.getElementById("ce-export-quality");
+      const ceQualityVal = document.getElementById("ce-quality-val");
+      const ceDownloadBtn = document.getElementById("ce-download-btn");
+
+      // State variables
+      let ceLoadedImage = null;
+      let ceRotation = 0; // 0, 90, 180, 270
+      let ceFlippedH = false;
+      let ceFlippedV = false;
+      let ceCropPxW = 0;
+      let ceCropPxH = 0;
+      let ceCropPxX = 0;
+      let ceCropPxY = 0;
+      let ceLockedAspectRatio = 1;
+
+      // Unit Conversions
+      function pxToUnit(px, unit, dpi) {
+        if (unit === "px") return Math.round(px);
+        if (unit === "in") return parseFloat((px / dpi).toFixed(2));
+        if (unit === "cm") return parseFloat(((px / dpi) * 2.54).toFixed(2));
+        if (unit === "mm") return parseFloat(((px / dpi) * 25.4).toFixed(1));
+        return Math.round(px);
+      }
+
+      function unitToPx(val, unit, dpi) {
+        val = parseFloat(val) || 0;
+        if (unit === "px") return Math.round(val);
+        if (unit === "in") return Math.round(val * dpi);
+        if (unit === "cm") return Math.round((val / 2.54) * dpi);
+        if (unit === "mm") return Math.round((val / 25.4) * dpi);
+        return Math.round(val);
+      }
+
+      function updateUnitLabels() {
+        const u = ceCropUnit.value;
+        ceUnitLabels.forEach(el => el.textContent = u);
+      }
+
+      function syncInputsFromPx() {
+        const u = ceCropUnit.value;
+        const dpi = parseInt(ceDpi.value) || 300;
+        ceCropW.value = pxToUnit(ceCropPxW, u, dpi);
+        ceCropH.value = pxToUnit(ceCropPxH, u, dpi);
+        ceCropX.value = pxToUnit(ceCropPxX, u, dpi);
+        ceCropY.value = pxToUnit(ceCropPxY, u, dpi);
+      }
+
+      function syncPxFromInputs() {
+        const u = ceCropUnit.value;
+        const dpi = parseInt(ceDpi.value) || 300;
+        ceCropPxW = Math.max(1, unitToPx(ceCropW.value, u, dpi));
+        ceCropPxH = Math.max(1, unitToPx(ceCropH.value, u, dpi));
+        ceCropPxX = Math.max(0, unitToPx(ceCropX.value, u, dpi));
+        ceCropPxY = Math.max(0, unitToPx(ceCropY.value, u, dpi));
+      }
+
+      // Dropzone & File Load
+      ceDropZone.addEventListener("click", () => ceFileInput.click());
+      ceFileInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) loadCustomEditorFile(e.target.files[0]);
+      });
+      ceDropZone.addEventListener("dragover", (e) => e.preventDefault());
+      ceDropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) loadCustomEditorFile(e.dataTransfer.files[0]);
+      });
+
+      // Clipboard Paste Listener
+      window.addEventListener("paste", (e) => {
+        const activePane = document.querySelector(".tool-pane.active");
+        if (activePane && activePane.id === "pane-custom-editor") {
+          if (e.clipboardData && e.clipboardData.items) {
+            for (let item of e.clipboardData.items) {
+              if (item.type.startsWith("image/")) {
+                loadCustomEditorFile(item.getAsFile());
+                break;
+              }
+            }
+          }
+        }
+      });
+
+      function loadCustomEditorFile(file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            ceLoadedImage = img;
+            ceRotation = 0;
+            ceFlippedH = false;
+            ceFlippedV = false;
+            ceCropPxX = 0;
+            ceCropPxY = 0;
+            ceCropPxW = img.width;
+            ceCropPxH = img.height;
+            ceLockedAspectRatio = img.width / img.height;
+            updateUnitLabels();
+            syncInputsFromPx();
+            ceWorkbench.style.display = "block";
+            renderCustomEditorCanvas();
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      // Slider Listeners
+      ceBrightness.addEventListener("input", () => {
+        ceBrightnessVal.textContent = `${ceBrightness.value}%`;
+        renderCustomEditorCanvas();
+      });
+      ceContrast.addEventListener("input", () => {
+        ceContrastVal.textContent = `${ceContrast.value}%`;
+        renderCustomEditorCanvas();
+      });
+      ceHue.addEventListener("input", () => {
+        ceHueVal.textContent = `${ceHue.value}°`;
+        renderCustomEditorCanvas();
+      });
+      ceSaturation.addEventListener("input", () => {
+        ceSaturationVal.textContent = `${ceSaturation.value}%`;
+        renderCustomEditorCanvas();
+      });
+      ceBlur.addEventListener("input", () => {
+        ceBlurVal.textContent = `${ceBlur.value}px`;
+        renderCustomEditorCanvas();
+      });
+      [ceFilterGrayscale, ceFilterSepia, ceFilterInvert].forEach(cb => {
+        cb.addEventListener("change", renderCustomEditorCanvas);
+      });
+
+      ceResetFiltersBtn.addEventListener("click", () => {
+        ceBrightness.value = 100; ceBrightnessVal.textContent = "100%";
+        ceContrast.value = 100; ceContrastVal.textContent = "100%";
+        ceHue.value = 0; ceHueVal.textContent = "0°";
+        ceSaturation.value = 100; ceSaturationVal.textContent = "100%";
+        ceBlur.value = 0; ceBlurVal.textContent = "0px";
+        ceFilterGrayscale.checked = false;
+        ceFilterSepia.checked = false;
+        ceFilterInvert.checked = false;
+        renderCustomEditorCanvas();
+      });
+
+      // Crop Unit & DPI Change
+      ceCropUnit.addEventListener("change", () => {
+        updateUnitLabels();
+        syncInputsFromPx();
+      });
+      ceDpi.addEventListener("change", () => {
+        syncInputsFromPx();
+        renderCustomEditorCanvas();
+      });
+
+      // Crop Inputs
+      ceCropW.addEventListener("input", () => {
+        const u = ceCropUnit.value;
+        const dpi = parseInt(ceDpi.value) || 300;
+        const wPx = unitToPx(ceCropW.value, u, dpi);
+        ceCropPxW = Math.max(1, wPx);
+        if (ceLockAspect.checked && ceLockedAspectRatio) {
+          ceCropPxH = Math.max(1, Math.round(ceCropPxW / ceLockedAspectRatio));
+          ceCropH.value = pxToUnit(ceCropPxH, u, dpi);
+        }
+        renderCustomEditorCanvas();
+      });
+
+      ceCropH.addEventListener("input", () => {
+        const u = ceCropUnit.value;
+        const dpi = parseInt(ceDpi.value) || 300;
+        const hPx = unitToPx(ceCropH.value, u, dpi);
+        ceCropPxH = Math.max(1, hPx);
+        if (ceLockAspect.checked && ceLockedAspectRatio) {
+          ceCropPxW = Math.max(1, Math.round(ceCropPxH * ceLockedAspectRatio));
+          ceCropW.value = pxToUnit(ceCropPxW, u, dpi);
+        }
+        renderCustomEditorCanvas();
+      });
+
+      ceCropX.addEventListener("input", () => {
+        syncPxFromInputs();
+        renderCustomEditorCanvas();
+      });
+      ceCropY.addEventListener("input", () => {
+        syncPxFromInputs();
+        renderCustomEditorCanvas();
+      });
+
+      ceLockAspect.addEventListener("change", () => {
+        if (ceLockAspect.checked && ceCropPxH > 0) {
+          ceLockedAspectRatio = ceCropPxW / ceCropPxH;
+        }
+      });
+
+      ceCenterCropBtn.addEventListener("click", () => {
+        if (!ceLoadedImage) return;
+        const imgW = (ceRotation === 90 || ceRotation === 270) ? ceLoadedImage.height : ceLoadedImage.width;
+        const imgH = (ceRotation === 90 || ceRotation === 270) ? ceLoadedImage.width : ceLoadedImage.height;
+        ceCropPxX = Math.max(0, Math.round((imgW - ceCropPxW) / 2));
+        ceCropPxY = Math.max(0, Math.round((imgH - ceCropPxH) / 2));
+        syncInputsFromPx();
+        renderCustomEditorCanvas();
+      });
+
+      // Aspect Ratio Presets
+      ceCropPresets.forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (!ceLoadedImage) return;
+          const p = btn.dataset.preset;
+          const dpi = parseInt(ceDpi.value) || 300;
+          const imgW = (ceRotation === 90 || ceRotation === 270) ? ceLoadedImage.height : ceLoadedImage.width;
+          const imgH = (ceRotation === 90 || ceRotation === 270) ? ceLoadedImage.width : ceLoadedImage.height;
+
+          if (p === "free") {
+            ceLockAspect.checked = false;
+            ceCropPxW = imgW; ceCropPxH = imgH; ceCropPxX = 0; ceCropPxY = 0;
+          } else if (p === "1:1") {
+            const side = Math.min(imgW, imgH);
+            ceCropPxW = side; ceCropPxH = side;
+            ceCropPxX = Math.round((imgW - side) / 2);
+            ceCropPxY = Math.round((imgH - side) / 2);
+            ceLockedAspectRatio = 1;
+            ceLockAspect.checked = true;
+          } else if (p === "passport_in") {
+            // 3.5 x 4.5 cm
+            ceCropUnit.value = "cm";
+            updateUnitLabels();
+            const wPx = Math.round((3.5 / 2.54) * dpi);
+            const hPx = Math.round((4.5 / 2.54) * dpi);
+            ceCropPxW = Math.min(imgW, wPx);
+            ceCropPxH = Math.min(imgH, hPx);
+            ceCropPxX = Math.max(0, Math.round((imgW - ceCropPxW) / 2));
+            ceCropPxY = Math.max(0, Math.round((imgH - ceCropPxH) / 2));
+            ceLockedAspectRatio = 3.5 / 4.5;
+            ceLockAspect.checked = true;
+          } else if (p === "visa_us") {
+            // 2 x 2 inches
+            ceCropUnit.value = "in";
+            updateUnitLabels();
+            const sidePx = Math.round(2.0 * dpi);
+            ceCropPxW = Math.min(imgW, sidePx);
+            ceCropPxH = Math.min(imgH, sidePx);
+            ceCropPxX = Math.max(0, Math.round((imgW - ceCropPxW) / 2));
+            ceCropPxY = Math.max(0, Math.round((imgH - ceCropPxH) / 2));
+            ceLockedAspectRatio = 1;
+            ceLockAspect.checked = true;
+          } else if (p === "4:3") {
+            ceLockedAspectRatio = 4 / 3;
+            ceCropPxW = imgW;
+            ceCropPxH = Math.round(imgW / ceLockedAspectRatio);
+            if (ceCropPxH > imgH) {
+              ceCropPxH = imgH;
+              ceCropPxW = Math.round(imgH * ceLockedAspectRatio);
+            }
+            ceCropPxX = Math.round((imgW - ceCropPxW) / 2);
+            ceCropPxY = Math.round((imgH - ceCropPxH) / 2);
+            ceLockAspect.checked = true;
+          } else if (p === "16:9") {
+            ceLockedAspectRatio = 16 / 9;
+            ceCropPxW = imgW;
+            ceCropPxH = Math.round(imgW / ceLockedAspectRatio);
+            if (ceCropPxH > imgH) {
+              ceCropPxH = imgH;
+              ceCropPxW = Math.round(imgH * ceLockedAspectRatio);
+            }
+            ceCropPxX = Math.round((imgW - ceCropPxW) / 2);
+            ceCropPxY = Math.round((imgH - ceCropPxH) / 2);
+            ceLockAspect.checked = true;
+          }
+
+          syncInputsFromPx();
+          renderCustomEditorCanvas();
+        });
+      });
+
+      // Banner Enable & Inputs
+      ceBannerEnable.addEventListener("change", () => {
+        ceBannerControls.style.opacity = ceBannerEnable.checked ? "1" : "0.5";
+        ceBannerControls.style.pointerEvents = ceBannerEnable.checked ? "auto" : "none";
+        renderCustomEditorCanvas();
+      });
+
+      ceBannerHeight.addEventListener("input", () => {
+        ceBannerHeightVal.textContent = `${ceBannerHeight.value}%`;
+        renderCustomEditorCanvas();
+      });
+
+      [ceBannerName, ceBannerDate, ceBannerBg, ceBannerColor].forEach(el => {
+        el.addEventListener("input", renderCustomEditorCanvas);
+      });
+
+      // Rotation & Flip
+      ceRotateCw.addEventListener("click", () => {
+        ceRotation = (ceRotation + 90) % 360;
+        resetCropToRotatedSize();
+        renderCustomEditorCanvas();
+      });
+      ceRotateCcw.addEventListener("click", () => {
+        ceRotation = (ceRotation + 270) % 360;
+        resetCropToRotatedSize();
+        renderCustomEditorCanvas();
+      });
+      ceFlipH.addEventListener("click", () => {
+        ceFlippedH = !ceFlippedH;
+        renderCustomEditorCanvas();
+      });
+      ceFlipV.addEventListener("click", () => {
+        ceFlippedV = !ceFlippedV;
+        renderCustomEditorCanvas();
+      });
+
+      function resetCropToRotatedSize() {
+        if (!ceLoadedImage) return;
+        const imgW = (ceRotation === 90 || ceRotation === 270) ? ceLoadedImage.height : ceLoadedImage.width;
+        const imgH = (ceRotation === 90 || ceRotation === 270) ? ceLoadedImage.width : ceLoadedImage.height;
+        ceCropPxW = imgW;
+        ceCropPxH = imgH;
+        ceCropPxX = 0;
+        ceCropPxY = 0;
+        ceLockedAspectRatio = imgW / imgH;
+        syncInputsFromPx();
+      }
+
+      // Quality Slider
+      ceExportQuality.addEventListener("input", () => {
+        ceQualityVal.textContent = `${ceExportQuality.value}%`;
+      });
+
+      // Main Render Canvas Pipeline
+      function renderCustomEditorCanvas() {
+        if (!ceLoadedImage) return;
+
+        // 1. Compute Base Rotated Dimensions
+        const origW = ceLoadedImage.width;
+        const origH = ceLoadedImage.height;
+        const isSideways = (ceRotation === 90 || ceRotation === 270);
+        const rotW = isSideways ? origH : origW;
+        const rotH = isSideways ? origW : origH;
+
+        // 2. Offscreen Canvas for Rotation, Flip & Filters
+        const baseCanvas = document.createElement("canvas");
+        baseCanvas.width = rotW;
+        baseCanvas.height = rotH;
+        const bCtx = baseCanvas.getContext("2d");
+
+        // Apply Color Adjustments
+        let filterStr = `brightness(${ceBrightness.value}%) contrast(${ceContrast.value}%) hue-rotate(${ceHue.value}deg) saturate(${ceSaturation.value}%)`;
+        if (parseFloat(ceBlur.value) > 0) filterStr += ` blur(${ceBlur.value}px)`;
+        if (ceFilterGrayscale.checked) filterStr += ` grayscale(100%)`;
+        if (ceFilterSepia.checked) filterStr += ` sepia(100%)`;
+        if (ceFilterInvert.checked) filterStr += ` invert(100%)`;
+        bCtx.filter = filterStr;
+
+        // Apply Transform (Rotate & Flip)
+        bCtx.save();
+        bCtx.translate(rotW / 2, rotH / 2);
+        bCtx.rotate((ceRotation * Math.PI) / 180);
+        bCtx.scale(ceFlippedH ? -1 : 1, ceFlippedV ? -1 : 1);
+        bCtx.drawImage(ceLoadedImage, -origW / 2, -origH / 2);
+        bCtx.restore();
+
+        // 3. Compute Valid Crop Boundaries
+        const finalCropX = Math.max(0, Math.min(ceCropPxX, rotW - 1));
+        const finalCropY = Math.max(0, Math.min(ceCropPxY, rotH - 1));
+        const finalCropW = Math.max(1, Math.min(ceCropPxW, rotW - finalCropX));
+        const finalCropH = Math.max(1, Math.min(ceCropPxH, rotH - finalCropY));
+
+        // 4. Render to Preview Canvas
+        cePreviewCanvas.width = finalCropW;
+        cePreviewCanvas.height = finalCropH;
+        const pCtx = cePreviewCanvas.getContext("2d");
+
+        // Draw Cropped Base
+        pCtx.drawImage(baseCanvas, finalCropX, finalCropY, finalCropW, finalCropH, 0, 0, finalCropW, finalCropH);
+
+        // 5. Draw Bottom Banner Strip if Enabled
+        if (ceBannerEnable.checked) {
+          const bannerHeightPct = parseInt(ceBannerHeight.value) / 100;
+          const stripH = Math.max(30, Math.round(finalCropH * bannerHeightPct));
+          const stripY = finalCropH - stripH;
+
+          // Fill Strip Background
+          pCtx.fillStyle = ceBannerBg.value;
+          pCtx.fillRect(0, stripY, finalCropW, stripH);
+
+          // Top Border Line on Strip
+          pCtx.strokeStyle = "rgba(0,0,0,0.15)";
+          pCtx.lineWidth = Math.max(1, Math.round(finalCropW * 0.002));
+          pCtx.beginPath();
+          pCtx.moveTo(0, stripY);
+          pCtx.lineTo(finalCropW, stripY);
+          pCtx.stroke();
+
+          // Render Bold Text
+          pCtx.fillStyle = ceBannerColor.value;
+          pCtx.textAlign = "center";
+          pCtx.textBaseline = "middle";
+
+          const nameText = ceBannerName.value.trim();
+          const dateText = ceBannerDate.value.trim();
+
+          const nameFontSize = Math.max(12, Math.round(stripH * 0.38));
+          const dateFontSize = Math.max(10, Math.round(stripH * 0.28));
+
+          if (nameText && dateText) {
+            pCtx.font = `bold ${nameFontSize}px sans-serif`;
+            pCtx.fillText(nameText, finalCropW / 2, stripY + (stripH * 0.36));
+
+            pCtx.font = `bold ${dateFontSize}px sans-serif`;
+            pCtx.fillText(dateText, finalCropW / 2, stripY + (stripH * 0.74));
+          } else if (nameText || dateText) {
+            const singleText = nameText || dateText;
+            pCtx.font = `bold ${Math.round(stripH * 0.50)}px sans-serif`;
+            pCtx.fillText(singleText, finalCropW / 2, stripY + (stripH * 0.50));
+          }
+        }
+
+        // 6. Update Badges
+        const dpi = parseInt(ceDpi.value) || 300;
+        const wIn = (finalCropW / dpi).toFixed(2);
+        const hIn = (finalCropH / dpi).toFixed(2);
+        const wCm = ((finalCropW / dpi) * 2.54).toFixed(2);
+        const hCm = ((finalCropH / dpi) * 2.54).toFixed(2);
+
+        ceDimsBadge.textContent = `${finalCropW} × ${finalCropH} px`;
+        cePhysicalBadge.innerHTML = `📐 Physical Dimensions at <strong>${dpi} DPI</strong>: <strong>${wCm} × ${hCm} cm</strong> &bull; <strong>${wIn} × ${hIn} in</strong>`;
+      }
+
+      // Download Edited Image
+      ceDownloadBtn.addEventListener("click", () => {
+        if (!ceLoadedImage) return;
+        const fmt = ceExportFormat.value;
+        const q = parseInt(ceExportQuality.value) / 100;
+        const ext = fmt === "image/png" ? "png" : (fmt === "image/webp" ? "webp" : "jpg");
+        const w = cePreviewCanvas.width;
+        const h = cePreviewCanvas.height;
+
+        cePreviewCanvas.toBlob((blob) => {
+          const link = document.createElement("a");
+          link.download = `custom_edited_${w}x${h}.${ext}`;
+          link.href = URL.createObjectURL(blob);
+          link.click();
+        }, fmt, q);
       });
     });
   </script>

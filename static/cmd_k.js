@@ -12,6 +12,7 @@
     { title: 'Blog Feed & Articles', url: '/blog', category: 'Blog', icon: '📖' },
     { title: 'Image Manipulation Studio', url: '/image-tools', category: 'Image Tool', icon: '🖼️' },
     { title: 'Target KB Compressor (20KB, 50KB, 100KB)', url: '/image-tools', category: 'Image Tool', icon: '🎯' },
+    { title: 'Custom Image Editor & Precision Cropper (px, in, cm)', url: '/image-tools', category: 'Image Tool', icon: '🎨' },
     { title: 'Passport Photo Maker (India 3.5x4.5, US 2x2)', url: '/image-tools', category: 'Image Tool', icon: '🛂' },
     { title: 'Add Name & Date on Photo (NEET / UPSC)', url: '/image-tools', category: 'Image Tool', icon: '📝' },
     { title: 'Merge Photo & Signature (Exam Form)', url: '/image-tools', category: 'Image Tool', icon: '🖋️' },
