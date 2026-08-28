@@ -28,6 +28,7 @@
     { title: 'Favicon & Multi-Size Icon Maker', url: '/image-tools', category: 'Image Tool', icon: '🖼️' },
     { title: 'Resize Image in Pixels (Exact Width & Height)', url: '/image-tools', category: 'Image Tool', icon: '📏' },
     { title: '2-Player Word Scramble & Scrabble Duel', url: '/games', category: 'Game', icon: '🔤' },
+    { title: 'Word Search Arena (1-Player & 2-Player Duel)', url: '/word-search', category: 'Game', icon: '🔍' },
     { title: 'ATS Resume & CV Builder', url: '/resume', category: 'Career', icon: '📄' },
     { title: 'Beam Stress, Deflection & SFD/BMD Calculator', url: '/calc', category: 'Mechanical Calc', icon: '🏗️' },
     { title: 'Gear Train Ratio, RPM & Torque Multiplier', url: '/calc', category: 'Mechanical Calc', icon: '⚙️' },
