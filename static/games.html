@@ -27,7 +27,17 @@
 
   <style>
     /* Full-Screen Mobile App Architecture */
-    :root {
+    :root, [data-theme="light"] {
+      --p1-color: #2563EB;
+      --p1-bg: rgba(37, 99, 235, 0.12);
+      --p2-color: #059669;
+      --p2-bg: rgba(5, 150, 105, 0.12);
+      --tile-wood: #FEF3C7;
+      --tile-wood-dark: #D97706;
+      --tile-text: #451A03;
+    }
+
+    [data-theme="dark"] {
       --p1-color: #38BDF8;
       --p1-bg: rgba(56, 189, 248, 0.15);
       --p2-color: #10B981;
@@ -35,12 +45,6 @@
       --tile-wood: #FDE68A;
       --tile-wood-dark: #F59E0B;
       --tile-text: #78350F;
-    }
-
-    [data-theme="light"] {
-      --tile-wood: #FEF3C7;
-      --tile-wood-dark: #D97706;
-      --tile-text: #451A03;
     }
 
     body {

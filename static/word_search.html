@@ -26,7 +26,18 @@
   <script src="/theme.js"></script>
 
   <style>
-    :root {
+    :root, [data-theme="light"] {
+      --p1-color: #2563EB;
+      --p1-bg: rgba(37, 99, 235, 0.12);
+      --p2-color: #059669;
+      --p2-bg: rgba(5, 150, 105, 0.12);
+      --grid-bg: #F1F5F9;
+      --cell-bg: #FFFFFF;
+      --cell-text: #0F172A;
+      --cell-hover: #E2E8F0;
+    }
+
+    [data-theme="dark"] {
       --p1-color: #38BDF8;
       --p1-bg: rgba(56, 189, 248, 0.18);
       --p2-color: #10B981;
@@ -35,13 +46,6 @@
       --cell-bg: #131D31;
       --cell-text: #F1F5F9;
       --cell-hover: #1E293B;
-    }
-
-    [data-theme="light"] {
-      --grid-bg: #F1F5F9;
-      --cell-bg: #FFFFFF;
-      --cell-text: #0F172A;
-      --cell-hover: #E2E8F0;
     }
 
     body {

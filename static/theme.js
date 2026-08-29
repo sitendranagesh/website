@@ -4,10 +4,9 @@
  */
 
 (function() {
-  // 1. Detect & Apply Initial Theme Instantly (Before DOM Renders to avoid FOUC)
+  // 1. Detect & Apply Initial Theme Instantly (Default to Elegant Light Mode)
   const savedTheme = localStorage.getItem("sitendra_theme");
-  const systemPrefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
-  const initialTheme = savedTheme ? savedTheme : (systemPrefersLight ? "light" : "dark");
+  const initialTheme = savedTheme ? savedTheme : "light";
 
   document.documentElement.setAttribute("data-theme", initialTheme);
 

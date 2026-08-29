@@ -85,7 +85,7 @@
 
     /* Diagrams & Plots */
     .diagram-container {
-      background: #090D16;
+      background: var(--bg-surface-elevated);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       padding: 1rem;
@@ -97,9 +97,9 @@
     .diagram-canvas {
       width: 100%;
       height: 180px;
-      background: #0B1120;
-      border-radius: 4px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
     }
     .diagram-title {
       font-size: 0.85rem;
@@ -596,6 +596,7 @@
 
       function plotDiagram(canvas, ctx, xArr, yArr, color, unit, divisor = 1) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const isLight = (document.documentElement.getAttribute("data-theme") || "light") === "light";
         const padX = 40;
         const padY = 25;
         const w = canvas.width - padX * 2;
@@ -604,15 +605,18 @@
         const maxVal = Math.max(...yArr.map(Math.abs), 1);
         const zeroY = padY + h / 2;
 
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+        ctx.strokeStyle = isLight ? "rgba(15, 23, 42, 0.12)" : "rgba(255, 255, 255, 0.2)";
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(padX, zeroY);
         ctx.lineTo(padX + w, zeroY);
         ctx.stroke();
 
-        ctx.fillStyle = color === "#38BDF8" ? "rgba(56, 189, 248, 0.15)" : "rgba(16, 185, 129, 0.15)";
-        ctx.strokeStyle = color;
+        const strokeColor = isLight ? (color === "#38BDF8" ? "#2563EB" : "#059669") : color;
+        const fillColor = isLight ? (color === "#38BDF8" ? "rgba(37, 99, 235, 0.12)" : "rgba(5, 150, 105, 0.12)") : (color === "#38BDF8" ? "rgba(56, 189, 248, 0.15)" : "rgba(16, 185, 129, 0.15)");
+
+        ctx.fillStyle = fillColor;
+        ctx.strokeStyle = strokeColor;
         ctx.lineWidth = 2.5;
 
         ctx.beginPath();
@@ -629,7 +633,7 @@
         ctx.fill();
         ctx.stroke();
 
-        ctx.fillStyle = "#94A3B8";
+        ctx.fillStyle = isLight ? "#64748B" : "#94A3B8";
         ctx.font = "10px Inter, sans-serif";
         ctx.fillText(`+${(maxVal / divisor).toFixed(1)} ${unit}`, 5, padY + 5);
         ctx.fillText(`-${(maxVal / divisor).toFixed(1)} ${unit}`, 5, canvas.height - 10);
