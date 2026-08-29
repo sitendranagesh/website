@@ -389,22 +389,29 @@
           coverEl.style.display = "none";
         }
 
-        // Parse Markdown Content
-        marked.setOptions({
-          highlight: function(code, lang) {
-            if (lang && hljs.getLanguage(lang)) {
-              try {
-                return hljs.highlight(code, { language: lang }).value;
-              } catch (__) {}
-            }
-            return hljs.highlightAuto(code).value;
-          },
-          breaks: true,
-          gfm: true
-        });
-
+        // Render Article Body (Rich Visual HTML or Legacy Markdown)
         const contentEl = document.getElementById("article-content");
-        contentEl.innerHTML = marked.parse(post.content || "");
+        const rawContent = post.content || "";
+        
+        if (/<[a-z][\s\S]*>/i.test(rawContent)) {
+          // Direct Rich HTML from Visual Editor
+          contentEl.innerHTML = rawContent;
+        } else {
+          // Fallback Markdown Parsing for older posts
+          marked.setOptions({
+            highlight: function(code, lang) {
+              if (lang && hljs.getLanguage(lang)) {
+                try {
+                  return hljs.highlight(code, { language: lang }).value;
+                } catch (__) {}
+              }
+              return hljs.highlightAuto(code).value;
+            },
+            breaks: true,
+            gfm: true
+          });
+          contentEl.innerHTML = marked.parse(rawContent);
+        }
 
         // Enhance Code Blocks with Copy Buttons
         contentEl.querySelectorAll("pre").forEach(pre => {

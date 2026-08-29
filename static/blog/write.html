@@ -3,15 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blog Studio & Editor | Sitendra</title>
+  <title>Article & Story Studio | Sitendra</title>
   
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  
-  <!-- Markdown & Code Highlight CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
   
   <!-- Blog CSS -->
   <link rel="stylesheet" href="/blog/blog.css">
@@ -19,12 +16,69 @@
   <!-- Theme Script -->
   <script src="/theme.js"></script>
 
-  <!-- Markdown Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-
   <style>
-    /* Compact overrides if needed */
+    /* Color and Highlight Dropdown Palettes */
+    .palette-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .palette-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      z-index: 1000;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      padding: 0.5rem;
+      min-width: 140px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.4rem;
+    }
+    .palette-menu.show {
+      display: grid;
+    }
+    .color-swatch {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .color-swatch:hover {
+      transform: scale(1.15);
+      border-color: #FFFFFF;
+    }
+    
+    /* Cover Preview */
+    .cover-preview-box {
+      width: 100%;
+      max-height: 220px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin-top: 0.6rem;
+      border: 1px solid var(--border);
+      display: none;
+    }
+    .cover-preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Modal Styling */
+    .studio-modal-card {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 480px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-lg);
+    }
   </style>
 </head>
 <body>
@@ -47,7 +101,7 @@
     </div>
 
     <nav class="nav-links">
-      <a href="/blog" class="nav-item" id="nav-blog">View Blog Feed</a>
+      <a href="/blog" class="nav-item" id="nav-blog">View Blog</a>
       <a href="/" class="nav-item">Notes Dashboard</a>
       <button type="button" class="theme-toggle-btn" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">☀️</button>
       <button id="manage-posts-btn" class="btn btn-secondary btn-sm">
@@ -66,104 +120,331 @@
   </header>
 
   <!-- Main Content Studio -->
-  <main class="blog-container" style="max-width: 1400px;">
+  <main class="blog-container" style="max-width: 1100px;">
     <!-- Studio Header & Action Buttons -->
     <div class="studio-header">
       <div>
-        <h1 style="font-size: 1.75rem; font-weight: 700;" id="studio-heading">Create New Article</h1>
-        <p style="color: var(--text-muted); font-size: 0.9rem;" id="studio-subheading">Draft your technical story with live Markdown preview.</p>
+        <h1 style="font-size: 1.75rem; font-weight: 800;" id="studio-heading">Article &amp; Story Studio</h1>
+        <p style="color: var(--text-muted); font-size: 0.92rem;" id="studio-subheading">Create stories, thoughts, articles, tutorials, or generic updates with a clean visual editor.</p>
       </div>
       <div class="studio-actions">
         <button type="button" id="new-post-btn" class="btn btn-secondary btn-sm" style="display: none;">+ New Post</button>
-        <button type="button" id="save-draft-btn" class="btn btn-secondary">Save Draft</button>
-        <button type="button" id="publish-btn" class="btn btn-primary">Publish Article</button>
+        <button type="button" id="preview-toggle-btn" class="btn btn-secondary" title="Toggle Reader Preview">👁️ Reader View</button>
+        <button type="button" id="save-draft-btn" class="btn btn-secondary">💾 Save Draft</button>
+        <button type="button" id="publish-btn" class="btn btn-primary">🚀 Publish Article</button>
         <button type="button" id="delete-btn" class="btn btn-danger btn-sm" style="display: none;">Delete</button>
       </div>
     </div>
 
-    <!-- Mobile Tab Switcher (Visible on Phones & Tablets) -->
-    <div class="mobile-view-tabs" id="mobile-tabs">
-      <button type="button" class="mobile-view-tab active" id="tab-editor">✏️ Markdown Source</button>
-      <button type="button" class="mobile-view-tab" id="tab-preview">👁️ Live Preview</button>
+    <!-- Metadata & Topic Settings Card -->
+    <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.75rem;">
+      <div class="settings-grid" style="margin-bottom: 0;">
+        <!-- Left Column: Title & Excerpt -->
+        <div>
+          <div class="form-group">
+            <label class="form-label" for="post-title">Article Title *</label>
+            <input type="text" id="post-title" class="form-control" placeholder="e.g. Exploring My New Journey, Building High-Performance Systems, or Thoughts on 2026..." autocomplete="off" style="font-size: 1.05rem; font-weight: 600;">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="post-summary">Summary / Excerpt (Short description for previews &amp; feed)</label>
+            <textarea id="post-summary" class="form-control" rows="2" placeholder="Write a brief 1-2 sentence overview of your post..."></textarea>
+          </div>
+        </div>
+
+        <!-- Right Column: Topic, Slug & Cover -->
+        <div>
+          <div class="form-group">
+            <label class="form-label" for="post-tags">Category &amp; Tags</label>
+            <input type="text" id="post-tags" class="form-control" placeholder="thoughts, life, tech, stories, tutorial, news">
+            
+            <!-- Quick Category Badges -->
+            <div class="topic-preset-pills">
+              <button type="button" class="topic-preset-pill" data-tag="thoughts">💡 Thoughts</button>
+              <button type="button" class="topic-preset-pill" data-tag="life">🌱 Life</button>
+              <button type="button" class="topic-preset-pill" data-tag="tech">🚀 Tech</button>
+              <button type="button" class="topic-preset-pill" data-tag="stories">📖 Stories</button>
+              <button type="button" class="topic-preset-pill" data-tag="tutorial">📚 Tutorial</button>
+              <button type="button" class="topic-preset-pill" data-tag="projects">🎯 Projects</button>
+              <button type="button" class="topic-preset-pill" data-tag="news">📢 News</button>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0.5rem;">
+            <label class="form-label" for="post-cover">Cover Image URL (Optional)</label>
+            <div style="display: flex; gap: 0.5rem;">
+              <input type="url" id="post-cover" class="form-control" placeholder="https://images.unsplash.com/...">
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-pick-unsplash" title="Choose from Curated Photos">📷 Presets</button>
+            </div>
+            <div class="cover-preview-box" id="cover-preview-box">
+              <img id="cover-preview-img" src="" alt="Cover preview">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 0.65rem;">
+            <label class="form-label" for="post-slug">URL Slug</label>
+            <input type="text" id="post-slug" class="form-control" placeholder="auto-generated-from-title" style="font-size: 0.85rem; font-family: var(--font-mono);">
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Metadata Form Grid -->
-    <div class="settings-grid">
-      <div>
-        <div class="form-group">
-          <label class="form-label" for="post-title">Article Title *</label>
-          <input type="text" id="post-title" class="form-control" placeholder="e.g. Building High-Performance Web Applications in Python..." autocomplete="off">
+    <!-- Visual Editor Studio Container -->
+    <div class="visual-studio-container" id="editor-wrapper">
+      
+      <!-- Sticky Rich Formatting Toolbar -->
+      <div class="visual-toolbar" id="visual-toolbar">
+        
+        <!-- Format Style Select (Paragraph, H1, H2, H3, Blockquote, Code) -->
+        <select class="toolbar-select" id="tool-format" title="Text Style Hierarchy">
+          <option value="p">Normal Text</option>
+          <option value="h1">Large Title (H1)</option>
+          <option value="h2">Section Heading (H2)</option>
+          <option value="h3">Sub-heading (H3)</option>
+          <option value="h4">Minor Heading (H4)</option>
+          <option value="blockquote">Blockquote</option>
+          <option value="pre">Code Block</option>
+        </select>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Inline Formats: Bold, Italic, Underline, Strike, Code -->
+        <button type="button" class="toolbar-btn-rich" data-cmd="bold" title="Bold (Ctrl+B)"><strong>B</strong></button>
+        <button type="button" class="toolbar-btn-rich" data-cmd="italic" title="Italic (Ctrl+I)"><em>I</em></button>
+        <button type="button" class="toolbar-btn-rich" data-cmd="underline" title="Underline (Ctrl+U)"><u>U</u></button>
+        <button type="button" class="toolbar-btn-rich" data-cmd="strikeThrough" title="Strikethrough"><s>S</s></button>
+        <button type="button" class="toolbar-btn-rich" id="btn-inline-code" title="Inline Code"><code>&lt;/&gt;</code></button>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Text Color Dropdown -->
+        <div class="palette-dropdown">
+          <button type="button" class="toolbar-btn-rich" id="btn-text-color" title="Text Color" style="font-weight: 700;">🎨 A</button>
+          <div class="palette-menu" id="menu-text-color">
+            <div class="color-swatch" data-color="#E2E8F0" style="background: #E2E8F0;" title="Default Text"></div>
+            <div class="color-swatch" data-color="#38BDF8" style="background: #38BDF8;" title="Electric Cyan"></div>
+            <div class="color-swatch" data-color="#10B981" style="background: #10B981;" title="Emerald Green"></div>
+            <div class="color-swatch" data-color="#F59E0B" style="background: #F59E0B;" title="Amber Gold"></div>
+            <div class="color-swatch" data-color="#F43F5E" style="background: #F43F5E;" title="Coral Rose"></div>
+            <div class="color-swatch" data-color="#A855F7" style="background: #A855F7;" title="Purple"></div>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="post-summary">Summary / Excerpt (Short description for feed & SEO)</label>
-          <textarea id="post-summary" class="form-control" rows="2" placeholder="Brief summary of the article..."></textarea>
+        <!-- Highlighter Dropdown -->
+        <div class="palette-dropdown">
+          <button type="button" class="toolbar-btn-rich" id="btn-highlighter" title="Highlight Marker" style="font-weight: 700;">🖍️</button>
+          <div class="palette-menu" id="menu-highlighter">
+            <div class="color-swatch" data-hl="hl-yellow" style="background: #FACC15;" title="Yellow Marker"></div>
+            <div class="color-swatch" data-hl="hl-green" style="background: #34D399;" title="Mint Green Marker"></div>
+            <div class="color-swatch" data-hl="hl-cyan" style="background: #38BDF8;" title="Sky Blue Marker"></div>
+            <div class="color-swatch" data-hl="hl-pink" style="background: #F472B6;" title="Rose Pink Marker"></div>
+            <div class="color-swatch" data-hl="hl-purple" style="background: #C084FC;" title="Purple Marker"></div>
+            <div class="color-swatch" data-hl="remove" style="background: #334155; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #FFF;" title="Clear Highlight">✕</div>
+          </div>
         </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Alignment -->
+        <button type="button" class="toolbar-btn-rich" data-cmd="justifyLeft" title="Align Left">⯬</button>
+        <button type="button" class="toolbar-btn-rich" data-cmd="justifyCenter" title="Align Center">☰</button>
+        <button type="button" class="toolbar-btn-rich" data-cmd="justifyRight" title="Align Right">⯮</button>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Lists -->
+        <button type="button" class="toolbar-btn-rich" data-cmd="insertUnorderedList" title="Bulleted List">&bull; List</button>
+        <button type="button" class="toolbar-btn-rich" data-cmd="insertOrderedList" title="Numbered List">1. List</button>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Inserters: Link, Image, Callout Box, Table, Divider -->
+        <button type="button" class="toolbar-btn-rich" id="btn-insert-link" title="Insert Link (Ctrl+K)">🔗</button>
+        <button type="button" class="toolbar-btn-rich" id="btn-insert-image" title="Insert Image">🖼️</button>
+        <button type="button" class="toolbar-btn-rich" id="btn-insert-callout" title="Insert Callout Box / Note">💡 Note</button>
+        <button type="button" class="toolbar-btn-rich" id="btn-insert-table" title="Insert Table">📊 Table</button>
+        <button type="button" class="toolbar-btn-rich" data-cmd="insertHorizontalRule" title="Divider Line">&horbar;</button>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Actions: Clear Format, Undo, Redo -->
+        <button type="button" class="toolbar-btn-rich" data-cmd="removeFormat" title="Clear Formatting">🧹</button>
+        <button type="button" class="toolbar-btn-rich" data-cmd="undo" title="Undo (Ctrl+Z)">↩️</button>
+        <button type="button" class="toolbar-btn-rich" data-cmd="redo" title="Redo (Ctrl+Y)">↪️</button>
       </div>
 
-      <div>
-        <div class="form-group">
-          <label class="form-label" for="post-slug">URL Slug (e.g. blog.sitendra.store/post/my-article)</label>
-          <input type="text" id="post-slug" class="form-control" placeholder="auto-generated-from-title">
+      <!-- Rich Visual Editable Canvas (WYSIWYG) -->
+      <div id="rich-canvas" class="rich-editor-canvas" contenteditable="true" data-placeholder="Start writing your story or article here... You can format text, add headings, bullet points, callout notes, images, and tables directly using the toolbar above."></div>
+
+      <!-- Reader Mode Preview Area (Hidden by default, shown on Reader View toggle) -->
+      <div id="reader-preview-area" class="article-body" style="display: none; padding: 2.5rem; min-height: 520px; background: var(--bg-surface);"></div>
+
+      <!-- Status Footer -->
+      <div class="editor-footer-status">
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <span id="stat-words" style="font-weight: 600;">0 words</span>
+          <span>&bull;</span>
+          <span id="stat-chars">0 characters</span>
+          <span>&bull;</span>
+          <span id="stat-readtime">1 min read</span>
         </div>
-
-        <div class="form-group">
-          <label class="form-label" for="post-tags">Tags (Comma-separated)</label>
-          <input type="text" id="post-tags" class="form-control" placeholder="python, backend, webdev, engineering">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="post-cover">Cover Image URL (Optional)</label>
-          <input type="url" id="post-cover" class="form-control" placeholder="https://images.unsplash.com/...">
-        </div>
-      </div>
-    </div>
-
-    <!-- Markdown Editor & Live Preview Grid -->
-    <div class="editor-grid" id="editor-grid">
-      <!-- Editor Column -->
-      <div class="editor-pane" id="editor-pane">
-        <div class="pane-header">
-          <span>Markdown Source</span>
-          <span style="font-size: 0.78rem; color: var(--text-subtle); font-family: var(--font-mono);" id="word-count">0 words &bull; 1 min read</span>
-        </div>
-
-        <!-- Formatting Toolbar -->
-        <div class="editor-toolbar">
-          <button type="button" class="toolbar-btn" data-action="h2" title="Heading 2">H2</button>
-          <button type="button" class="toolbar-btn" data-action="h3" title="Heading 3">H3</button>
-          <button type="button" class="toolbar-btn" data-action="bold" title="Bold"><strong>B</strong></button>
-          <button type="button" class="toolbar-btn" data-action="italic" title="Italic"><em>I</em></button>
-          <button type="button" class="toolbar-btn" data-action="quote" title="Quote">&ldquo;&rdquo;</button>
-          <button type="button" class="toolbar-btn" data-action="code" title="Code block">&lt;/&gt;</button>
-          <button type="button" class="toolbar-btn" data-action="link" title="Link">&#128279;</button>
-          <button type="button" class="toolbar-btn" data-action="image" title="Image">&#128444;</button>
-          <button type="button" class="toolbar-btn" data-action="bullet" title="Bullet List">&bull; List</button>
-          <button type="button" class="toolbar-btn" data-action="table" title="Insert Table">Table</button>
-          <button type="button" class="toolbar-btn" data-action="hr" title="Horizontal Rule">&horbar;</button>
-        </div>
-
-        <textarea id="post-content" class="editor-textarea" placeholder="# Introduction&#10;&#10;Write your article here in Markdown...&#10;&#10;## Features&#10;- Subdomain support&#10;- Code block syntax highlighting&#10;- Fast rendering"></textarea>
-      </div>
-
-      <!-- Preview Column -->
-      <div class="preview-pane" id="preview-pane">
-        <div class="pane-header">
-          <span>Live Article Preview</span>
+        <div style="display: flex; gap: 0.85rem; align-items: center;">
+          <span id="autosave-label" style="font-size: 0.78rem; color: var(--text-subtle);">Draft ready</span>
           <span class="status-badge status-draft" id="status-badge">Draft Mode</span>
-        </div>
-        <div class="preview-content article-body" id="preview-content">
-          <p style="color: var(--text-muted);">Start writing on the left to see the rendered live preview here...</p>
         </div>
       </div>
     </div>
   </main>
 
+  <!-- =========================================================
+       MODALS: LINK, IMAGE, TABLE, UNSPASH PRESETS, MANAGE POSTS
+       ========================================================= -->
+
+  <!-- Link Modal -->
+  <div class="modal-overlay" id="modal-link">
+    <div class="studio-modal-card">
+      <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem;">🔗 Insert / Edit Hyperlink</h3>
+      <div class="form-group">
+        <label class="form-label" for="link-url-input">Destination URL *</label>
+        <input type="url" id="link-url-input" class="form-control" placeholder="https://example.com" value="https://">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="link-text-input">Display Text (Optional)</label>
+        <input type="text" id="link-text-input" class="form-control" placeholder="Click here to read more...">
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-link-cancel">Cancel</button>
+        <button type="button" class="btn btn-primary btn-sm" id="btn-link-apply">Apply Link</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Modal (URL or Upload) -->
+  <div class="modal-overlay" id="modal-image">
+    <div class="studio-modal-card">
+      <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem;">🖼️ Insert Article Image</h3>
+      
+      <div class="form-group">
+        <label class="form-label">Image Web URL</label>
+        <input type="url" id="img-url-input" class="form-control" placeholder="https://images.unsplash.com/...">
+      </div>
+
+      <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; margin: 0.75rem 0;">&mdash; OR UPLOAD FROM DEVICE &mdash;</div>
+
+      <div class="form-group">
+        <label class="btn btn-secondary" style="width: 100%; cursor: pointer;">
+          📁 Choose Image File from Device
+          <input type="file" id="img-file-input" accept="image/*" style="display: none;">
+        </label>
+      </div>
+
+      <div class="form-group" style="margin-top: 0.75rem;">
+        <label class="form-label" for="img-alt-input">Caption / Alt Text (Optional)</label>
+        <input type="text" id="img-alt-input" class="form-control" placeholder="Description of the image...">
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-img-cancel">Cancel</button>
+        <button type="button" class="btn btn-primary btn-sm" id="btn-img-apply">Insert Image</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Callout Note Modal -->
+  <div class="modal-overlay" id="modal-callout">
+    <div class="studio-modal-card">
+      <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem;">💡 Insert Callout Note Box</h3>
+      <div class="form-group">
+        <label class="form-label">Callout Type</label>
+        <select id="callout-type-select" class="form-control">
+          <option value="info">💡 Information / Note (Blue)</option>
+          <option value="tip">🚀 Pro Tip / Advice (Emerald Green)</option>
+          <option value="warning">⚠️ Warning / Important (Amber Gold)</option>
+          <option value="quote">❝ Highlighted Pull-Quote (Purple)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="callout-text-input">Note Content</label>
+        <textarea id="callout-text-input" class="form-control" rows="3" placeholder="Write your key takeaway, reminder, or highlighted thought here..."></textarea>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-callout-cancel">Cancel</button>
+        <button type="button" class="btn btn-primary btn-sm" id="btn-callout-apply">Insert Note</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table Modal -->
+  <div class="modal-overlay" id="modal-table">
+    <div class="studio-modal-card">
+      <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem;">📊 Insert Table</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label class="form-label" for="tbl-rows">Rows (excl. header)</label>
+          <input type="number" id="tbl-rows" class="form-control" min="1" max="20" value="3">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tbl-cols">Columns</label>
+          <input type="number" id="tbl-cols" class="form-control" min="1" max="8" value="3">
+        </div>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-tbl-cancel">Cancel</button>
+        <button type="button" class="btn btn-primary btn-sm" id="btn-tbl-apply">Insert Table</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Unsplash Presets Modal -->
+  <div class="modal-overlay" id="modal-unsplash">
+    <div class="studio-modal-card" style="max-width: 620px;">
+      <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem;">📷 Choose a Curated Cover Photo</h3>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem;">High-resolution royalty-free cover photos tailored for any topic.</p>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.75rem; max-height: 360px; overflow-y: auto;">
+        <!-- Minimalist -->
+        <div class="unsplash-card" data-url="https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=1200" style="cursor: pointer; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border);">
+          <img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=300" style="width: 100%; height: 80px; object-fit: cover; display: block;" alt="Workspace">
+          <div style="padding: 0.35rem; font-size: 0.75rem; text-align: center; background: var(--bg-surface);">Workspace</div>
+        </div>
+        <!-- Nature -->
+        <div class="unsplash-card" data-url="https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200" style="cursor: pointer; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border);">
+          <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=300" style="width: 100%; height: 80px; object-fit: cover; display: block;" alt="Landscape">
+          <div style="padding: 0.35rem; font-size: 0.75rem; text-align: center; background: var(--bg-surface);">Landscape</div>
+        </div>
+        <!-- Technology -->
+        <div class="unsplash-card" data-url="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200" style="cursor: pointer; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border);">
+          <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=300" style="width: 100%; height: 80px; object-fit: cover; display: block;" alt="Technology">
+          <div style="padding: 0.35rem; font-size: 0.75rem; text-align: center; background: var(--bg-surface);">Technology</div>
+        </div>
+        <!-- Creative / Abstract -->
+        <div class="unsplash-card" data-url="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1200" style="cursor: pointer; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border);">
+          <img src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=300" style="width: 100%; height: 80px; object-fit: cover; display: block;" alt="Abstract">
+          <div style="padding: 0.35rem; font-size: 0.75rem; text-align: center; background: var(--bg-surface);">Abstract</div>
+        </div>
+        <!-- Books & Learning -->
+        <div class="unsplash-card" data-url="https://images.unsplash.com/photo-1457369804613-52c61a468e7d?q=80&w=1200" style="cursor: pointer; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border);">
+          <img src="https://images.unsplash.com/photo-1457369804613-52c61a468e7d?q=80&w=300" style="width: 100%; height: 80px; object-fit: cover; display: block;" alt="Books & Stories">
+          <div style="padding: 0.35rem; font-size: 0.75rem; text-align: center; background: var(--bg-surface);">Books &amp; Stories</div>
+        </div>
+        <!-- Coffee & Thoughts -->
+        <div class="unsplash-card" data-url="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=1200" style="cursor: pointer; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border);">
+          <img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=300" style="width: 100%; height: 80px; object-fit: cover; display: block;" alt="Coffee & Thoughts">
+          <div style="padding: 0.35rem; font-size: 0.75rem; text-align: center; background: var(--bg-surface);">Coffee &amp; Life</div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: 1.25rem;">
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-unsplash-close">Close</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Manage Posts Modal -->
   <div class="modal-overlay" id="manage-modal">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 style="font-size: 1.25rem; font-weight: 700;">My Articles</h3>
+        <h3 style="font-size: 1.25rem; font-weight: 700;">My Articles &amp; Stories</h3>
         <button type="button" id="close-modal-btn" class="btn btn-secondary btn-sm">&times;</button>
       </div>
       <div class="modal-body" id="manage-posts-list">
@@ -172,7 +453,7 @@
     </div>
   </div>
 
-  <!-- Toast Message -->
+  <!-- Toast Notification -->
   <div class="toast-msg" id="toast">
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--success);">
       <polyline points="20 6 9 17 4 12"/>
@@ -180,6 +461,9 @@
     <span id="toast-text">Post saved successfully!</span>
   </div>
 
+  <!-- =========================================================
+       JAVASCRIPT: RICH VISUAL EDITOR PIPELINE & SAVING LOGIC
+       ========================================================= -->
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
       // Subdomain link normalizer
@@ -188,44 +472,6 @@
       const navBlog = document.getElementById("nav-blog");
       if (brandLink) brandLink.href = isSubdomain ? "/" : "/blog";
       if (navBlog) navBlog.href = isSubdomain ? "/" : "/blog";
-
-      // Mobile View Tab Switcher (Editor vs Live Preview)
-      const tabEditor = document.getElementById("tab-editor");
-      const tabPreview = document.getElementById("tab-preview");
-      const editorPane = document.getElementById("editor-pane");
-      const previewPane = document.getElementById("preview-pane");
-
-      if (tabEditor && tabPreview && editorPane && previewPane) {
-        tabEditor.addEventListener("click", () => {
-          tabEditor.classList.add("active");
-          tabPreview.classList.remove("active");
-          editorPane.style.display = "flex";
-          previewPane.style.display = "none";
-        });
-        tabPreview.addEventListener("click", () => {
-          tabPreview.classList.add("active");
-          tabEditor.classList.remove("active");
-          editorPane.style.display = "none";
-          previewPane.style.display = "flex";
-          updateLivePreview();
-        });
-
-        // Reset display when resizing to desktop (> 960px)
-        window.addEventListener("resize", () => {
-          if (window.innerWidth > 960) {
-            editorPane.style.display = "flex";
-            previewPane.style.display = "flex";
-          } else {
-            if (tabEditor.classList.contains("active")) {
-              editorPane.style.display = "flex";
-              previewPane.style.display = "none";
-            } else {
-              editorPane.style.display = "none";
-              previewPane.style.display = "flex";
-            }
-          }
-        });
-      }
 
       // Auth Check Guard
       let currentUser = null;
@@ -251,16 +497,24 @@
         }
       });
 
-      // Elements
+      // DOM Elements
       const titleInput = document.getElementById("post-title");
       const summaryInput = document.getElementById("post-summary");
       const slugInput = document.getElementById("post-slug");
       const tagsInput = document.getElementById("post-tags");
       const coverInput = document.getElementById("post-cover");
-      const contentTextarea = document.getElementById("post-content");
-      const previewContent = document.getElementById("preview-content");
-      const wordCountEl = document.getElementById("word-count");
+      const coverPreviewBox = document.getElementById("cover-preview-box");
+      const coverPreviewImg = document.getElementById("cover-preview-img");
+      const richCanvas = document.getElementById("rich-canvas");
+      const readerPreviewArea = document.getElementById("reader-preview-area");
+      const previewToggleBtn = document.getElementById("preview-toggle-btn");
+      
+      const statWords = document.getElementById("stat-words");
+      const statChars = document.getElementById("stat-chars");
+      const statReadtime = document.getElementById("stat-readtime");
       const statusBadge = document.getElementById("status-badge");
+      const autosaveLabel = document.getElementById("autosave-label");
+      
       const saveDraftBtn = document.getElementById("save-draft-btn");
       const publishBtn = document.getElementById("publish-btn");
       const deleteBtn = document.getElementById("delete-btn");
@@ -270,6 +524,8 @@
 
       let currentEditingId = null;
       let isPublished = false;
+      let isReaderMode = false;
+      let savedSelectionRange = null;
 
       // Toast feedback helper
       function showToast(text, isError = false) {
@@ -281,38 +537,185 @@
         setTimeout(() => toast.classList.remove("show"), 3000);
       }
 
-      // Configure marked parser
-      marked.setOptions({
-        highlight: function(code, lang) {
-          if (lang && hljs.getLanguage(lang)) {
-            try {
-              return hljs.highlight(code, { language: lang }).value;
-            } catch (__) {}
-          }
-          return hljs.highlightAuto(code).value;
-        },
-        breaks: true,
-        gfm: true
-      });
-
-      // Update Live Preview & Reading Estimate
-      function updateLivePreview() {
-        const text = contentTextarea.value;
-        const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-        const mins = Math.max(1, Math.ceil(words / 200));
-        wordCountEl.textContent = `${words} words \u2022 ${mins} min read`;
-
-        if (!text.trim()) {
-          previewContent.innerHTML = '<p style="color: var(--text-muted);">Start writing on the left to see the rendered live preview here...</p>';
-          return;
+      // Selection preservation helper for modal operations
+      function saveSelection() {
+        const sel = window.getSelection();
+        if (sel.getRangeAt && sel.rangeCount) {
+          savedSelectionRange = sel.getRangeAt(0);
         }
-
-        previewContent.innerHTML = marked.parse(text);
       }
 
-      contentTextarea.addEventListener("input", updateLivePreview);
+      function restoreSelection() {
+        if (savedSelectionRange) {
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(savedSelectionRange);
+        } else {
+          richCanvas.focus();
+        }
+      }
 
-      // Auto slug suggestion on title change (if new post or slug not manually customized)
+      // Execute formatting command on canvas
+      function execCmd(command, value = null) {
+        richCanvas.focus();
+        document.execCommand(command, false, value);
+        updateStats();
+      }
+
+      // Toolbar Command Buttons
+      document.querySelectorAll(".toolbar-btn-rich[data-cmd]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          execCmd(btn.dataset.cmd);
+        });
+      });
+
+      // Format Select (p, h1, h2, h3, h4, blockquote, pre)
+      const toolFormat = document.getElementById("tool-format");
+      toolFormat.addEventListener("change", () => {
+        const val = toolFormat.value;
+        if (val === "p") {
+          execCmd("formatBlock", "<p>");
+        } else if (["h1", "h2", "h3", "h4", "blockquote", "pre"].includes(val)) {
+          execCmd("formatBlock", `<${val}>`);
+        }
+      });
+
+      // Inline Code Button
+      document.getElementById("btn-inline-code").addEventListener("click", () => {
+        const sel = window.getSelection();
+        if (!sel || !sel.rangeCount) return;
+        const text = sel.toString();
+        if (text) {
+          const codeEl = document.createElement("code");
+          codeEl.textContent = text;
+          const range = sel.getRangeAt(0);
+          range.deleteContents();
+          range.insertNode(codeEl);
+          range.setStartAfter(codeEl);
+          sel.removeAllRanges();
+          sel.addRange(range);
+          updateStats();
+        }
+      });
+
+      // Color Palette Dropdowns
+      const btnTextColor = document.getElementById("btn-text-color");
+      const menuTextColor = document.getElementById("menu-text-color");
+      const btnHighlighter = document.getElementById("btn-highlighter");
+      const menuHighlighter = document.getElementById("menu-highlighter");
+
+      btnTextColor.addEventListener("click", (e) => {
+        e.stopPropagation();
+        menuTextColor.classList.toggle("show");
+        menuHighlighter.classList.remove("show");
+      });
+
+      btnHighlighter.addEventListener("click", (e) => {
+        e.stopPropagation();
+        menuHighlighter.classList.toggle("show");
+        menuTextColor.classList.remove("show");
+      });
+
+      window.addEventListener("click", () => {
+        menuTextColor.classList.remove("show");
+        menuHighlighter.classList.remove("show");
+      });
+
+      // Text Color Swatches
+      menuTextColor.querySelectorAll(".color-swatch").forEach(s => {
+        s.addEventListener("click", () => {
+          execCmd("foreColor", s.dataset.color);
+          menuTextColor.classList.remove("show");
+        });
+      });
+
+      // Highlight Marker Swatches
+      menuHighlighter.querySelectorAll(".color-swatch").forEach(s => {
+        s.addEventListener("click", () => {
+          const hlClass = s.dataset.hl;
+          menuHighlighter.classList.remove("show");
+          const sel = window.getSelection();
+          if (!sel || !sel.rangeCount) return;
+
+          if (hlClass === "remove") {
+            execCmd("removeFormat");
+            return;
+          }
+
+          const span = document.createElement("span");
+          span.className = hlClass;
+          span.textContent = sel.toString() || "highlighted text";
+          const range = sel.getRangeAt(0);
+          range.deleteContents();
+          range.insertNode(span);
+          updateStats();
+        });
+      });
+
+      // Stats: Word & Character Count
+      function updateStats() {
+        const text = richCanvas.innerText || "";
+        const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+        const chars = text.length;
+        const readMin = Math.max(1, Math.ceil(words / 200));
+
+        statWords.textContent = `${words} words`;
+        statChars.textContent = `${chars} characters`;
+        statReadtime.textContent = `${readMin} min read`;
+      }
+
+      richCanvas.addEventListener("input", () => {
+        updateStats();
+        triggerAutoSave();
+      });
+
+      // Cover Image Live Preview
+      function updateCoverPreview() {
+        const url = coverInput.value.trim();
+        if (url) {
+          coverPreviewImg.src = url;
+          coverPreviewBox.style.display = "block";
+        } else {
+          coverPreviewBox.style.display = "none";
+        }
+      }
+      coverInput.addEventListener("input", updateCoverPreview);
+
+      // Unsplash Modal & Presets
+      const modalUnsplash = document.getElementById("modal-unsplash");
+      const btnPickUnsplash = document.getElementById("btn-pick-unsplash");
+      const btnUnsplashClose = document.getElementById("btn-unsplash-close");
+
+      btnPickUnsplash.addEventListener("click", () => modalUnsplash.classList.add("active"));
+      btnUnsplashClose.addEventListener("click", () => modalUnsplash.classList.remove("active"));
+      
+      document.querySelectorAll(".unsplash-card").forEach(c => {
+        c.addEventListener("click", () => {
+          coverInput.value = c.dataset.url;
+          updateCoverPreview();
+          modalUnsplash.classList.remove("active");
+        });
+      });
+
+      // Topic Preset Badges (Clicking adds to Tags)
+      document.querySelectorAll(".topic-preset-pill").forEach(pill => {
+        pill.addEventListener("click", () => {
+          const tag = pill.dataset.tag;
+          const currentTags = tagsInput.value.split(",").map(t => t.trim()).filter(Boolean);
+          if (currentTags.includes(tag)) {
+            // Remove tag
+            tagsInput.value = currentTags.filter(t => t !== tag).join(", ");
+            pill.classList.remove("active");
+          } else {
+            // Add tag
+            currentTags.push(tag);
+            tagsInput.value = currentTags.join(", ");
+            pill.classList.add("active");
+          }
+        });
+      });
+
+      // Auto Slug Generation
       let slugTouched = false;
       slugInput.addEventListener("input", () => { slugTouched = true; });
       titleInput.addEventListener("input", () => {
@@ -324,67 +727,268 @@
         }
       });
 
-      // Toolbar Actions
-      document.querySelectorAll(".toolbar-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const action = btn.dataset.action;
-          insertFormatting(action);
-        });
+      // ---------------------------------------------------------
+      // MODAL: INSERT LINK
+      // ---------------------------------------------------------
+      const modalLink = document.getElementById("modal-link");
+      const btnInsertLink = document.getElementById("btn-insert-link");
+      const btnLinkCancel = document.getElementById("btn-link-cancel");
+      const btnLinkApply = document.getElementById("btn-link-apply");
+      const linkUrlInput = document.getElementById("link-url-input");
+      const linkTextInput = document.getElementById("link-text-input");
+
+      btnInsertLink.addEventListener("click", () => {
+        saveSelection();
+        const selText = window.getSelection().toString();
+        linkTextInput.value = selText || "";
+        modalLink.classList.add("active");
+        linkUrlInput.focus();
       });
 
-      function insertFormatting(action) {
-        const start = contentTextarea.selectionStart;
-        const end = contentTextarea.selectionEnd;
-        const selected = contentTextarea.value.substring(start, end);
-        let replacement = "";
-        let cursorOffset = 0;
+      btnLinkCancel.addEventListener("click", () => modalLink.classList.remove("active"));
 
-        switch (action) {
-          case "h2":
-            replacement = `\n## ${selected || "Heading 2"}\n`;
-            break;
-          case "h3":
-            replacement = `\n### ${selected || "Heading 3"}\n`;
-            break;
-          case "bold":
-            replacement = `**${selected || "bold text"}**`;
-            break;
-          case "italic":
-            replacement = `*${selected || "italic text"}*`;
-            break;
-          case "quote":
-            replacement = `\n> ${selected || "Quote text"}\n`;
-            break;
-          case "code":
-            replacement = `\n\`\`\`python\n${selected || "# Code here"}\n\`\`\`\n`;
-            break;
-          case "link":
-            replacement = `[${selected || "Link text"}](https://example.com)`;
-            break;
-          case "image":
-            replacement = `![${selected || "Alt text"}](https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200)`;
-            break;
-          case "bullet":
-            replacement = `\n- ${selected || "List item 1"}\n- List item 2\n`;
-            break;
-          case "table":
-            replacement = `\n| Column 1 | Column 2 |\n|---|---|\n| Value 1 | Value 2 |\n`;
-            break;
-          case "hr":
-            replacement = `\n---\n`;
-            break;
+      btnLinkApply.addEventListener("click", () => {
+        const url = linkUrlInput.value.trim();
+        const text = linkTextInput.value.trim();
+        modalLink.classList.remove("active");
+        restoreSelection();
+
+        if (url && url !== "https://") {
+          if (text) {
+            const a = document.createElement("a");
+            a.href = url;
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+            a.textContent = text;
+            const sel = window.getSelection();
+            if (sel.rangeCount) {
+              const range = sel.getRangeAt(0);
+              range.deleteContents();
+              range.insertNode(a);
+            }
+          } else {
+            execCmd("createLink", url);
+          }
         }
+      });
 
-        contentTextarea.setRangeText(replacement, start, end, "select");
-        contentTextarea.focus();
-        updateLivePreview();
+      // ---------------------------------------------------------
+      // MODAL: INSERT IMAGE (URL OR DEVICE UPLOAD)
+      // ---------------------------------------------------------
+      const modalImage = document.getElementById("modal-image");
+      const btnInsertImage = document.getElementById("btn-insert-image");
+      const btnImgCancel = document.getElementById("btn-img-cancel");
+      const btnImgApply = document.getElementById("btn-img-apply");
+      const imgUrlInput = document.getElementById("img-url-input");
+      const imgFileInput = document.getElementById("img-file-input");
+      const imgAltInput = document.getElementById("img-alt-input");
+
+      btnInsertImage.addEventListener("click", () => {
+        saveSelection();
+        modalImage.classList.add("active");
+      });
+
+      btnImgCancel.addEventListener("click", () => modalImage.classList.remove("active"));
+
+      imgFileInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            imgUrlInput.value = ev.target.result; // Data URL Base64
+          };
+          reader.readAsDataURL(e.target.files[0]);
+        }
+      });
+
+      btnImgApply.addEventListener("click", () => {
+        const src = imgUrlInput.value.trim();
+        const alt = imgAltInput.value.trim() || "Article image";
+        modalImage.classList.remove("active");
+        restoreSelection();
+
+        if (src) {
+          const img = document.createElement("img");
+          img.src = src;
+          img.alt = alt;
+          img.style.maxWidth = "100%";
+          img.style.borderRadius = "var(--radius-md)";
+          img.style.margin = "1.5rem auto";
+          img.style.display = "block";
+          
+          const sel = window.getSelection();
+          if (sel.rangeCount) {
+            const range = sel.getRangeAt(0);
+            range.insertNode(img);
+          } else {
+            richCanvas.appendChild(img);
+          }
+          updateStats();
+        }
+      });
+
+      // ---------------------------------------------------------
+      // MODAL: INSERT CALLOUT NOTE
+      // ---------------------------------------------------------
+      const modalCallout = document.getElementById("modal-callout");
+      const btnInsertCallout = document.getElementById("btn-insert-callout");
+      const btnCalloutCancel = document.getElementById("btn-callout-cancel");
+      const btnCalloutApply = document.getElementById("btn-callout-apply");
+      const calloutTypeSelect = document.getElementById("callout-type-select");
+      const calloutTextInput = document.getElementById("callout-text-input");
+
+      btnInsertCallout.addEventListener("click", () => {
+        saveSelection();
+        const selText = window.getSelection().toString();
+        calloutTextInput.value = selText || "";
+        modalCallout.classList.add("active");
+      });
+
+      btnCalloutCancel.addEventListener("click", () => modalCallout.classList.remove("active"));
+
+      btnCalloutApply.addEventListener("click", () => {
+        const type = calloutTypeSelect.value;
+        const text = calloutTextInput.value.trim() || "Important note...";
+        modalCallout.classList.remove("active");
+        restoreSelection();
+
+        const icons = { info: "💡", tip: "🚀", warning: "⚠️", quote: "❝" };
+        const box = document.createElement("div");
+        box.className = `callout-box callout-${type}`;
+        box.innerHTML = `
+          <div class="callout-icon">${icons[type] || "💡"}</div>
+          <div class="callout-content">${text}</div>
+        `;
+
+        const sel = window.getSelection();
+        if (sel.rangeCount) {
+          const range = sel.getRangeAt(0);
+          range.insertNode(box);
+        } else {
+          richCanvas.appendChild(box);
+        }
+        updateStats();
+      });
+
+      // ---------------------------------------------------------
+      // MODAL: INSERT TABLE
+      // ---------------------------------------------------------
+      const modalTable = document.getElementById("modal-table");
+      const btnInsertTable = document.getElementById("btn-insert-table");
+      const btnTblCancel = document.getElementById("btn-tbl-cancel");
+      const btnTblApply = document.getElementById("btn-tbl-apply");
+      const tblRows = document.getElementById("tbl-rows");
+      const tblCols = document.getElementById("tbl-cols");
+
+      btnInsertTable.addEventListener("click", () => {
+        saveSelection();
+        modalTable.classList.add("active");
+      });
+
+      btnTblCancel.addEventListener("click", () => modalTable.classList.remove("active"));
+
+      btnTblApply.addEventListener("click", () => {
+        const r = Math.max(1, parseInt(tblRows.value) || 3);
+        const c = Math.max(1, parseInt(tblCols.value) || 3);
+        modalTable.classList.remove("active");
+        restoreSelection();
+
+        let tableHtml = '<table style="width: 100%; border-collapse: collapse; margin: 1.5rem 0;"><thead><tr>';
+        for (let j = 1; j <= c; j++) {
+          tableHtml += `<th style="border: 1px solid var(--border); padding: 8px 12px; background: var(--bg-surface-elevated);">Header ${j}</th>`;
+        }
+        tableHtml += '</tr></thead><tbody>';
+        for (let i = 1; i <= r; i++) {
+          tableHtml += '<tr>';
+          for (let j = 1; j <= c; j++) {
+            tableHtml += `<td style="border: 1px solid var(--border); padding: 8px 12px;">Cell ${i},${j}</td>`;
+          }
+          tableHtml += '</tr>';
+        }
+        tableHtml += '</tbody></table>';
+
+        const wrapper = document.createElement("div");
+        wrapper.innerHTML = tableHtml;
+        const tblEl = wrapper.firstChild;
+
+        const sel = window.getSelection();
+        if (sel.rangeCount) {
+          const range = sel.getRangeAt(0);
+          range.insertNode(tblEl);
+        } else {
+          richCanvas.appendChild(tblEl);
+        }
+        updateStats();
+      });
+
+      // ---------------------------------------------------------
+      // READER VIEW / PREVIEW TOGGLE
+      // ---------------------------------------------------------
+      previewToggleBtn.addEventListener("click", () => {
+        isReaderMode = !isReaderMode;
+        if (isReaderMode) {
+          readerPreviewArea.innerHTML = richCanvas.innerHTML || '<p style="color: var(--text-muted);">No content to preview.</p>';
+          readerPreviewArea.style.display = "block";
+          richCanvas.style.display = "none";
+          document.getElementById("visual-toolbar").style.display = "none";
+          previewToggleBtn.textContent = "✏️ Editor Mode";
+          previewToggleBtn.classList.add("btn-primary");
+          previewToggleBtn.classList.remove("btn-secondary");
+        } else {
+          readerPreviewArea.style.display = "none";
+          richCanvas.style.display = "block";
+          document.getElementById("visual-toolbar").style.display = "flex";
+          previewToggleBtn.textContent = "👁️ Reader View";
+          previewToggleBtn.classList.remove("btn-primary");
+          previewToggleBtn.classList.add("btn-secondary");
+        }
+      });
+
+      // ---------------------------------------------------------
+      // LOCALSTORAGE AUTOSAVE
+      // ---------------------------------------------------------
+      let autoSaveTimer = null;
+      function triggerAutoSave() {
+        clearTimeout(autoSaveTimer);
+        autosaveLabel.textContent = "Saving...";
+        autoSaveTimer = setTimeout(() => {
+          if (!currentEditingId) {
+            const draft = {
+              title: titleInput.value,
+              summary: summaryInput.value,
+              tags: tagsInput.value,
+              cover: coverInput.value,
+              html: richCanvas.innerHTML,
+              time: Date.now()
+            };
+            localStorage.setItem("sitendra_blog_draft", JSON.stringify(draft));
+            autosaveLabel.textContent = "Auto-saved locally";
+          }
+        }, 1200);
       }
 
-      // Check if URL has ?slug=... to load an existing post for editing
+      // Check URL for ?slug=... to load existing post for editing
       const urlParams = new URLSearchParams(window.location.search);
       const editSlug = urlParams.get("slug");
       if (editSlug) {
         loadPostForEdit(editSlug);
+      } else {
+        // Check for saved local draft
+        const savedDraft = localStorage.getItem("sitendra_blog_draft");
+        if (savedDraft) {
+          try {
+            const parsed = JSON.parse(savedDraft);
+            if (parsed.html && !titleInput.value) {
+              titleInput.value = parsed.title || "";
+              summaryInput.value = parsed.summary || "";
+              tagsInput.value = parsed.tags || "";
+              coverInput.value = parsed.cover || "";
+              richCanvas.innerHTML = parsed.html;
+              updateCoverPreview();
+              updateStats();
+              autosaveLabel.textContent = "Restored from local draft";
+            }
+          } catch (e) {}
+        }
       }
 
       async function loadPostForEdit(slug) {
@@ -403,7 +1007,11 @@
           slugInput.value = post.slug || "";
           tagsInput.value = post.tags || "";
           coverInput.value = post.cover_image || "";
-          contentTextarea.value = post.content || "";
+          
+          // Render content cleanly into rich visual canvas
+          richCanvas.innerHTML = post.content || "";
+          updateCoverPreview();
+          updateStats();
 
           slugTouched = true;
           studioHeading.textContent = "Edit Article";
@@ -412,7 +1020,6 @@
           newPostBtn.style.display = "inline-flex";
 
           updateStatusBadge(isPublished);
-          updateLivePreview();
         } catch (e) {
           console.error("Error fetching post to edit:", e);
         }
@@ -426,14 +1033,16 @@
         } else {
           statusBadge.textContent = "Draft Mode";
           statusBadge.className = "status-badge status-draft";
-          publishBtn.textContent = "Publish Article";
+          publishBtn.textContent = "🚀 Publish Article";
         }
       }
 
-      // Save Post Function (Draft or Published)
+      // ---------------------------------------------------------
+      // SAVE / PUBLISH PIPELINE
+      // ---------------------------------------------------------
       async function savePost(publish) {
         const title = titleInput.value.trim();
-        const content = contentTextarea.value.trim();
+        const content = richCanvas.innerHTML.trim();
         const summary = summaryInput.value.trim();
         const slug = slugInput.value.trim();
         const tags = tagsInput.value.trim();
@@ -445,9 +1054,9 @@
           return;
         }
 
-        if (!content) {
+        if (!content || content === "<p><br></p>") {
           showToast("Please enter article content.", true);
-          contentTextarea.focus();
+          richCanvas.focus();
           return;
         }
 
@@ -495,7 +1104,11 @@
           studioHeading.textContent = "Edit Article";
           studioSubheading.textContent = `Editing "${title}"`;
 
-          showToast(publish ? "Article published successfully!" : "Draft saved successfully!");
+          // Clear local draft once saved to database
+          localStorage.removeItem("sitendra_blog_draft");
+          autosaveLabel.textContent = "Saved to database";
+
+          showToast(publish ? "🎉 Article published successfully!" : "💾 Draft saved successfully!");
         } catch (e) {
           console.error(e);
           showToast(e.message || "Error saving article", true);
@@ -532,10 +1145,13 @@
 
       // New Post button
       newPostBtn.addEventListener("click", () => {
+        localStorage.removeItem("sitendra_blog_draft");
         window.location.href = isSubdomain ? "/write" : "/blog/write";
       });
 
-      // Manage Articles Modal Handlers
+      // ---------------------------------------------------------
+      // MANAGE ARTICLES MODAL
+      // ---------------------------------------------------------
       const manageModal = document.getElementById("manage-modal");
       const manageBtn = document.getElementById("manage-posts-btn");
       const closeModalBtn = document.getElementById("close-modal-btn");
