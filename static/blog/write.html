@@ -221,12 +221,12 @@
         <div class="palette-dropdown">
           <button type="button" class="toolbar-btn-rich" id="btn-text-color" title="Text Color" style="font-weight: 700;">🎨 A</button>
           <div class="palette-menu" id="menu-text-color">
-            <div class="color-swatch" data-color="#E2E8F0" style="background: #E2E8F0;" title="Default Text"></div>
-            <div class="color-swatch" data-color="#38BDF8" style="background: #38BDF8;" title="Electric Cyan"></div>
-            <div class="color-swatch" data-color="#10B981" style="background: #10B981;" title="Emerald Green"></div>
-            <div class="color-swatch" data-color="#F59E0B" style="background: #F59E0B;" title="Amber Gold"></div>
-            <div class="color-swatch" data-color="#F43F5E" style="background: #F43F5E;" title="Coral Rose"></div>
-            <div class="color-swatch" data-color="#A855F7" style="background: #A855F7;" title="Purple"></div>
+            <div class="color-swatch" data-color="#0F172A" style="background: #0F172A;" title="Charcoal (Default)"></div>
+            <div class="color-swatch" data-color="#2563EB" style="background: #2563EB;" title="Sapphire Blue"></div>
+            <div class="color-swatch" data-color="#059669" style="background: #059669;" title="Emerald Green"></div>
+            <div class="color-swatch" data-color="#D97706" style="background: #D97706;" title="Amber Gold"></div>
+            <div class="color-swatch" data-color="#DC2626" style="background: #DC2626;" title="Crimson Red"></div>
+            <div class="color-swatch" data-color="#7C3AED" style="background: #7C3AED;" title="Purple"></div>
           </div>
         </div>
 
@@ -664,9 +664,34 @@
         statReadtime.textContent = `${readMin} min read`;
       }
 
+      // Input and typing events
       richCanvas.addEventListener("input", () => {
         updateStats();
         triggerAutoSave();
+      });
+
+      // Ensure clicking anywhere inside editor container focuses canvas
+      document.getElementById("editor-wrapper").addEventListener("click", (e) => {
+        if (!e.target.closest("#visual-toolbar") && !e.target.closest(".editor-footer-status") && !e.target.closest(".modal-overlay")) {
+          if (document.activeElement !== richCanvas && !isReaderMode) {
+            richCanvas.focus();
+          }
+        }
+      });
+
+      // Initialize paragraph on focus if empty
+      richCanvas.addEventListener("focus", () => {
+        if (!richCanvas.innerHTML || richCanvas.innerHTML.trim() === "" || richCanvas.innerHTML === "<br>") {
+          richCanvas.innerHTML = "<p><br></p>";
+          const sel = window.getSelection();
+          const range = document.createRange();
+          if (richCanvas.firstChild) {
+            range.setStart(richCanvas.firstChild, 0);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+          }
+        }
       });
 
       // Cover Image Live Preview

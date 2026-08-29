@@ -1175,12 +1175,16 @@ a:hover {
   outline: none;
   font-size: 1.12rem;
   line-height: 1.8;
-  color: #E2E8F0;
+  color: var(--text-main);
+  background: var(--bg-surface);
   word-break: break-word;
+  cursor: text;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
-[data-theme="light"] .rich-editor-canvas {
-  color: #1E293B;
+[data-theme="dark"] .rich-editor-canvas {
+  color: #F8FAFC;
 }
 
 .rich-editor-canvas[contenteditable="true"]:empty:before {
