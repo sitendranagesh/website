@@ -693,7 +693,7 @@ a:hover {
 .article-body {
   font-size: 1.08rem;
   line-height: 1.8;
-  color: #E2E8F0;
+  color: var(--text-main);
   word-break: break-word;
 }
 
@@ -1183,11 +1183,16 @@ a:hover {
   -webkit-user-select: text;
 }
 
+.rich-editor-canvas:focus {
+  outline: none;
+}
+
 [data-theme="dark"] .rich-editor-canvas {
   color: #F8FAFC;
 }
 
-.rich-editor-canvas[contenteditable="true"]:empty:before {
+.rich-editor-canvas[contenteditable="true"]:empty:before,
+.rich-editor-canvas[contenteditable="true"] > p:only-child:empty:before {
   content: attr(data-placeholder);
   color: var(--text-subtle);
   pointer-events: none;
@@ -1346,17 +1351,18 @@ a:hover {
   background: rgba(11, 17, 32, 0.85);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   z-index: 2000;
   opacity: 0;
   pointer-events: none;
-  transition: all 0.25s ease;
+  transition: opacity 0.25s ease;
   padding: 1rem;
 }
 
 .modal-overlay.active {
+  display: flex;
   opacity: 1;
   pointer-events: auto;
 }
