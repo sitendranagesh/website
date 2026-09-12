@@ -175,19 +175,23 @@ def dynamic_root_dispatcher(request: Request):
     if subdomain in ("jobs", "job", "govt", "sarkari", "career", "careers"):
         return FileResponse(STATIC_DIR / "jobs.html")
 
-    # 9. About / Profile Subdomain (about.sitendra.store / me.sitendra.store)
+    # 10. Motivation & Mindset Sanctuary Subdomain (motivation.sitendra.store / focus.sitendra.store / mindset.sitendra.store / approach.sitendra.store)
+    if subdomain in ("motivation", "focus", "mindset", "approach", "mind", "flow", "daily", "zen"):
+        return FileResponse(STATIC_DIR / "motivation.html")
+
+    # 11. About / Profile Subdomain (about.sitendra.store / me.sitendra.store)
     if subdomain in ("about", "me", "intro"):
         intro_file = INTRO_DIR / "index.html"
         if intro_file.exists():
             return FileResponse(intro_file)
 
-    # 10. Notes App Subdomain (app.sitendra.store / notes.sitendra.store)
+    # 12. Notes App Subdomain (app.sitendra.store / notes.sitendra.store)
     if subdomain in ("app", "notes", "my"):
         if not request.session.get("user_id"):
             return RedirectResponse(url="/login.html")
         return RedirectResponse(url="/index.html")
 
-    # 11. Main Root Domain Homepage (sitendra.store)
+    # 13. Main Root Domain Homepage (sitendra.store)
     return FileResponse(STATIC_DIR / "home.html")
 
 
@@ -288,6 +292,15 @@ def projects_page():
 @app.get("/careers")
 def govt_jobs_page():
     return FileResponse(STATIC_DIR / "jobs.html")
+
+
+@app.get("/motivation")
+@app.get("/focus")
+@app.get("/mindset")
+@app.get("/approach")
+@app.get("/zen")
+def motivation_page():
+    return FileResponse(STATIC_DIR / "motivation.html")
 
 
 @app.get("/share/{share_id}")
@@ -419,6 +432,11 @@ def robots_txt():
 Allow: /
 Disallow: /api/
 Disallow: /write
+Disallow: /motivation
+Disallow: /focus
+Disallow: /mindset
+Disallow: /approach
+Disallow: /zen
 
 Sitemap: https://sitendra.store/sitemap.xml
 """

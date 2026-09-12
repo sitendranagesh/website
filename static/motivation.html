@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Approach &amp; Motivation Sanctuary | Sitendra</title>
+  
+  <!-- Private Stealth Robots Tag: Strictly Disallow Indexing -->
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+  <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
+  <meta name="description" content="Personal minimalist sanctuary for daily approach and small task appreciation.">
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/blog/blog.css">
+  <link rel="stylesheet" href="/cmd_k.css">
+  <link rel="stylesheet" href="/chat.css">
+
+  <!-- Theme Script -->
+  <script src="/theme.js"></script>
+
+  <style>
+    /* Minimalist Zen Layout */
+    .sanctuary-container {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 5rem;
+      transition: filter 0.25s ease, opacity 0.25s ease;
+    }
+    .sanctuary-container.shield-active {
+      filter: blur(12px);
+      opacity: 0.2;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* Privacy Camouflage Screen */
+    .camouflage-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg-deep);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9998;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+    }
+    .camouflage-overlay.active {
+      display: flex;
+    }
+    .camouflage-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.6;
+    }
+    .camouflage-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+    }
+    .camouflage-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Core Triple Anchors Hero */
+    .zen-hero {
+      text-align: center;
+      padding: 2.5rem 1.5rem 2rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+    }
+    .zen-hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #10B981, #38BDF8, #818CF8);
+    }
+    .zen-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+      color: var(--primary);
+      background: var(--primary-glow);
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 1.25rem;
+    }
+    .zen-anchor-headline {
+      font-family: 'Newsreader', Georgia, serif;
+      font-size: 2.2rem;
+      font-weight: 500;
+      line-height: 1.35;
+      color: var(--text-main);
+      margin-bottom: 1.25rem;
+      letter-spacing: -0.5px;
+    }
+    .zen-mantras-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .zen-mantra-pill {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .zen-mantra-pill:hover {
+      border-color: var(--primary);
+      color: var(--text-main);
+      transform: translateY(-1px);
+    }
+    .zen-mantra-pill strong {
+      color: var(--text-main);
+    }
+
+    /* Section Headers */
+    .zen-section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 2.5rem 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .zen-section-title h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .zen-section-subtitle {
+      font-size: 0.82rem;
+      color: var(--text-subtle);
+    }
+
+    /* Input Box for Reminders & Sentences */
+    .add-thought-box {
+      display: flex;
+      gap: 0.5rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0.4rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.5rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .add-thought-box:focus-within {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md), 0 0 0 3px var(--primary-glow);
+    }
+    .add-thought-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      font-family: inherit;
+    }
+    .add-thought-input:focus {
+      outline: none;
+    }
+    .add-thought-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 1.1rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+    .add-thought-btn:hover {
+      background: var(--primary-hover);
+      transform: scale(1.02);
+    }
+
+    /* Sentences List */
+    .thoughts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .thought-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .thought-card:hover {
+      border-color: var(--border-focus);
+      box-shadow: var(--shadow-sm);
+    }
+    .thought-card.pinned {
+      border-left: 3px solid #10B981;
+      background: var(--bg-surface-elevated);
+    }
+    .thought-content {
+      flex: 1;
+    }
+    .thought-text {
+      font-size: 1.02rem;
+      line-height: 1.5;
+      color: var(--text-main);
+      font-family: 'Newsreader', Georgia, serif;
+      font-weight: 400;
+      cursor: pointer;
+    }
+    .thought-text:hover {
+      opacity: 0.85;
+    }
+    .thought-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 6px;
+      font-size: 0.75rem;
+      color: var(--text-subtle);
+    }
+    .thought-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .icon-action-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 4px 8px;
+      color: var(--text-subtle);
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+    .icon-action-btn:hover {
+      background: var(--bg-surface-hover);
+      color: var(--text-main);
+    }
+    .icon-action-btn.pat-btn:hover {
+      color: #10B981;
+      background: rgba(16, 185, 129, 0.1);
+    }
+    .icon-action-btn.delete-btn:hover {
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    /* Pattern & Pat: Micro-tasks Clarity */
+    .task-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    .task-card.done {
+      opacity: 0.85;
+      background: var(--bg-surface-elevated);
+    }
+    .task-checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      flex: 1;
+      user-select: none;
+    }
+    .task-checkbox {
+      width: 18px;
+      height: 18px;
+      accent-color: #10B981;
+      cursor: pointer;
+    }
+    .task-title {
+      font-size: 0.92rem;
+      color: var(--text-main);
+      transition: color 0.2s ease;
+    }
+    .task-card.done .task-title {
+      text-decoration: line-through;
+      color: var(--text-subtle);
+    }
+    .pat-feedback-toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(50px);
+      background: var(--bg-surface);
+      border: 1px solid #10B981;
+      color: var(--text-main);
+      padding: 0.75rem 1.5rem;
+      border-radius: 999px;
+      box-shadow: var(--shadow-lg), 0 0 20px rgba(16, 185, 129, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 10000;
+    }
+    .pat-feedback-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Zen Ambient Player */
+    .zen-ambient-bar {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .ambient-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .ambient-right {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Modal / Confirm Popup */
+    .confirm-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(3px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 1rem;
+    }
+    .confirm-modal-overlay.active {
+      display: flex;
+    }
+    .confirm-modal-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      max-width: 420px;
+      width: 100%;
+      padding: 1.75rem;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+    }
+    .confirm-modal-icon {
+      font-size: 2.2rem;
+      margin-bottom: 0.5rem;
+    }
+    .confirm-modal-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+    }
+    .confirm-modal-text {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.45;
+    }
+    .confirm-modal-actions {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    /* Hidden file input */
+    #json-sync-input {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header class="blog-header">
+    <div class="brand-wrapper">
+      <a href="/" id="brand-link" style="display: flex; align-items: center; gap: 0.85rem; color: inherit;">
+        <div class="brand-logo" style="background: linear-gradient(135deg, #10B981, #38BDF8);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v8"/>
+            <path d="m4.93 10.93 1.41 1.41"/>
+            <path d="M2 18h2"/>
+            <path d="M20 18h2"/>
+            <path d="m19.07 10.93-1.41 1.41"/>
+            <path d="M22 22H2"/>
+            <path d="m8 22 4-10 4 10"/>
+          </svg>
+        </div>
+        <div class="brand-title">
+          Sitendra <span class="brand-badge" style="background: rgba(16, 185, 129, 0.15); color: #10B981; border-color: rgba(16, 185, 129, 0.3);">Focus &bull; Flow</span>
+        </div>
+      </a>
+    </div>
+
+    <nav class="nav-links">
+      <button type="button" class="btn btn-secondary btn-sm" id="btn-privacy-shield" title="Discreet Shield (Esc) - Blurs content if someone looks at screen">
+        🛡️ <span style="font-size: 0.8rem;">Shield (Esc)</span>
+      </button>
+      <button type="button" class="btn btn-secondary btn-sm" id="btn-disguise-tab" title="Disguise browser tab title as generic notes">
+        🕶️ <span style="font-size: 0.8rem;" id="tab-disguise-label">Disguise Tab</span>
+      </button>
+      <button type="button" class="theme-toggle-btn" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">☀️</button>
+    </nav>
+  </header>
+
+  <!-- Camouflage Screen (Appears when Shield is activated) -->
+  <div class="camouflage-overlay" id="camouflage-screen">
+    <div class="camouflage-icon">📁</div>
+    <div class="camouflage-title">Sitendra Workspace &bull; General Notes</div>
+    <div class="camouflage-subtitle">Click anywhere or press <strong>Escape</strong> to resume.</div>
+  </div>
+
+  <main class="sanctuary-container" id="main-sanctuary">
+
+    <!-- 1. Zen Core Anchors Hero -->
+    <div class="zen-hero">
+      <div class="zen-badge">
+        <span>🌱</span> Personal Mindset &amp; Approach
+      </div>
+      <div class="zen-anchor-headline" id="main-anchor-display">
+        &ldquo;Design it small. Appreciate. If missed, tolerate. Move on.&rdquo;
+      </div>
+      <div class="zen-mantras-row">
+        <div class="zen-mantra-pill">
+          <span>✨</span> <strong>Design it small.</strong> Appreciate.
+        </div>
+        <div class="zen-mantra-pill">
+          <span>🕊️</span> <strong>If missed, tolerate.</strong> Move on.
+        </div>
+        <div class="zen-mantra-pill">
+          <span>🎯</span> <strong>Clarity on small tasks.</strong> Pattern &amp; pat.
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. "Pattern & Pat" — Small Tasks & Micro-Wins -->
+    <div class="zen-section-title">
+      <div>
+        <h2><span>🎯</span> Small Tasks Done &bull; Pattern &amp; Pat</h2>
+        <div class="zen-section-subtitle">Acknowledge every tiny step. No pressure, no guilt.</div>
+      </div>
+      <button type="button" class="btn btn-secondary btn-sm" id="btn-tolerate-clear" title="Clear completed tasks without guilt">
+        🕊️ Tolerate &amp; Move On
+      </button>
+    </div>
+
+    <!-- Add Task Input -->
+    <div class="add-thought-box">
+      <input type="text" id="new-task-input" class="add-thought-input" placeholder="What small task did you just do? (e.g., drafted 1 email, refactored 1 file)...">
+      <button type="button" id="btn-add-task" class="add-thought-btn">
+        <span>+</span> Done
+      </button>
+    </div>
+
+    <!-- Tasks List -->
+    <div id="tasks-list-container">
+      <!-- Injected by JS -->
+    </div>
+
+    <!-- 3. Reminders, Mantras & Sentences -->
+    <div class="zen-section-title">
+      <div>
+        <h2><span>📝</span> Sentences &amp; Guiding Reminders</h2>
+        <div class="zen-section-subtitle">Click text to edit. Star to anchor. Tap 👏 to appreciate.</div>
+      </div>
+      <div style="display: flex; gap: 0.5rem;">
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-export-mindset" title="Backup thoughts to JSON">💾 Backup</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-import-mindset" title="Restore thoughts from JSON">📂 Restore</button>
+        <input type="file" id="json-sync-input" accept=".json">
+      </div>
+    </div>
+
+    <!-- Add Sentence Input -->
+    <div class="add-thought-box">
+      <input type="text" id="new-thought-input" class="add-thought-input" placeholder="Add a new reminder, sentence, or mantra for your approach...">
+      <button type="button" id="btn-add-thought" class="add-thought-btn">
+        <span>+</span> Add
+      </button>
+    </div>
+
+    <!-- Thoughts List -->
+    <div class="thoughts-list" id="thoughts-list-container">
+      <!-- Injected by JS -->
+    </div>
+
+    <!-- 4. Zen Breathe & Audio Sanctuary Bar -->
+    <div class="zen-ambient-bar">
+      <div class="ambient-left">
+        <span style="font-size: 1.4rem;">🧘</span>
+        <div>
+          <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-main);">Mindful Reset &bull; 2-Min Breathe</div>
+          <div style="font-size: 0.78rem; color: var(--text-muted);" id="breathe-status-text">Inhale gently. Exhale and soften your shoulders.</div>
+        </div>
+      </div>
+      <div class="ambient-right">
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-zen-chime" title="Play calming gentle chime sound">
+          🔔 Gentle Chime
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" id="btn-toggle-breathe">
+          ▶ Start Breathe
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="confirm-modal-overlay" id="delete-modal">
+    <div class="confirm-modal-box">
+      <div class="confirm-modal-icon">🗑️</div>
+      <div class="confirm-modal-title" id="delete-modal-title">Remove Reminder?</div>
+      <div class="confirm-modal-text" id="delete-modal-text">
+        Are you sure you want to delete this sentence? You can always add it again later.
+      </div>
+      <div class="confirm-modal-actions">
+        <button type="button" class="btn btn-secondary" id="btn-cancel-delete">Keep It</button>
+        <button type="button" class="btn btn-danger" id="btn-confirm-delete">Yes, Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="pat-feedback-toast" id="pat-toast">
+    <span>👏</span>
+    <span id="pat-toast-text">Pat on the back! Well done.</span>
+  </div>
+
+  <footer class="blog-footer" style="margin-top: 3rem;">
+    <p>&copy; 2026 Sitendra Kumar Nagesh &bull; <a href="/blog">Blog</a> &bull; <a href="/resume">CV Studio</a> &bull; <a href="/tools">Tools</a> &bull; <a href="/about">About</a> &bull; <a href="/">Notes</a></p>
+  </footer>
+
+  <script src="/cmd_k.js"></script>
+  <script src="/chat.js"></script>
+
+  <!-- Motivation & Mindset Engine -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Default Initial Core Anchors
+      const DEFAULT_THOUGHTS = [
+        { id: "t1", text: "Design it small. Appreciate.", pinned: true, pats: 14, date: "Core Approach" },
+        { id: "t2", text: "If missed, tolerate. Move on.", pinned: false, pats: 12, date: "Core Approach" },
+        { id: "t3", text: "Clarity on small tasks done. Pattern and pat.", pinned: false, pats: 9, date: "Core Approach" },
+        { id: "t4", text: "Action precedes clarity. Take one tiny imperfect step.", pinned: false, pats: 6, date: "Daily Wisdom" },
+        { id: "t5", text: "Consistency over intensity. Show up gently today.", pinned: false, pats: 8, date: "Daily Wisdom" }
+      ];
+
+      const DEFAULT_TASKS = [
+        { id: "k1", title: "Configured personal motivation sanctuary", done: true, time: "Just now" }
+      ];
+
+      // Load State
+      let thoughts = [];
+      let tasks = [];
+
+      try {
+        const savedThoughts = localStorage.getItem("sitendra_zen_thoughts");
+        thoughts = savedThoughts ? JSON.parse(savedThoughts) : DEFAULT_THOUGHTS;
+      } catch (e) {
+        thoughts = DEFAULT_THOUGHTS;
+      }
+
+      try {
+        const savedTasks = localStorage.getItem("sitendra_zen_tasks");
+        tasks = savedTasks ? JSON.parse(savedTasks) : DEFAULT_TASKS;
+      } catch (e) {
+        tasks = DEFAULT_TASKS;
+      }
+
+      function saveState() {
+        localStorage.setItem("sitendra_zen_thoughts", JSON.stringify(thoughts));
+        localStorage.setItem("sitendra_zen_tasks", JSON.stringify(tasks));
+      }
+
+      // DOM Elements
+      const thoughtsContainer = document.getElementById("thoughts-list-container");
+      const tasksContainer = document.getElementById("tasks-list-container");
+      const mainAnchorDisplay = document.getElementById("main-anchor-display");
+
+      const newThoughtInput = document.getElementById("new-thought-input");
+      const btnAddThought = document.getElementById("btn-add-thought");
+
+      const newTaskInput = document.getElementById("new-task-input");
+      const btnAddTask = document.getElementById("btn-add-task");
+      const btnTolerateClear = document.getElementById("btn-tolerate-clear");
+
+      // Privacy Shield & Camouflage Screen
+      const mainSanctuary = document.getElementById("main-sanctuary");
+      const camouflageScreen = document.getElementById("camouflage-screen");
+      const btnPrivacyShield = document.getElementById("btn-privacy-shield");
+      const btnDisguiseTab = document.getElementById("btn-disguise-tab");
+      const tabDisguiseLabel = document.getElementById("tab-disguise-label");
+      let isShieldActive = false;
+      let isTabDisguised = localStorage.getItem("sitendra_tab_disguise") === "true";
+
+      function toggleShield(forceState) {
+        isShieldActive = typeof forceState === "boolean" ? forceState : !isShieldActive;
+        if (isShieldActive) {
+          mainSanctuary.classList.add("shield-active");
+          camouflageScreen.classList.add("active");
+        } else {
+          mainSanctuary.classList.remove("shield-active");
+          camouflageScreen.classList.remove("active");
+        }
+      }
+
+      btnPrivacyShield.addEventListener("click", () => toggleShield());
+      camouflageScreen.addEventListener("click", () => toggleShield(false));
+
+      // Quick Esc key toggle for privacy shield
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          // If a modal is open, let modal close handle it; else toggle shield
+          if (deleteModal.classList.contains("active")) {
+            deleteModal.classList.remove("active");
+            itemToDelete = null;
+          } else {
+            toggleShield();
+          }
+        }
+      });
+
+      // Disguise Tab Title
+      function updateTabTitle() {
+        if (isTabDisguised) {
+          document.title = "Workspace Notes | Docs";
+          tabDisguiseLabel.textContent = "Revealed Tab";
+        } else {
+          document.title = "Approach & Motivation Sanctuary | Sitendra";
+          tabDisguiseLabel.textContent = "Disguise Tab";
+        }
+        localStorage.setItem("sitendra_tab_disguise", isTabDisguised ? "true" : "false");
+      }
+      updateTabTitle();
+
+      btnDisguiseTab.addEventListener("click", () => {
+        isTabDisguised = !isTabDisguised;
+        updateTabTitle();
+        showToast(isTabDisguised ? "Tab disguised as 'Workspace Notes'" : "Tab title restored", "🕶️");
+      });
+
+      // Delete Modal Elements
+      const deleteModal = document.getElementById("delete-modal");
+      const btnCancelDelete = document.getElementById("btn-cancel-delete");
+      const btnConfirmDelete = document.getElementById("btn-confirm-delete");
+      let itemToDelete = null;
+
+      // Toast Feedback
+      const patToast = document.getElementById("pat-toast");
+      const patToastText = document.getElementById("pat-toast-text");
+      let toastTimer = null;
+
+      function showToast(message, emoji = "👏") {
+        patToast.querySelector("span:first-child").textContent = emoji;
+        patToastText.textContent = message;
+        patToast.classList.add("show");
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          patToast.classList.remove("show");
+        }, 2600);
+      }
+
+      // Audio Synthesizer (Web Audio API)
+      let audioCtx = null;
+      function playGentleChime(freq = 528) {
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContext) return;
+          if (!audioCtx) audioCtx = new AudioContext();
+          if (audioCtx.state === "suspended") audioCtx.resume();
+
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(freq * 1.5, audioCtx.currentTime + 1.2);
+
+          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.4);
+
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          osc.start();
+          osc.stop(audioCtx.currentTime + 1.5);
+        } catch (e) {
+          // Fallback
+        }
+      }
+
+      document.getElementById("btn-zen-chime").addEventListener("click", () => {
+        playGentleChime(432);
+        showToast("Gentle bell sound &bull; Breathe in clarity", "🔔");
+      });
+
+      // Render Thoughts
+      function renderThoughts() {
+        thoughtsContainer.innerHTML = "";
+        
+        const pinnedThought = thoughts.find(t => t.pinned);
+        if (pinnedThought) {
+          mainAnchorDisplay.innerHTML = `&ldquo;${escapeHtml(pinnedThought.text)}&rdquo;`;
+        } else if (thoughts.length > 0) {
+          mainAnchorDisplay.innerHTML = `&ldquo;${escapeHtml(thoughts[0].text)}&rdquo;`;
+        } else {
+          mainAnchorDisplay.innerHTML = `&ldquo;Design it small. Appreciate. If missed, tolerate. Move on.&rdquo;`;
+        }
+
+        if (thoughts.length === 0) {
+          thoughtsContainer.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: var(--text-subtle); font-style: italic;">
+              No custom sentences yet. Add your first thought or anchor above.
+            </div>
+          `;
+          return;
+        }
+
+        thoughts.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = `thought-card ${item.pinned ? 'pinned' : ''}`;
+          card.innerHTML = `
+            <div class="thought-content">
+              <div class="thought-text" data-id="${item.id}" title="Click to edit">${escapeHtml(item.text)}</div>
+              <div class="thought-meta">
+                <span>${item.date || 'Mindset'}</span>
+                <span>&bull;</span>
+                <span>👏 ${item.pats || 0} pats</span>
+              </div>
+            </div>
+            <div class="thought-actions">
+              <button type="button" class="icon-action-btn pin-btn" data-id="${item.id}" title="${item.pinned ? 'Unpin anchor' : 'Pin as main anchor'}">
+                ${item.pinned ? '⭐' : '☆'}
+              </button>
+              <button type="button" class="icon-action-btn pat-btn" data-id="${item.id}" title="Pat & Appreciate">
+                👏 <span style="font-size: 0.8rem; font-weight: 600;">Pat</span>
+              </button>
+              <button type="button" class="icon-action-btn delete-btn" data-id="${item.id}" title="Delete sentence">
+                ✕
+              </button>
+            </div>
+          `;
+          thoughtsContainer.appendChild(card);
+        });
+      }
+
+      // Render Tasks
+      function renderTasks() {
+        tasksContainer.innerHTML = "";
+        if (tasks.length === 0) {
+          tasksContainer.innerHTML = `
+            <div style="text-align: center; padding: 1.5rem; color: var(--text-subtle); background: var(--bg-surface-elevated); border: 1px dashed var(--border); border-radius: 8px; font-size: 0.88rem;">
+              No small tasks logged yet. Finish a micro-step, log it, and give yourself a well-deserved pat!
+            </div>
+          `;
+          return;
+        }
+
+        tasks.forEach((task) => {
+          const card = document.createElement("div");
+          card.className = `task-card ${task.done ? 'done' : ''}`;
+          card.innerHTML = `
+            <label class="task-checkbox-label">
+              <input type="checkbox" class="task-checkbox" data-id="${task.id}" ${task.done ? 'checked' : ''}>
+              <span class="task-title">${escapeHtml(task.title)}</span>
+            </label>
+            <div style="display: flex; align-items: center; gap: 4px;">
+              <span style="font-size: 0.72rem; color: var(--text-subtle); margin-right: 4px;">${task.time || ''}</span>
+              <button type="button" class="icon-action-btn delete-task-btn" data-id="${task.id}" title="Remove task" style="padding: 2px 6px;">✕</button>
+            </div>
+          `;
+          tasksContainer.appendChild(card);
+        });
+      }
+
+      // Add Thought
+      function addThought() {
+        const text = newThoughtInput.value.trim();
+        if (!text) return;
+        const newObj = {
+          id: "t_" + Date.now(),
+          text: text,
+          pinned: thoughts.length === 0,
+          pats: 1,
+          date: new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+        };
+        thoughts.unshift(newObj);
+        newThoughtInput.value = "";
+        saveState();
+        renderThoughts();
+        playGentleChime(528);
+        showToast("Thought anchored &bull; Appreciate", "🌱");
+      }
+
+      btnAddThought.addEventListener("click", addThought);
+      newThoughtInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") addThought();
+      });
+
+      // Add Task
+      function addTask() {
+        const title = newTaskInput.value.trim();
+        if (!title) return;
+        const newObj = {
+          id: "k_" + Date.now(),
+          title: title,
+          done: true,
+          time: new Date().toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
+        };
+        tasks.unshift(newObj);
+        newTaskInput.value = "";
+        saveState();
+        renderTasks();
+        playGentleChime(660);
+        showToast("Small task done! Pat on the back.", "👏");
+      }
+
+      btnAddTask.addEventListener("click", addTask);
+      newTaskInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") addTask();
+      });
+
+      // Tolerate & Clear
+      btnTolerateClear.addEventListener("click", () => {
+        if (tasks.length === 0) return;
+        itemToDelete = { type: "clear_tasks" };
+        document.getElementById("delete-modal-title").textContent = "Tolerate & Move On?";
+        document.getElementById("delete-modal-text").textContent = "Clear your task list without any judgment or pressure. Celebrate what got done and start fresh.";
+        deleteModal.classList.add("active");
+      });
+
+      // Interactions on Thoughts & Tasks lists
+      document.addEventListener("click", (e) => {
+        const target = e.target.closest("button") || e.target;
+
+        // Pat button
+        if (target.classList.contains("pat-btn")) {
+          const id = target.dataset.id;
+          const thought = thoughts.find(t => t.id === id);
+          if (thought) {
+            thought.pats = (thought.pats || 0) + 1;
+            saveState();
+            renderThoughts();
+            playGentleChime(528 + (thought.pats % 5) * 40);
+            showToast(`Pat recorded! (${thought.pats} appreciations)`, "👏");
+          }
+        }
+
+        // Pin button
+        if (target.classList.contains("pin-btn")) {
+          const id = target.dataset.id;
+          thoughts.forEach(t => t.pinned = (t.id === id ? !t.pinned : false));
+          saveState();
+          renderThoughts();
+          showToast("Main anchor updated", "⭐");
+        }
+
+        // Delete Thought button (Triggers warning confirmation modal)
+        if (target.classList.contains("delete-btn")) {
+          const id = target.dataset.id;
+          const thought = thoughts.find(t => t.id === id);
+          itemToDelete = { type: "thought", id: id };
+          document.getElementById("delete-modal-title").textContent = "Remove Reminder?";
+          document.getElementById("delete-modal-text").textContent = `Are you sure you want to delete "${thought ? thought.text : 'this sentence'}"?`;
+          deleteModal.classList.add("active");
+        }
+
+        // Delete Task button
+        if (target.classList.contains("delete-task-btn")) {
+          const id = target.dataset.id;
+          itemToDelete = { type: "task", id: id };
+          document.getElementById("delete-modal-title").textContent = "Remove Task?";
+          document.getElementById("delete-modal-text").textContent = "Do you want to remove this task from your log?";
+          deleteModal.classList.add("active");
+        }
+
+        // Edit thought text inline
+        if (e.target.classList.contains("thought-text")) {
+          const id = e.target.dataset.id;
+          const thought = thoughts.find(t => t.id === id);
+          if (thought) {
+            const newText = prompt("Edit your sentence:", thought.text);
+            if (newText !== null && newText.trim()) {
+              thought.text = newText.trim();
+              saveState();
+              renderThoughts();
+              showToast("Sentence updated", "✏️");
+            }
+          }
+        }
+      });
+
+      // Checkbox toggle
+      document.addEventListener("change", (e) => {
+        if (e.target.classList.contains("task-checkbox")) {
+          const id = e.target.dataset.id;
+          const task = tasks.find(t => t.id === id);
+          if (task) {
+            task.done = e.target.checked;
+            saveState();
+            renderTasks();
+            if (task.done) {
+              playGentleChime(660);
+              showToast("Well done! Small steps compound.", "👏");
+            }
+          }
+        }
+      });
+
+      // Modal Confirmation Handling
+      btnCancelDelete.addEventListener("click", () => {
+        deleteModal.classList.remove("active");
+        itemToDelete = null;
+      });
+
+      btnConfirmDelete.addEventListener("click", () => {
+        if (itemToDelete) {
+          if (itemToDelete.type === "thought") {
+            thoughts = thoughts.filter(t => t.id !== itemToDelete.id);
+            showToast("Sentence removed", "🗑️");
+          } else if (itemToDelete.type === "task") {
+            tasks = tasks.filter(t => t.id !== itemToDelete.id);
+            showToast("Task removed", "🗑️");
+          } else if (itemToDelete.type === "clear_tasks") {
+            tasks = [];
+            showToast("Tasks cleared &bull; Fresh start with zero guilt", "🕊️");
+          }
+          saveState();
+          renderThoughts();
+          renderTasks();
+        }
+        deleteModal.classList.remove("active");
+        itemToDelete = null;
+      });
+
+      deleteModal.addEventListener("click", (e) => {
+        if (e.target === deleteModal) {
+          deleteModal.classList.remove("active");
+          itemToDelete = null;
+        }
+      });
+
+      // JSON Backup & Restore
+      document.getElementById("btn-export-mindset").addEventListener("click", () => {
+        const payload = { thoughts, tasks, exportedAt: new Date().toISOString() };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+        const link = document.createElement("a");
+        link.download = `sitendra_mindset_backup_${Date.now()}.json`;
+        link.href = URL.createObjectURL(blob);
+        link.click();
+        showToast("Mindset data backed up", "💾");
+      });
+
+      const jsonSyncInput = document.getElementById("json-sync-input");
+      document.getElementById("btn-import-mindset").addEventListener("click", () => jsonSyncInput.click());
+      jsonSyncInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            try {
+              const data = JSON.parse(ev.target.result);
+              if (data.thoughts && Array.isArray(data.thoughts)) thoughts = data.thoughts;
+              if (data.tasks && Array.isArray(data.tasks)) tasks = data.tasks;
+              saveState();
+              renderThoughts();
+              renderTasks();
+              showToast("Mindset data restored successfully!", "📂");
+            } catch (err) {
+              alert("Invalid JSON file.");
+            }
+          };
+          reader.readAsText(e.target.files[0]);
+        }
+      });
+
+      // Zen Breathe Timer
+      let breatheInterval = null;
+      let breatheSeconds = 120; // 2 minutes
+      const btnToggleBreathe = document.getElementById("btn-toggle-breathe");
+      const breatheStatusText = document.getElementById("breathe-status-text");
+
+      btnToggleBreathe.addEventListener("click", () => {
+        if (breatheInterval) {
+          clearInterval(breatheInterval);
+          breatheInterval = null;
+          btnToggleBreathe.textContent = "▶ Start Breathe";
+          breatheStatusText.textContent = "Inhale gently. Exhale and soften your shoulders.";
+        } else {
+          breatheSeconds = 120;
+          btnToggleBreathe.textContent = "⏹ Stop (2:00)";
+          playGentleChime(432);
+
+          breatheInterval = setInterval(() => {
+            breatheSeconds--;
+            const mins = Math.floor(breatheSeconds / 60);
+            const secs = (breatheSeconds % 60).toString().padStart(2, "0");
+            btnToggleBreathe.textContent = `⏹ Stop (${mins}:${secs})`;
+
+            const cycle = breatheSeconds % 8;
+            if (cycle >= 4) {
+              breatheStatusText.innerHTML = `<strong>Inhale slowly...</strong> Expand gently. (${mins}:${secs})`;
+            } else {
+              breatheStatusText.innerHTML = `<strong>Exhale softly...</strong> Release any tension. (${mins}:${secs})`;
+            }
+
+            if (breatheSeconds <= 0) {
+              clearInterval(breatheInterval);
+              breatheInterval = null;
+              btnToggleBreathe.textContent = "▶ Start Breathe";
+              breatheStatusText.textContent = "Mindful reset complete. Appreciate this moment.";
+              playGentleChime(528);
+              showToast("Breathing session complete &bull; Centered & clear", "🧘");
+            }
+          }, 1000);
+        }
+      });
+
+      // Helper
+      function escapeHtml(str) {
+        if (!str) return "";
+        return str
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      // Initial Render
+      renderThoughts();
+      renderTasks();
+    });
+  </script>
+</body>
+</html>

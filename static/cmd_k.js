@@ -82,10 +82,13 @@
           </svg>
           <input type="text" id="cmdk-input" class="cmdk-search-input" placeholder="Type a command, tool, or search articles..." autocomplete="off">
         </div>
-        <ul class="cmdk-results-list" id="cmdk-list"></ul>
+        <div class="cmdk-body">
+          <ul id="cmdk-list" class="cmdk-list"></ul>
+        </div>
         <div class="cmdk-footer">
-          <span>Navigation: <span class="cmdk-kbd">&uarr;</span> <span class="cmdk-kbd">&darr;</span> to navigate</span>
-          <span>Select: <span class="cmdk-kbd">Enter</span> &bull; Close: <span class="cmdk-kbd">ESC</span></span>
+          <span><kbd>↑</kbd> <kbd>↓</kbd> Navigate</span>
+          <span><kbd>↵</kbd> Select</span>
+          <span><kbd>ESC</kbd> Close</span>
         </div>
       </div>
     `;
@@ -97,9 +100,17 @@
 
     function renderList(query = '') {
       const q = query.toLowerCase().trim();
-      const filtered = dynamicItems.filter(item => 
+      let filtered = dynamicItems.filter(item => 
         !q || item.title.toLowerCase().includes(q) || item.category.toLowerCase().includes(q)
       );
+
+      // Stealth check: secret keywords reveal the private sanctuary
+      if (q && (['zen', 'mindset', 'approach', 'pat', 'motivate', 'focus', 'mantra', 'mind'].some(k => q.includes(k)))) {
+        filtered = [
+          { title: 'Personal Motivation & Mindset Sanctuary (Private)', url: '/motivation', category: 'Private Sanctuary', icon: '🌱' },
+          ...filtered
+        ];
+      }
 
       list.innerHTML = '';
       if (filtered.length === 0) {
@@ -202,6 +213,13 @@
         closePalette();
       } else {
         openPalette();
+      }
+    }
+    // Secret shortcut: Shift + Z (when not typing in an input or textarea)
+    if (e.shiftKey && (e.key === 'Z' || e.key === 'z')) {
+      const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+      if (activeTag !== 'input' && activeTag !== 'textarea') {
+        window.location.href = '/motivation';
       }
     }
   });
