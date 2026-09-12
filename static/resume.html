@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interactive ATS Resume & CV Builder | Sitendra</title>
-  <meta name="description" content="Free, 100% private, client-side ATS-friendly Resume and CV builder. Real-time preview, modern engineering templates, custom colors, JSON backup, and 1-click vector PDF download.">
+  <title>Universal ATS Resume &amp; CV Studio | Sitendra</title>
+  <meta name="description" content="Free, 100% private, client-side ATS-friendly Resume &amp; CV builder for all professions: Business, Marketing, Healthcare, Finance, Engineering, Design, Teaching &amp; more. Real-time preview, dynamic skill categories, ATS scoring, and vector PDF download.">
 
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
@@ -12,7 +12,7 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Merriweather:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Merriweather:wght@400;700&family=Roboto:wght@400;500;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- CSS -->
   <link rel="stylesheet" href="/blog/blog.css">
@@ -26,7 +26,7 @@
     /* Builder Layout */
     .builder-layout {
       display: grid;
-      grid-template-columns: 480px 1fr;
+      grid-template-columns: 500px 1fr;
       gap: 2rem;
       align-items: start;
       margin-bottom: 3rem;
@@ -37,12 +37,12 @@
       background: var(--bg-surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 1rem 1.5rem;
+      padding: 1.25rem 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 1rem;
+      gap: 1.25rem;
       margin-bottom: 2rem;
       box-shadow: var(--shadow-sm);
     }
@@ -51,6 +51,33 @@
       align-items: center;
       gap: 0.75rem;
       flex-wrap: wrap;
+    }
+    .toolbar-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    /* Quick Color Palette Pills */
+    .color-presets {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .color-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .color-dot:hover {
+      transform: scale(1.15);
+    }
+    .color-dot.active {
+      border-color: var(--text-main);
+      transform: scale(1.15);
     }
 
     /* Editor Accordion Form */
@@ -69,6 +96,7 @@
       border-radius: var(--radius-md);
       padding: 1.25rem;
       margin-bottom: 1.25rem;
+      position: relative;
     }
     .section-header {
       display: flex;
@@ -79,9 +107,34 @@
       font-size: 1.05rem;
       color: var(--text-main);
     }
+    .section-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .section-title-input {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-main);
+      background: transparent;
+      border: 1px dashed transparent;
+      border-radius: 4px;
+      padding: 2px 6px;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .section-title-input:hover, .section-title-input:focus {
+      border-color: var(--primary);
+      background: var(--bg-surface);
+    }
     .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    .form-row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 0.75rem;
       margin-bottom: 0.75rem;
     }
@@ -97,13 +150,29 @@
       position: absolute;
       top: 8px;
       right: 8px;
-      background: rgba(239, 68, 68, 0.15);
+      background: rgba(239, 68, 68, 0.12);
       border: 1px solid rgba(239, 68, 68, 0.3);
       color: var(--danger);
       border-radius: 4px;
       padding: 0.2rem 0.5rem;
       font-size: 0.75rem;
       cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s ease;
+    }
+    .item-delete-btn:hover {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    /* Dynamic Skill Category Item */
+    .skill-category-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem;
+      margin-bottom: 0.75rem;
+      position: relative;
     }
 
     /* Live Preview Paper Container */
@@ -115,17 +184,138 @@
       align-items: center;
       max-height: calc(100vh - 120px);
       overflow-y: auto;
-      padding: 1rem;
+      padding: 1.25rem;
       background: var(--bg-deep);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
+    }
+    .preview-header-bar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
     }
     .preview-zoom-bar {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      margin-bottom: 1rem;
-      align-self: flex-end;
+    }
+
+    /* ATS Score Pill */
+    .ats-score-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #10B981;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ats-score-badge:hover {
+      background: rgba(16, 185, 129, 0.25);
+      transform: translateY(-1px);
+    }
+    .ats-score-badge.warning {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: rgba(245, 158, 11, 0.35);
+      color: #F59E0B;
+    }
+
+    /* Modal / Drawer for Presets & ATS Checklist */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 1rem;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal-content {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      max-width: 720px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 2rem;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+    }
+    .modal-close-btn {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      line-height: 1;
+    }
+    .preset-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1.25rem;
+    }
+    .preset-card {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .preset-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .preset-icon {
+      font-size: 1.8rem;
+      margin-bottom: 0.25rem;
+    }
+    .preset-title {
+      font-weight: 700;
+      color: var(--text-main);
+      font-size: 1.05rem;
+    }
+    .preset-desc {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+    .preset-tag {
+      align-self: flex-start;
+      font-size: 0.72rem;
+      font-weight: 600;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 999px;
+      color: var(--primary);
+      margin-top: 0.5rem;
     }
 
     /* Standard A4 Paper Document Preview */
@@ -134,19 +324,20 @@
       min-height: 297mm;
       background: #FFFFFF;
       color: #1E293B;
-      padding: 20mm 20mm;
+      padding: 18mm 18mm;
       box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
       border-radius: 4px;
-      font-size: 10pt;
-      line-height: 1.45;
+      font-size: var(--paper-font-size, 10pt);
+      line-height: var(--paper-line-height, 1.45);
       transform-origin: top center;
       transition: transform 0.2s ease;
       box-sizing: border-box;
+      font-family: var(--paper-font-family, 'Inter', sans-serif);
     }
 
-    /* Template 1: Modern Tech / Engineer */
+    /* Template 1: Modern Clean (Universal / All Professions) */
     .resume-paper.tpl-modern {
-      font-family: 'Inter', sans-serif;
+      font-family: var(--paper-font-family, 'Inter', sans-serif);
     }
     .tpl-modern .resume-name {
       font-size: 20pt;
@@ -168,7 +359,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       padding-bottom: 8px;
       border-bottom: 2px solid var(--resume-accent, #0284C7);
     }
@@ -178,14 +369,14 @@
       color: var(--resume-accent, #0284C7);
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin: 12px 0 6px 0;
+      margin: var(--paper-sec-gap, 12px) 0 6px 0;
       padding-bottom: 2px;
       border-bottom: 1px solid #E2E8F0;
     }
 
     /* Template 2: Classic Minimalist (Ivy League / ATS Standard) */
     .resume-paper.tpl-classic {
-      font-family: 'Merriweather', serif;
+      font-family: var(--paper-font-family, 'Merriweather', serif);
     }
     .tpl-classic .resume-name {
       font-size: 20pt;
@@ -218,20 +409,20 @@
       color: #0F172A;
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin: 10px 0 4px 0;
+      margin: var(--paper-sec-gap, 10px) 0 4px 0;
       border-bottom: 1px solid #94A3B8;
       text-align: left;
     }
 
-    /* Template 3: Executive Compact */
+    /* Template 3: Executive Corporate (Leadership / Management) */
     .resume-paper.tpl-executive {
-      font-family: 'Roboto', sans-serif;
+      font-family: var(--paper-font-family, 'Roboto', sans-serif);
     }
     .tpl-executive .resume-header-bar {
       background: var(--resume-accent, #1E293B);
       color: #FFFFFF;
-      margin: -20mm -20mm 15px -20mm;
-      padding: 16mm 20mm;
+      margin: -18mm -18mm 14px -18mm;
+      padding: 16mm 18mm;
     }
     .tpl-executive .resume-name {
       font-size: 22pt;
@@ -256,20 +447,65 @@
       font-weight: 700;
       color: var(--resume-accent, #1E293B);
       text-transform: uppercase;
-      margin: 10px 0 6px 0;
+      margin: var(--paper-sec-gap, 10px) 0 6px 0;
       padding-bottom: 3px;
       border-bottom: 2px solid var(--resume-accent, #1E293B);
     }
 
+    /* Template 4: Nordic Minimal (Airy, Contemporary) */
+    .resume-paper.tpl-nordic {
+      font-family: var(--paper-font-family, 'Outfit', 'Inter', sans-serif);
+      padding: 16mm 16mm;
+    }
+    .tpl-nordic .resume-name {
+      font-size: 22pt;
+      font-weight: 700;
+      color: #0F172A;
+      letter-spacing: -0.5px;
+      margin-bottom: 2px;
+    }
+    .tpl-nordic .resume-headline {
+      font-size: 11pt;
+      font-weight: 500;
+      color: var(--resume-accent, #0284C7);
+      margin-bottom: 8px;
+    }
+    .tpl-nordic .resume-contacts {
+      font-size: 8.5pt;
+      color: #64748B;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed #CBD5E1;
+    }
+    .tpl-nordic .resume-sec-title {
+      font-size: 10.5pt;
+      font-weight: 700;
+      color: #0F172A;
+      letter-spacing: 0.5px;
+      margin: var(--paper-sec-gap, 10px) 0 6px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tpl-nordic .resume-sec-title::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #E2E8F0;
+    }
+
     /* Shared Resume Elements */
     .resume-item {
-      margin-bottom: 8px;
+      margin-bottom: var(--paper-item-gap, 8px);
     }
     .resume-item-header {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 9.5pt;
       color: #0F172A;
     }
@@ -293,6 +529,7 @@
       font-size: 9pt;
       color: #334155;
       margin-bottom: 8px;
+      line-height: 1.5;
     }
     .resume-skills-block {
       font-size: 9pt;
@@ -301,6 +538,43 @@
     }
     .resume-skills-block strong {
       color: #0F172A;
+    }
+    .resume-custom-block {
+      font-size: 9pt;
+      color: #334155;
+      line-height: 1.5;
+      white-space: pre-line;
+    }
+
+    /* Spacing / Density Modes */
+    .resume-paper.spacing-compact {
+      --paper-sec-gap: 8px;
+      --paper-item-gap: 5px;
+      --paper-line-height: 1.35;
+      padding: 14mm 14mm;
+    }
+    .resume-paper.spacing-standard {
+      --paper-sec-gap: 12px;
+      --paper-item-gap: 8px;
+      --paper-line-height: 1.45;
+      padding: 18mm 18mm;
+    }
+    .resume-paper.spacing-spacious {
+      --paper-sec-gap: 16px;
+      --paper-item-gap: 12px;
+      --paper-line-height: 1.55;
+      padding: 20mm 20mm;
+    }
+
+    /* Font Size Modes */
+    .resume-paper.size-sm {
+      --paper-font-size: 9.2pt;
+    }
+    .resume-paper.size-md {
+      --paper-font-size: 10pt;
+    }
+    .resume-paper.size-lg {
+      --paper-font-size: 10.8pt;
     }
 
     /* Hidden File Input for JSON restore */
@@ -313,7 +587,7 @@
       body * {
         visibility: hidden;
       }
-      .blog-header, .builder-toolbar, .editor-pane, .preview-zoom-bar, .blog-footer, .chat-widget-fab, .chat-widget-window {
+      .blog-header, .builder-toolbar, .editor-pane, .preview-header-bar, .blog-footer, .chat-widget-fab, .chat-widget-window, .modal-overlay {
         display: none !important;
       }
       .preview-pane {
@@ -341,7 +615,7 @@
     }
 
     /* Responsive */
-    @media (max-width: 1024px) {
+    @media (max-width: 1080px) {
       .builder-layout {
         grid-template-columns: 1fr;
       }
@@ -353,6 +627,9 @@
         width: 100%;
         min-height: auto;
         padding: 10mm;
+      }
+      .preset-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -392,7 +669,7 @@
     </nav>
   </header>
 
-  <main class="blog-container" style="max-width: 1440px; padding: 1.5rem 1.5rem 3rem;">
+  <main class="blog-container" style="max-width: 1480px; padding: 1.5rem 1.5rem 3rem;">
     <!-- Title & Controls -->
     <div class="hero-section" style="padding: 1rem 0 1.5rem;">
       <div class="hero-eyebrow">
@@ -400,36 +677,63 @@
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
           <polyline points="14 2 14 8 20 8"/>
         </svg>
-        ATS-Friendly Resume &amp; CV Builder
+        Universal ATS Resume &amp; CV Studio
       </div>
       <h1 class="hero-title" style="font-size: 2.2rem;">
         Professional <span class="gradient-text">Resume &amp; CV Studio</span>
       </h1>
       <p class="hero-desc">
-        Craft modern, ATS-parseable developer &amp; engineering resumes with real-time live preview, customizable templates, and 1-click clean PDF export. 100% private.
+        Craft modern, ATS-parseable resumes and CVs for <strong>any profession</strong> — Business, Healthcare, Marketing, Finance, Education, Design, Tech &amp; more. Real-time live vector preview, dynamic skill categories, and 1-click clean PDF export. 100% private.
       </p>
     </div>
 
     <!-- Toolbar -->
     <div class="builder-toolbar">
       <div class="toolbar-group">
-        <label class="form-label" style="margin-bottom: 0;">Template:</label>
+        <span class="toolbar-label">Template:</span>
         <select id="tpl-select" class="form-control" style="width: auto; padding: 0.4rem 0.8rem;">
-          <option value="modern" selected>Modern Engineer</option>
-          <option value="classic">Classic Minimalist (ATS Standard)</option>
-          <option value="executive">Executive Compact</option>
+          <option value="modern" selected>Modern Clean (Universal)</option>
+          <option value="classic">Classic Minimalist (Ivy League / ATS Standard)</option>
+          <option value="executive">Executive Corporate (Leadership)</option>
+          <option value="nordic">Nordic Contemporary</option>
         </select>
 
-        <label class="form-label" style="margin-bottom: 0; margin-left: 0.5rem;">Accent Color:</label>
-        <input type="color" id="accent-color" value="#0284C7" style="width: 42px; height: 36px; border: none; background: transparent; cursor: pointer;">
+        <span class="toolbar-label" style="margin-left: 0.25rem;">Font:</span>
+        <select id="font-select" class="form-control" style="width: auto; padding: 0.4rem 0.8rem;">
+          <option value="font-inter" selected>Inter (Sans)</option>
+          <option value="font-merriweather">Merriweather (Serif)</option>
+          <option value="font-roboto">Roboto (Clean)</option>
+          <option value="font-outfit">Outfit (Modern)</option>
+          <option value="font-jetbrains">JetBrains Mono</option>
+        </select>
+
+        <span class="toolbar-label" style="margin-left: 0.25rem;">Density:</span>
+        <select id="density-select" class="form-control" style="width: auto; padding: 0.4rem 0.8rem;">
+          <option value="spacing-compact">Compact (1-Page Fit)</option>
+          <option value="spacing-standard" selected>Standard</option>
+          <option value="spacing-spacious">Spacious</option>
+        </select>
+
+        <span class="toolbar-label" style="margin-left: 0.25rem;">Accent:</span>
+        <div class="color-presets">
+          <div class="color-dot active" data-color="#0284C7" style="background: #0284C7;" title="Sky Blue"></div>
+          <div class="color-dot" data-color="#1E3A8A" style="background: #1E3A8A;" title="Navy Blue"></div>
+          <div class="color-dot" data-color="#059669" style="background: #059669;" title="Emerald Green"></div>
+          <div class="color-dot" data-color="#7C3AED" style="background: #7C3AED;" title="Royal Purple"></div>
+          <div class="color-dot" data-color="#991B1B" style="background: #991B1B;" title="Burgundy Crimson"></div>
+          <div class="color-dot" data-color="#0F172A" style="background: #0F172A;" title="Charcoal Slate"></div>
+        </div>
+        <input type="color" id="accent-color" value="#0284C7" style="width: 34px; height: 32px; border: none; background: transparent; cursor: pointer; margin-left: 2px;" title="Custom Color">
       </div>
 
       <div class="toolbar-group">
-        <button type="button" class="btn btn-secondary btn-sm" id="btn-load-sample">✨ Load Sample Profile</button>
-        <button type="button" class="btn btn-secondary btn-sm" id="btn-export-json">💾 Backup JSON</button>
-        <button type="button" class="btn btn-secondary btn-sm" id="btn-import-json">📂 Restore JSON</button>
+        <button type="button" class="btn btn-primary btn-sm" id="btn-open-presets" style="font-weight: 700;">
+          ✨ Industry Presets
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-export-json" title="Save resume data as a JSON file">💾 Backup JSON</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-import-json" title="Load resume data from a JSON file">📂 Restore JSON</button>
         <input type="file" id="json-file-input" accept=".json">
-        <button type="button" class="btn btn-danger btn-sm" id="btn-reset">🗑️ Clear</button>
+        <button type="button" class="btn btn-danger btn-sm" id="btn-reset" title="Clear all fields">🗑️ Clear</button>
         <button type="button" class="btn btn-primary" id="btn-print-pdf" style="font-weight: 700;">
           📥 Download Vector PDF
         </button>
@@ -445,44 +749,57 @@
         <!-- 1. Personal Info -->
         <div class="section-card">
           <div class="section-header">
-            <span>👤 Personal &amp; Contact Info</span>
+            <div class="section-header-left">
+              <span>👤 Personal &amp; Contact Info</span>
+            </div>
           </div>
           <div class="form-group">
             <label class="form-label">Full Name</label>
-            <input type="text" id="f-name" class="form-control" placeholder="Sitendra Kumar Nagesh">
+            <input type="text" id="f-name" class="form-control" placeholder="e.g. Sarah Jenkins, PMP">
           </div>
           <div class="form-group">
-            <label class="form-label">Target Job Title / Headline</label>
-            <input type="text" id="f-title" class="form-control" placeholder="Fullstack Software &amp; Systems Engineer">
+            <label class="form-label">Target Job Title / Professional Headline</label>
+            <input type="text" id="f-title" class="form-control" placeholder="e.g. Senior Project Manager &amp; Operations Specialist">
           </div>
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Email</label>
-              <input type="email" id="f-email" class="form-control" placeholder="sitendranagesh@gmail.com">
+              <input type="email" id="f-email" class="form-control" placeholder="e.g. sarah.jenkins@email.com">
             </div>
             <div class="form-group">
               <label class="form-label">Phone</label>
-              <input type="text" id="f-phone" class="form-control" placeholder="+91 98765 43210">
+              <input type="text" id="f-phone" class="form-control" placeholder="e.g. +1 (555) 234-5678">
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Location</label>
-              <input type="text" id="f-location" class="form-control" placeholder="Bangalore, India">
+              <input type="text" id="f-location" class="form-control" placeholder="e.g. Chicago, IL">
             </div>
             <div class="form-group">
-              <label class="form-label">Portfolio Website</label>
-              <input type="text" id="f-website" class="form-control" placeholder="sitendra.store">
+              <label class="form-label">Primary Portfolio / Website</label>
+              <input type="text" id="f-website" class="form-control" placeholder="e.g. sarahjenkins.com">
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label">LinkedIn (Username/URL)</label>
-              <input type="text" id="f-linkedin" class="form-control" placeholder="linkedin.com/in/sitendra">
+              <label class="form-label">LinkedIn Profile</label>
+              <input type="text" id="f-linkedin" class="form-control" placeholder="e.g. linkedin.com/in/sarahjenkins">
             </div>
             <div class="form-group">
-              <label class="form-label">GitHub (Username/URL)</label>
-              <input type="text" id="f-github" class="form-control" placeholder="github.com/sitendra">
+              <label class="form-label">
+                Additional Profile Link
+                <select id="f-link-type" style="font-size: 0.75rem; padding: 1px 4px; border-radius: 3px; background: var(--bg-surface); color: var(--text-main); border: 1px solid var(--border); margin-left: 4px;">
+                  <option value="GitHub">GitHub</option>
+                  <option value="Behance">Behance</option>
+                  <option value="Dribbble">Dribbble</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Scholar">Google Scholar</option>
+                  <option value="ResearchGate">ResearchGate</option>
+                  <option value="Custom" selected>Custom Link</option>
+                </select>
+              </label>
+              <input type="text" id="f-custom-link" class="form-control" placeholder="e.g. github.com/user or behance.net/user">
             </div>
           </div>
         </div>
@@ -490,15 +807,21 @@
         <!-- 2. Summary -->
         <div class="section-card">
           <div class="section-header">
-            <span>📝 Professional Summary</span>
+            <div class="section-header-left">
+              <span>📝</span>
+              <input type="text" id="sec-title-summary" class="section-title-input" value="Professional Summary" title="Click to rename section">
+            </div>
           </div>
-          <textarea id="f-summary" class="editor-textarea" rows="4" placeholder="Brief 2-3 sentence overview of your engineering background, core expertise, and key accomplishments..."></textarea>
+          <textarea id="f-summary" class="editor-textarea" rows="4" placeholder="Compelling 2-3 sentence overview of your career background, core competencies, industry achievements, and quantifiable impact..."></textarea>
         </div>
 
         <!-- 3. Work Experience -->
         <div class="section-card">
           <div class="section-header">
-            <span>💼 Work Experience</span>
+            <div class="section-header-left">
+              <span>💼</span>
+              <input type="text" id="sec-title-exp" class="section-title-input" value="Work Experience" title="Click to rename section">
+            </div>
             <button type="button" class="btn btn-secondary btn-sm" id="btn-add-exp">+ Add Role</button>
           </div>
           <div id="experience-list"></div>
@@ -507,70 +830,183 @@
         <!-- 4. Education -->
         <div class="section-card">
           <div class="section-header">
-            <span>🎓 Education</span>
-            <button type="button" class="btn btn-secondary btn-sm" id="btn-add-edu">+ Add Degree</button>
+            <div class="section-header-left">
+              <span>🎓</span>
+              <input type="text" id="sec-title-edu" class="section-title-input" value="Education" title="Click to rename section">
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-add-edu">+ Add Degree / Credential</button>
           </div>
           <div id="education-list"></div>
         </div>
 
-        <!-- 5. Projects -->
+        <!-- 5. Key Projects / Initiatives / Case Studies -->
         <div class="section-card">
           <div class="section-header">
-            <span>🚀 Key Engineering &amp; Software Projects</span>
+            <div class="section-header-left">
+              <span>🚀</span>
+              <input type="text" id="sec-title-proj" class="section-title-input" value="Key Projects &amp; Initiatives" title="Click to rename section (e.g. Case Studies, Publications, Clinical Rotations)">
+            </div>
             <button type="button" class="btn btn-secondary btn-sm" id="btn-add-proj">+ Add Project</button>
           </div>
           <div id="projects-list"></div>
         </div>
 
-        <!-- 6. Skills -->
+        <!-- 6. Dynamic Skills Categories -->
         <div class="section-card">
           <div class="section-header">
-            <span>🛠️ Technical Skills &amp; Tools</span>
+            <div class="section-header-left">
+              <span>🛠️</span>
+              <input type="text" id="sec-title-skills" class="section-title-input" value="Skills &amp; Core Competencies" title="Click to rename section">
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-add-skill-cat">+ Add Category</button>
           </div>
-          <div class="form-group">
-            <label class="form-label">Languages &amp; Core</label>
-            <input type="text" id="f-skills-lang" class="form-control" placeholder="Python, JavaScript, TypeScript, C++, HTML5/CSS3">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Frameworks &amp; Backend</label>
-            <input type="text" id="f-skills-backend" class="form-control" placeholder="FastAPI, Next.js, Node.js, REST APIs, Starlette">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Mechanical &amp; CAD/CAM</label>
-            <input type="text" id="f-skills-mech" class="form-control" placeholder="SolidWorks, AutoCAD, GD&amp;T, Finite Element Analysis (FEA), Mechanism Design">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Databases &amp; Cloud Tools</label>
-            <input type="text" id="f-skills-tools" class="form-control" placeholder="PostgreSQL, SQLite, Docker, Git, Linux, WebAssembly">
-          </div>
+          <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.85rem;">
+            Create custom skill categories tailored to your profession (e.g., Core Competencies, Tools &amp; Software, Clinical Skills, Financial Modeling, Languages).
+          </p>
+          <div id="skills-category-list"></div>
         </div>
 
-        <!-- 7. Certifications -->
+        <!-- 7. Certifications & Licenses -->
         <div class="section-card">
           <div class="section-header">
-            <span>📜 Certifications &amp; Honors</span>
+            <div class="section-header-left">
+              <span>📜</span>
+              <input type="text" id="sec-title-cert" class="section-title-input" value="Certifications &amp; Licenses" title="Click to rename section (e.g. Honors, Awards, Bar Admission)">
+            </div>
             <button type="button" class="btn btn-secondary btn-sm" id="btn-add-cert">+ Add Certification</button>
           </div>
           <div id="cert-list"></div>
+        </div>
+
+        <!-- 8. Custom / Additional Section -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-header-left">
+              <span>✨</span>
+              <input type="text" id="sec-title-custom" class="section-title-input" value="Additional Honors &amp; Languages" title="Click to rename section">
+            </div>
+            <label style="font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+              <input type="checkbox" id="f-custom-sec-enable"> Show on CV
+            </label>
+          </div>
+          <textarea id="f-custom-sec-content" class="editor-textarea" rows="3" placeholder="Add custom content such as Languages (Native/Fluent), Volunteer Experience, Publications, Speaking Engagements, or Board Memberships..."></textarea>
         </div>
 
       </div>
 
       <!-- Right Pane: Live Paper Document Preview -->
       <div class="preview-pane">
-        <div class="preview-zoom-bar">
-          <button type="button" class="preset-pill" data-scale="0.85">85%</button>
-          <button type="button" class="preset-pill active" data-scale="1.0">100%</button>
-          <button type="button" class="preset-pill" data-scale="1.15">115%</button>
+        <div class="preview-header-bar">
+          <button type="button" class="ats-score-badge" id="btn-ats-modal" title="Click to view ATS Optimization Checklist">
+            <span>⚡</span>
+            <span id="ats-score-text">95% ATS Ready</span>
+          </button>
+
+          <div class="preview-zoom-bar">
+            <span style="font-size: 0.8rem; color: var(--text-secondary); margin-right: 4px;">Zoom:</span>
+            <button type="button" class="preset-pill" data-scale="0.80">80%</button>
+            <button type="button" class="preset-pill active" data-scale="1.0">100%</button>
+            <button type="button" class="preset-pill" data-scale="1.15">115%</button>
+          </div>
         </div>
 
-        <div class="resume-paper tpl-modern" id="resume-document">
+        <div class="resume-paper tpl-modern spacing-standard size-md" id="resume-document">
           <!-- Dynamic Content Rendered by JS -->
         </div>
       </div>
 
     </div>
   </main>
+
+  <!-- Industry Presets Modal -->
+  <div class="modal-overlay" id="presets-modal">
+    <div class="modal-content">
+      <button type="button" class="modal-close-btn" id="btn-close-presets">&times;</button>
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+        <span style="font-size: 1.8rem;">✨</span>
+        <div>
+          <h3 style="font-size: 1.4rem; font-weight: 800; margin: 0; color: var(--text-main);">Choose an Industry Preset</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Select a profession to automatically populate realistic, ATS-optimized structure and content.</p>
+        </div>
+      </div>
+
+      <div class="preset-grid">
+        <!-- 1. Business & Operations -->
+        <div class="preset-card" data-preset="business">
+          <div class="preset-icon">🏢</div>
+          <div class="preset-title">Business &amp; Operations Manager</div>
+          <div class="preset-desc">Senior Project Manager, PMP certified, Agile/Lean, ERP migration, budget forecasting &amp; vendor management.</div>
+          <div class="preset-tag">Business &bull; PMP &bull; Operations</div>
+        </div>
+
+        <!-- 2. Marketing & Brand Growth -->
+        <div class="preset-card" data-preset="marketing">
+          <div class="preset-icon">📈</div>
+          <div class="preset-title">Marketing &amp; Growth Strategist</div>
+          <div class="preset-desc">Omnichannel customer acquisition, performance marketing (CAC/LTV), SEO/SEM, HubSpot &amp; campaign analytics.</div>
+          <div class="preset-tag">Marketing &bull; Growth &bull; Strategy</div>
+        </div>
+
+        <!-- 3. Healthcare & Clinical -->
+        <div class="preset-card" data-preset="healthcare">
+          <div class="preset-icon">🏥</div>
+          <div class="preset-title">Healthcare &amp; Clinical Coordinator</div>
+          <div class="preset-desc">Registered Nurse (RN), acute triage, ICU/ED critical care, patient advocacy, BLS/ACLS &amp; Epic EHR systems.</div>
+          <div class="preset-tag">Healthcare &bull; Nursing &bull; Clinical</div>
+        </div>
+
+        <!-- 4. Finance & Accounting -->
+        <div class="preset-card" data-preset="finance">
+          <div class="preset-icon">📊</div>
+          <div class="preset-title">Finance &amp; Corporate Controller</div>
+          <div class="preset-desc">Certified Public Accountant (CPA), FP&amp;A modeling, statutory GAAP/SOX auditing, EBITDA &amp; financial variance.</div>
+          <div class="preset-tag">Finance &bull; CPA &bull; Accounting</div>
+        </div>
+
+        <!-- 5. Creative UI/UX & Design -->
+        <div class="preset-card" data-preset="creative">
+          <div class="preset-icon">🎨</div>
+          <div class="preset-title">Product Designer &amp; UX Lead</div>
+          <div class="preset-desc">User research, multi-brand Figma design systems, WCAG 2.1 accessibility, interactive wireframing &amp; prototyping.</div>
+          <div class="preset-tag">Design &bull; UI/UX &bull; Creative</div>
+        </div>
+
+        <!-- 6. Education & Academic -->
+        <div class="preset-card" data-preset="education">
+          <div class="preset-icon">🎓</div>
+          <div class="preset-title">Educator &amp; Academic Specialist</div>
+          <div class="preset-desc">Higher education lecturer, curriculum design, student assessment, peer-reviewed research &amp; instructional tech.</div>
+          <div class="preset-tag">Academia &bull; Teaching &bull; Research</div>
+        </div>
+
+        <!-- 7. Software & Systems Engineering -->
+        <div class="preset-card" data-preset="tech">
+          <div class="preset-icon">💻</div>
+          <div class="preset-title">Software &amp; Systems Engineer</div>
+          <div class="preset-desc">Fullstack architectures, high-throughput microservices, WebAssembly, database indexing &amp; cloud scaling.</div>
+          <div class="preset-tag">Engineering &bull; Tech &bull; Systems</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATS Checklist Modal -->
+  <div class="modal-overlay" id="ats-modal">
+    <div class="modal-content" style="max-width: 580px;">
+      <button type="button" class="modal-close-btn" id="btn-close-ats">&times;</button>
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+        <span style="font-size: 1.8rem;">⚡</span>
+        <div>
+          <h3 style="font-size: 1.3rem; font-weight: 800; margin: 0; color: var(--text-main);">ATS Optimization Audit</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Automated checks ensuring your resume is parsed accurately by Applicant Tracking Systems.</p>
+        </div>
+      </div>
+
+      <div id="ats-checklist-items" style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem;">
+        <!-- Dynamic checklist injected by JS -->
+      </div>
+    </div>
+  </div>
 
   <footer class="blog-footer">
     <p>&copy; 2026 Sitendra Kumar Nagesh &bull; <a href="/blog">Blog</a> &bull; <a href="/tools">Tools</a> &bull; <a href="/projects">Projects</a> &bull; <a href="/about">About</a> &bull; <a href="/">Notes</a></p>
@@ -579,93 +1015,633 @@
   <script src="/cmd_k.js"></script>
   <script src="/chat.js"></script>
 
-  <!-- Resume Builder Engine -->
+  <!-- Universal Resume Builder Engine -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      // Data State
-      let resumeData = {
-        name: "Sitendra Kumar Nagesh",
-        title: "Fullstack Software Engineer & Mechanical Systems Builder",
-        email: "sitendranagesh@gmail.com",
-        phone: "+91 98765 43210",
-        location: "Bangalore, India",
-        website: "sitendra.store",
-        linkedin: "linkedin.com/in/sitendra",
-        github: "github.com/sitendra",
-        summary: "Versatile engineer bridging mechanical systems and modern web architectures. Experienced in building high-throughput Python/FastAPI microservices, sub-millisecond client-side WebAssembly tools, and robust database architectures. Passionate about end-to-end reliability and clean product design.",
-        experience: [
-          {
-            role: "Fullstack Software Engineer",
-            company: "Sitendra Systems",
-            location: "Bangalore, India",
-            dates: "2024 - Present",
-            bullets: [
-              "Architected and deployed a multi-subdomain cloud platform serving thousands of monthly visitors with zero-latency client-side utilities.",
-              "Implemented an automated in-browser image manipulation engine using WebAssembly, Canvas, and binary search compression algorithms.",
-              "Designed secure session authentication and database schemas across SQLite and PostgreSQL with automated index optimizations."
-            ]
+      // Pre-configured Industry Profiles
+      const PRESET_PROFILES = {
+        business: {
+          name: "Sarah Jenkins, PMP",
+          title: "Senior Operations Project Manager & Scrum Master",
+          email: "sarah.jenkins@email.com",
+          phone: "+1 (555) 234-5678",
+          location: "Chicago, IL",
+          website: "sarahjenkins.com",
+          linkedin: "linkedin.com/in/sarahjenkins-pmp",
+          linkType: "Portfolio",
+          customLink: "sarahjenkins.com/portfolio",
+          summary: "Results-driven Senior Project Manager with 8+ years of experience leading cross-functional teams, executing multi-million dollar operational transformations, and optimizing workflow efficiency. Proven track record of delivering 95%+ of projects on-time and under budget using Agile, Waterfall, and Lean Six Sigma methodologies.",
+          sectionTitles: {
+            summary: "Professional Summary",
+            experience: "Work Experience",
+            education: "Education",
+            projects: "Key Initiatives & Strategic Programs",
+            skills: "Skills & Core Competencies",
+            certifications: "Certifications & Licenses",
+            custom: "Honors & Leadership"
           },
-          {
-            role: "Mechanical Design & Simulation Engineer",
-            company: "Precision Mechanism Labs",
-            location: "India",
-            dates: "2022 - 2024",
-            bullets: [
-              "Modeled and simulated complex multi-linkage mechanical assemblies using SolidWorks and FEA stress distribution analysis.",
-              "Reduced part fabrication tolerances by 18% through systematic GD&T compliance and kinematic tolerance stack-up analysis."
-            ]
-          }
-        ],
-        education: [
-          {
-            degree: "Bachelor of Technology in Mechanical Engineering",
-            school: "National Institute of Technology",
-            year: "2018 - 2022",
-            gpa: "First Class with Distinction"
-          }
-        ],
-        projects: [
-          {
-            name: "Multi-Subdomain Cloud Platform & Notes App",
-            tools: "Python, FastAPI, Starlette, JavaScript, PostgreSQL",
-            link: "sitendra.store",
-            bullets: [
-              "Engineered unified host-header routing dispatching traffic dynamically to Blog, Tools, and Notes applications.",
-              "Built markdown note sharing system with unique tokenized public view permissions."
-            ]
-          },
-          {
-            name: "In-Browser Privacy-First Image Studio",
-            tools: "JavaScript Canvas, Tesseract OCR, jsPDF, JSZip",
-            link: "sitendra.store/image-tools",
-            bullets: [
-              "Developed 14 client-side utilities including binary-search target KB compressor and JFIF 300 DPI injector."
-            ]
-          }
-        ],
-        skills: {
-          languages: "Python, JavaScript (ES6+), TypeScript, C++, HTML5/CSS3",
-          backend: "FastAPI, Next.js, Node.js, Starlette, REST APIs",
-          mechanical: "SolidWorks, AutoCAD, GD&T, FEA Simulation, Kinematics",
-          tools: "PostgreSQL, SQLite, Docker, Git, Linux, WebAssembly"
+          experience: [
+            {
+              role: "Senior Operations Project Manager",
+              company: "Apex Global Logistics",
+              dates: "2022 - Present",
+              location: "Chicago, IL",
+              bullets: [
+                "Spearheaded enterprise ERP migration across 14 regional distribution hubs, reducing shipment processing cycle time by 28% and saving $1.4M annually.",
+                "Managed cross-functional teams of 25+ engineers, analysts, and supply chain specialists with a 98% on-time milestone completion rate.",
+                "Implemented Lean Six Sigma continuous improvement protocols, eliminating redundant workflows and increasing daily fulfillment throughput by 34%."
+              ]
+            },
+            {
+              role: "Project Coordinator & Operations Specialist",
+              company: "Vanguard Retail Partners",
+              dates: "2019 - 2022",
+              location: "Chicago, IL",
+              bullets: [
+                "Coordinated $8.5M quarterly inventory procurement budgets across 45 retail vendor partners with zero budget overruns.",
+                "Designed executive KPI dashboards in Tableau and Excel to track vendor SLA compliance, improving supplier delivery reliability by 22%."
+              ]
+            }
+          ],
+          education: [
+            {
+              degree: "Master of Business Administration (MBA) - Operations & Supply Chain",
+              school: "Northwestern University - Kellogg School of Management",
+              year: "2017 - 2019",
+              gpa: "3.9 / 4.0"
+            },
+            {
+              degree: "Bachelor of Science in Business Administration",
+              school: "University of Illinois at Urbana-Champaign",
+              year: "2013 - 2017",
+              gpa: "Dean's Honor List"
+            }
+          ],
+          projects: [
+            {
+              name: "Enterprise Warehouse Automation Initiative",
+              tools: "Agile, JIRA, SAP S/4HANA, Lean Six Sigma",
+              link: "",
+              bullets: [
+                "Led a 12-month capital improvement initiative automating barcode scanning and robotic sorting systems across 3 fulfillment hubs.",
+                "Reduced manual order error rate from 4.2% to under 0.3% while increasing daily parcel output by 40,000 units."
+              ]
+            }
+          ],
+          skills: [
+            { category: "Project Management & Methodologies", items: "Agile / Scrum, Waterfall, Lean Six Sigma, Risk Management, Resource Allocation, Sprint Planning" },
+            { category: "Operations & Strategy", items: "Process Optimization, Supply Chain Logistics, Vendor Management, Budgeting & Forecasting, Change Management" },
+            { category: "Tools & Software", items: "JIRA, Confluence, Asana, MS Project, SAP ERP, Tableau, Advanced Excel (VBA / PowerQuery)" }
+          ],
+          certifications: [
+            { name: "Project Management Professional (PMP)", issuer: "Project Management Institute (PMI)", year: "2021" },
+            { name: "Certified ScrumMaster (CSM)", issuer: "Scrum Alliance", year: "2020" },
+            { name: "Lean Six Sigma Green Belt", issuer: "IASSC", year: "2019" }
+          ],
+          showCustomSection: true,
+          customSectionContent: "• Chair of Women in Operations & Supply Chain Association (2023 - Present)\n• Keynote Speaker at Midwest Project Leadership Summit (2024)"
         },
-        certifications: [
-          { name: "Certified SolidWorks Professional (CSWP)", issuer: "Dassault Systèmes", year: "2023" },
-          { name: "Fullstack Backend Specialization", issuer: "Meta / Coursera", year: "2024" }
-        ]
+
+        marketing: {
+          name: "Elena Rostova",
+          title: "Director of Growth Marketing & Brand Strategy",
+          email: "elena.rostova@email.com",
+          phone: "+1 (555) 789-0123",
+          location: "New York, NY",
+          website: "elenarostova.com",
+          linkedin: "linkedin.com/in/elena-rostova",
+          linkType: "Portfolio",
+          customLink: "elenarostova.com/case-studies",
+          summary: "Performance marketing leader with 9+ years of expertise scaling omnichannel customer acquisition, brand awareness campaigns, and product-led growth. Generated over $18M in attributable pipeline revenue through data-driven CAC/LTV optimization, content distribution, and multi-touch attribution modeling.",
+          sectionTitles: {
+            summary: "Executive Summary",
+            experience: "Professional Experience",
+            education: "Education",
+            projects: "Featured Growth Campaigns & Case Studies",
+            skills: "Core Competencies & Marketing Stack",
+            certifications: "Certifications & Credentials",
+            custom: "Awards & Industry Recognition"
+          },
+          experience: [
+            {
+              role: "Lead Growth Marketing Manager",
+              company: "Horizon Media Labs",
+              dates: "2021 - Present",
+              location: "New York, NY",
+              bullets: [
+                "Scaled annual digital ad spend from $1.2M to $4.5M across Meta, Google Ads, and LinkedIn while lowering blended CAC by 24%.",
+                "Orchestrated cross-channel product launch campaigns generating 140,000+ qualified leads and $6.2M in annual recurring revenue (ARR).",
+                "Managed a creative team of 8 designers, copywriters, and media buyers, executing 50+ weekly A/B multivariate ad creative experiments."
+              ]
+            },
+            {
+              role: "Senior Digital Marketing Strategist",
+              company: "Beacon Agency Group",
+              dates: "2017 - 2021",
+              location: "New York, NY",
+              bullets: [
+                "Spearheaded organic SEO and content distribution strategy that drove a 310% increase in monthly organic search traffic (1.2M monthly impressions).",
+                "Automated lifecycle email nurturing workflows in HubSpot, improving lead-to-MQL conversion rate from 3.8% to 8.4%."
+              ]
+            }
+          ],
+          education: [
+            {
+              degree: "Bachelor of Arts in Marketing & Strategic Communications",
+              school: "New York University (NYU) - Stern School of Business",
+              year: "2013 - 2017",
+              gpa: "Magna Cum Laude"
+            }
+          ],
+          projects: [
+            {
+              name: "Omnichannel Corporate Rebrand & Website Relaunch",
+              tools: "Figma, HubSpot, Google Analytics 4, Hotjar",
+              link: "elenarostova.com/rebrand",
+              bullets: [
+                "Directed end-to-end corporate rebranding across 200+ brand assets, resulting in a 45% increase in branded search volume within 90 days."
+              ]
+            }
+          ],
+          skills: [
+            { category: "Growth & Performance Marketing", items: "Paid Search (SEM), Paid Social (Meta / LinkedIn / TikTok), CRO, Funnel Optimization, A/B Testing, Multi-Touch Attribution" },
+            { category: "Content & Organic Strategy", items: "SEO Strategy, Brand Messaging, Copywriting, Email Marketing, Influencer Partnerships, PR" },
+            { category: "Analytics & Marketing Tech", items: "Google Analytics 4, HubSpot, Salesforce CRM, SEMrush, Mixpanel, Looker Studio, Figma" }
+          ],
+          certifications: [
+            { name: "Google Ads & Analytics Certified Professional", issuer: "Google", year: "2023" },
+            { name: "HubSpot Inbound & Revenue Operations Master", issuer: "HubSpot Academy", year: "2022" }
+          ],
+          showCustomSection: false,
+          customSectionContent: ""
+        },
+
+        healthcare: {
+          name: "Marcus Vance, BSN, RN",
+          title: "Clinical Nurse Specialist & Patient Care Coordinator",
+          email: "marcus.vance.rn@email.com",
+          phone: "+1 (555) 456-7890",
+          location: "Austin, TX",
+          website: "",
+          linkedin: "linkedin.com/in/marcus-vance-rn",
+          linkType: "Custom",
+          customLink: "",
+          summary: "Compassionate, board-certified Registered Nurse with 7+ years of acute clinical experience in emergency care, intensive care (ICU), and patient triage. Recognized for clinical precision, rapid crisis intervention, multidisciplinary team leadership, and dedication to evidence-based patient-centered care.",
+          sectionTitles: {
+            summary: "Professional Summary",
+            experience: "Clinical & Nursing Experience",
+            education: "Education & Academic Credentials",
+            projects: "Clinical Quality & Safety Initiatives",
+            skills: "Clinical Competencies & Health Systems",
+            certifications: "Licenses & Clinical Certifications",
+            custom: "Professional Affiliations"
+          },
+          experience: [
+            {
+              role: "Charge Nurse / Clinical Coordinator - Emergency Dept",
+              company: "St. Jude Metropolitan Hospital",
+              dates: "2021 - Present",
+              location: "Austin, TX",
+              bullets: [
+                "Lead clinical triage operations for a Level 1 Trauma Center ED treating an average of 180+ acute and critical patients per 12-hour shift.",
+                "Supervise a multidisciplinary nursing team of 18 RNs and technicians, ensuring strict compliance with JCAHO, OSHA, and HIPAA regulations.",
+                "Pioneered an emergency bed-turnaround workflow protocol that reduced average patient ED wait time by 32 minutes."
+              ]
+            },
+            {
+              role: "Staff Registered Nurse - Intensive Care Unit (ICU)",
+              company: "Central Texas Medical Center",
+              dates: "2018 - 2021",
+              location: "Austin, TX",
+              bullets: [
+                "Administered complex critical care therapies, hemodynamic monitoring, ventilator management, and IV titration for critically ill patients.",
+                "Trained 12 incoming graduate nursing residents on arterial line placement, trauma resuscitation protocols, and EHR documentation."
+              ]
+            }
+          ],
+          education: [
+            {
+              degree: "Bachelor of Science in Nursing (BSN)",
+              school: "University of Texas at Austin - School of Nursing",
+              year: "2014 - 2018",
+              gpa: "Dean's Honor List"
+            }
+          ],
+          projects: [
+            {
+              name: "Hospital-Wide Sepsis Early-Warning Protocol",
+              tools: "Epic EHR, Clinical Informatics, Evidence-Based Protocols",
+              link: "",
+              bullets: [
+                "Collaborated with physicians and pharmacy leads to deploy automated early-warning sepsis alert algorithms in Epic EHR, reducing sepsis mortality by 19%."
+              ]
+            }
+          ],
+          skills: [
+            { category: "Clinical Competencies", items: "Emergency Triage, ICU / Critical Care, Hemodynamic Monitoring, ACLS / BLS Resuscitation, IV & Medication Administration, Wound Care" },
+            { category: "Healthcare Administration", items: "Patient Advocacy, Infection Control (CDC / OSHA), Clinical Workflow Management, Quality Assurance, JCAHO Standards" },
+            { category: "Health Tech & Systems", items: "Epic Systems EHR, Cerner PowerChart, Meditech, Pyxis MedStation, Telemetry Monitoring" }
+          ],
+          certifications: [
+            { name: "Registered Nurse (RN) License #847291", issuer: "Texas Board of Nursing", year: "Active" },
+            { name: "Advanced Cardiovascular Life Support (ACLS) & BLS", issuer: "American Heart Association", year: "2024" },
+            { name: "Certified Emergency Nurse (CEN)", issuer: "Board of Certification for Emergency Nursing", year: "2022" }
+          ],
+          showCustomSection: true,
+          customSectionContent: "• Member, Emergency Nurses Association (ENA)\n• Member, American Association of Critical-Care Nurses (AACN)"
+        },
+
+        finance: {
+          name: "David Chen, CPA",
+          title: "Senior Financial Analyst & Corporate Controller",
+          email: "david.chen.cpa@email.com",
+          phone: "+1 (555) 321-6549",
+          location: "San Francisco, CA",
+          website: "",
+          linkedin: "linkedin.com/in/david-chen-cpa",
+          linkType: "Custom",
+          customLink: "",
+          summary: "Certified Public Accountant (CPA) with 8+ years of comprehensive experience in corporate financial planning and analysis (FP&A), variance modeling, statutory auditing, and GAAP reporting. Adept at transforming complex datasets into actionable executive financial strategies to drive EBITDA margin expansion.",
+          sectionTitles: {
+            summary: "Professional Summary",
+            experience: "Professional Experience",
+            education: "Education",
+            projects: "Strategic Financial Projects",
+            skills: "Financial Expertise & Software Stack",
+            certifications: "Licenses & Professional Designations",
+            custom: "Core Financial Strengths"
+          },
+          experience: [
+            {
+              role: "Senior FP&A Analyst",
+              company: "Sterling Financial Holdings",
+              dates: "2021 - Present",
+              location: "San Francisco, CA",
+              bullets: [
+                "Constructed annual corporate operating budgets ($85M P&L) and dynamic 3-statement forecast models with 98% quarterly forecast accuracy.",
+                "Identified $3.8M in cost-saving opportunities through operational variance analysis and renegotiated vendor procurement contracts.",
+                "Presented monthly board-level financial packages, EBITDA bridge analysis, and cash flow forecasts to C-suite executives."
+              ]
+            },
+            {
+              role: "Senior Audit Associate",
+              company: "Deloitte & Touche LLP",
+              dates: "2017 - 2021",
+              location: "San Francisco, CA",
+              bullets: [
+                "Executed statutory GAAP/IFRS audits and SOX 404 internal control assessments for Fortune 500 technology and retail clients.",
+                "Supervised engagement audit teams of 5 associates, reviewing workpapers and drafting formal audit opinion memoranda."
+              ]
+            }
+          ],
+          education: [
+            {
+              degree: "Master of Science in Accountancy (MSA)",
+              school: "University of California, Berkeley - Haas School of Business",
+              year: "2016 - 2017",
+              gpa: "3.92 / 4.0"
+            },
+            {
+              degree: "Bachelor of Science in Finance & Economics",
+              school: "UC Santa Barbara",
+              year: "2012 - 2016",
+              gpa: "Summa Cum Laude"
+            }
+          ],
+          projects: [
+            {
+              name: "Automated Financial Consolidation & Power BI Dashboard",
+              tools: "Power BI, SQL, Advanced Excel VBA, NetSuite",
+              link: "",
+              bullets: [
+                "Automated intercompany transaction reconciliations across 6 global subsidiaries, cutting month-end close cycle from 12 days to 4 days."
+              ]
+            }
+          ],
+          skills: [
+            { category: "Financial Modeling & Analysis", items: "3-Statement Financial Modeling, DCF & LBO Valuation, FP&A Budgeting & Forecasting, Variance Analysis, Working Capital" },
+            { category: "Accounting & Compliance", items: "US GAAP / IFRS, SOX Compliance, Month-End Financial Close, Tax Preparation & Filing, Statutory Auditing" },
+            { category: "Software & Systems", items: "Oracle NetSuite, SAP ERP, Power BI, SQL, Advanced Excel (VBA, Power Query, Macros), QuickBooks Enterprise" }
+          ],
+          certifications: [
+            { name: "Certified Public Accountant (CPA) #59201", issuer: "California Board of Accountancy", year: "2019" },
+            { name: "Chartered Financial Analyst (CFA) - Level II Candidate", issuer: "CFA Institute", year: "2023" }
+          ],
+          showCustomSection: false,
+          customSectionContent: ""
+        },
+
+        creative: {
+          name: "Maya Lin",
+          title: "Lead Product Designer & UX Researcher",
+          email: "maya.lin.design@email.com",
+          phone: "+1 (555) 678-9012",
+          location: "Seattle, WA",
+          website: "mayalin.design",
+          linkedin: "linkedin.com/in/mayalindesign",
+          linkType: "Dribbble",
+          customLink: "dribbble.com/mayalin",
+          summary: "User-centered Lead Product Designer with 7+ years of experience crafting intuitive digital experiences across web, mobile, and enterprise SaaS applications. Expert in design systems, interaction design, quantitative user research, and cross-functional collaboration with engineering and product teams.",
+          sectionTitles: {
+            summary: "Design Philosophy & Summary",
+            experience: "Product Design Experience",
+            education: "Education",
+            projects: "Selected Case Studies & Design Systems",
+            skills: "Design Tools & Core Competencies",
+            certifications: "Certifications & Honors",
+            custom: "Speaking & Mentorship"
+          },
+          experience: [
+            {
+              role: "Lead Product Designer",
+              company: "Aura Design Studio",
+              dates: "2022 - Present",
+              location: "Seattle, WA",
+              bullets: [
+                "Led product design strategy for a flagship B2B SaaS platform used by 250,000+ daily active users, improving task completion rate by 38%.",
+                "Built and maintained a scalable multi-brand Figma design system comprising 400+ tokens and WCAG 2.1 AA compliant components.",
+                "Conducted 60+ moderated usability interviews, cognitive walkthroughs, and quantitative user testings to inform quarterly product roadmaps."
+              ]
+            },
+            {
+              role: "UI/UX Designer & Researcher",
+              company: "Voxel Interactive",
+              dates: "2018 - 2022",
+              location: "Seattle, WA",
+              bullets: [
+                "Redesigned the mobile checkout flow for an e-commerce platform, decreasing cart abandonment by 18.5% ($2.1M ARR lift).",
+                "Created interactive high-fidelity motion prototypes in ProtoPie and Principle to validate micro-interactions with stakeholders."
+              ]
+            }
+          ],
+          education: [
+            {
+              degree: "Bachelor of Fine Arts (BFA) in Interaction Design",
+              school: "Rhode Island School of Design (RISD)",
+              year: "2014 - 2018",
+              gpa: "Honors Graduate"
+            }
+          ],
+          projects: [
+            {
+              name: "Universal Multi-Brand Design System & Component Library",
+              tools: "Figma, Storybook, Tokens Studio, HTML5/CSS3",
+              link: "mayalin.design/system",
+              bullets: [
+                "Engineered a cross-platform design token architecture syncing Figma variables directly to code repositories for front-end engineers."
+              ]
+            }
+          ],
+          skills: [
+            { category: "Design & Prototyping", items: "User Interface (UI), User Experience (UX), Wireframing, Rapid Prototyping, Design Systems, Information Architecture, Motion Design" },
+            { category: "Research & Validation", items: "Usability Testing, User Personas, Journey Mapping, Heatmap Analysis, A/B Testing, Accessibility (WCAG 2.1 AA)" },
+            { category: "Tools & Technologies", items: "Figma, FigJam, Adobe Creative Cloud (Photoshop, Illustrator), Framer, ProtoPie, Maze, HTML/CSS, Miro" }
+          ],
+          certifications: [
+            { name: "Nielsen Norman Group (NN/g) UX Master Certified", issuer: "Nielsen Norman Group", year: "2022" },
+            { name: "Certified Professional in Accessibility Core Competencies (CPACC)", issuer: "IAAP", year: "2023" }
+          ],
+          showCustomSection: true,
+          customSectionContent: "• Design Mentor at ADPList (Over 120+ hours of mentoring)\n• Guest Speaker at Seattle UX Summit 2024"
+        },
+
+        education: {
+          name: "Dr. Rebecca Miller, Ph.D.",
+          title: "Senior Lecturer & Curriculum Development Specialist",
+          email: "rebecca.miller.phd@email.com",
+          phone: "+1 (555) 890-1234",
+          location: "San Diego, CA",
+          website: "rebeccamiller.edu",
+          linkedin: "linkedin.com/in/dr-rebecca-miller",
+          linkType: "Scholar",
+          customLink: "scholar.google.com/citations?user=miller",
+          summary: "Dedicated educator and curriculum specialist with 10+ years of experience in higher education, instructional design, and pedagogical leadership. Published author in peer-reviewed journals with proven expertise in student engagement, blended learning methodologies, and institutional educational assessment.",
+          sectionTitles: {
+            summary: "Academic Profile",
+            experience: "Academic & Teaching Appointments",
+            education: "Education & Degrees",
+            projects: "Curriculum Initiatives & Grants",
+            skills: "Pedagogical & Instructional Competencies",
+            certifications: "Teaching Credentials & Affiliations",
+            custom: "Selected Publications & Presentations"
+          },
+          experience: [
+            {
+              role: "Associate Professor & Curriculum Coordinator",
+              company: "Pacific Coast University",
+              dates: "2020 - Present",
+              location: "San Diego, CA",
+              bullets: [
+                "Instruct undergraduate and graduate courses of 120+ students, receiving a 96% positive student evaluation rating across 8 consecutive semesters.",
+                "Redesigned the interdisciplinary humanities curriculum incorporating hybrid digital learning modules and project-based assessments.",
+                "Mentored 24 undergraduate honors research theses and served as primary advisor on 4 doctoral dissertation committees."
+              ]
+            },
+            {
+              role: "Assistant Lecturer & Instructional Designer",
+              company: "Midwest State University",
+              dates: "2016 - 2020",
+              location: "Ann Arbor, MI",
+              bullets: [
+                "Developed 6 fully accredited online and hybrid course curricula utilizing Canvas LMS and interactive multimedia tools.",
+                "Co-authored a $250,000 National Endowment for the Humanities (NEH) grant for digital pedagogical innovation."
+              ]
+            }
+          ],
+          education: [
+            {
+              degree: "Ph.D. in Education & Comparative Literature",
+              school: "Columbia University",
+              year: "2014 - 2019",
+              gpa: "Doctoral Fellowship Award"
+            },
+            {
+              degree: "Master of Arts in Curriculum and Teaching",
+              school: "Columbia University",
+              year: "2012 - 2014",
+              gpa: "3.95 / 4.0"
+            },
+            {
+              degree: "Bachelor of Arts in English Literature",
+              school: "University of Michigan",
+              year: "2008 - 2012",
+              gpa: "High Honors"
+            }
+          ],
+          projects: [
+            {
+              name: "Digital Humanities Blended Learning Initiative",
+              tools: "Canvas LMS, Moodle, Interactive Video, Rubrics",
+              link: "",
+              bullets: [
+                "Constructed standardized interactive assessment rubrics deployed across 14 departmental courses, improving retention by 14%."
+              ]
+            }
+          ],
+          skills: [
+            { category: "Pedagogy & Instruction", items: "Curriculum Design, Instructional Technology, Student Assessment, Differentiated Instruction, Classroom Leadership, Rubric Development" },
+            { category: "Academic & Research", items: "Peer-Reviewed Publishing, Qualitative Research, Grant Writing, Thesis Advising, Academic Peer Review" },
+            { category: "Educational Technology", items: "Canvas LMS, Blackboard, Moodle, Google Classroom, Turnitin, Zoom for Education, Kahoot!" }
+          ],
+          certifications: [
+            { name: "Quality Matters (QM) Higher Education Peer Reviewer", issuer: "Quality Matters", year: "2021" },
+            { name: "State Faculty & Teaching Credential", issuer: "California Commission on Teacher Credentialing", year: "Active" }
+          ],
+          showCustomSection: true,
+          customSectionContent: "• Miller, R. (2023). 'Blended Learning Strategies in Higher Education.' Journal of Pedagogical Studies, 45(2), 112-128.\n• Keynote Speaker, American Educational Research Association (AERA) Annual Meeting (2024)"
+        },
+
+        tech: {
+          name: "Sitendra Kumar Nagesh",
+          title: "Fullstack Software Engineer & Systems Architect",
+          email: "sitendranagesh@gmail.com",
+          phone: "+91 98765 43210",
+          location: "Bangalore, India",
+          website: "sitendra.store",
+          linkedin: "linkedin.com/in/sitendra",
+          linkType: "GitHub",
+          customLink: "github.com/sitendra",
+          summary: "Versatile systems and fullstack engineer with deep expertise in high-throughput cloud architectures, microservices, and high-performance client-side web technologies. Experienced in building sub-millisecond client-side WebAssembly tools, automated image engines, and robust database architectures.",
+          sectionTitles: {
+            summary: "Professional Summary",
+            experience: "Work Experience",
+            education: "Education",
+            projects: "Engineering & Software Projects",
+            skills: "Technical Skills & Competencies",
+            certifications: "Certifications & Honors",
+            custom: "Open Source & Contributions"
+          },
+          experience: [
+            {
+              role: "Fullstack Software Engineer",
+              company: "Sitendra Systems",
+              dates: "2024 - Present",
+              location: "Bangalore, India",
+              bullets: [
+                "Architected and deployed a multi-subdomain cloud platform serving thousands of monthly visitors with zero-latency client-side utilities.",
+                "Implemented an automated in-browser image manipulation engine using WebAssembly, Canvas, and binary search compression algorithms.",
+                "Designed secure session authentication and database schemas across SQLite and PostgreSQL with automated index optimizations."
+              ]
+            },
+            {
+              role: "Mechanical Design & Simulation Engineer",
+              company: "Precision Mechanism Labs",
+              dates: "2022 - 2024",
+              location: "India",
+              bullets: [
+                "Modeled and simulated complex multi-linkage mechanical assemblies using SolidWorks and FEA stress distribution analysis.",
+                "Reduced part fabrication tolerances by 18% through systematic GD&T compliance and kinematic tolerance stack-up analysis."
+              ]
+            }
+          ],
+          education: [
+            {
+              degree: "Bachelor of Technology in Mechanical Engineering",
+              school: "National Institute of Technology",
+              year: "2018 - 2022",
+              gpa: "First Class with Distinction"
+            }
+          ],
+          projects: [
+            {
+              name: "Multi-Subdomain Cloud Platform & Notes App",
+              tools: "Python, FastAPI, Starlette, JavaScript, PostgreSQL",
+              link: "sitendra.store",
+              bullets: [
+                "Engineered unified host-header routing dispatching traffic dynamically to Blog, Tools, and Notes applications.",
+                "Built markdown note sharing system with unique tokenized public view permissions."
+              ]
+            },
+            {
+              name: "In-Browser Privacy-First Image Studio",
+              tools: "JavaScript Canvas, Tesseract OCR, jsPDF, JSZip",
+              link: "sitendra.store/image-tools",
+              bullets: [
+                "Developed 14 client-side utilities including binary-search target KB compressor and JFIF 300 DPI injector."
+              ]
+            }
+          ],
+          skills: [
+            { category: "Languages & Core", items: "Python, JavaScript (ES6+), TypeScript, C++, HTML5/CSS3, SQL" },
+            { category: "Frameworks & Backend", items: "FastAPI, Next.js, Node.js, Starlette, REST APIs" },
+            { category: "Engineering & CAD/CAM", items: "SolidWorks, AutoCAD, GD&T, FEA Simulation, Kinematic Mechanisms" },
+            { category: "Databases & Cloud Tools", items: "PostgreSQL, SQLite, Docker, Git, Linux, WebAssembly" }
+          ],
+          certifications: [
+            { name: "Certified SolidWorks Professional (CSWP)", issuer: "Dassault Systèmes", year: "2023" },
+            { name: "Fullstack Backend Specialization", issuer: "Meta / Coursera", year: "2024" }
+          ],
+          showCustomSection: false,
+          customSectionContent: ""
+        }
       };
+
+      // Active Resume Data (Defaults to generalized Business preset or saved localStorage)
+      let resumeData = JSON.parse(JSON.stringify(PRESET_PROFILES.business));
 
       // Load saved draft if present
       const savedDraft = localStorage.getItem("sitendra_resume_data");
       if (savedDraft) {
-        try { resumeData = JSON.parse(savedDraft); } catch (e) {}
+        try {
+          const parsed = JSON.parse(savedDraft);
+          // Migration check for older skills format:
+          if (parsed.skills && typeof parsed.skills === "object" && !Array.isArray(parsed.skills)) {
+            const newSkills = [];
+            if (parsed.skills.languages) newSkills.push({ category: "Languages & Core", items: parsed.skills.languages });
+            if (parsed.skills.backend) newSkills.push({ category: "Frameworks & Backend", items: parsed.skills.backend });
+            if (parsed.skills.mechanical) newSkills.push({ category: "Engineering & CAD", items: parsed.skills.mechanical });
+            if (parsed.skills.tools) newSkills.push({ category: "Databases & Tools", items: parsed.skills.tools });
+            parsed.skills = newSkills;
+          }
+          resumeData = Object.assign({}, resumeData, parsed);
+        } catch (e) {
+          console.error("Failed to parse saved resume draft:", e);
+        }
       }
 
+      // DOM Elements
       const tplSelect = document.getElementById("tpl-select");
+      const fontSelect = document.getElementById("font-select");
+      const densitySelect = document.getElementById("density-select");
       const accentColorInput = document.getElementById("accent-color");
       const paper = document.getElementById("resume-document");
 
-      // Sync Inputs
+      // Presets & ATS Modals
+      const presetsModal = document.getElementById("presets-modal");
+      const atsModal = document.getElementById("ats-modal");
+      const btnOpenPresets = document.getElementById("btn-open-presets");
+      const btnClosePresets = document.getElementById("btn-close-presets");
+      const btnAtsModal = document.getElementById("btn-ats-modal");
+      const btnCloseAts = document.getElementById("btn-close-ats");
+
+      btnOpenPresets.addEventListener("click", () => presetsModal.classList.add("active"));
+      btnClosePresets.addEventListener("click", () => presetsModal.classList.remove("active"));
+      btnAtsModal.addEventListener("click", () => {
+        updateAtsAuditList();
+        atsModal.classList.add("active");
+      });
+      btnCloseAts.addEventListener("click", () => atsModal.classList.remove("active"));
+
+      document.querySelectorAll(".modal-overlay").forEach(overlay => {
+        overlay.addEventListener("click", (e) => {
+          if (e.target === overlay) overlay.classList.remove("active");
+        });
+      });
+
+      // Preset click listener
+      document.querySelectorAll(".preset-card").forEach(card => {
+        card.addEventListener("click", () => {
+          const key = card.dataset.preset;
+          if (PRESET_PROFILES[key]) {
+            resumeData = JSON.parse(JSON.stringify(PRESET_PROFILES[key]));
+            syncFormFromData();
+            syncDataFromForm();
+            presetsModal.classList.remove("active");
+          }
+        });
+      });
+
+      // Sync form fields from data model
       function syncFormFromData() {
         document.getElementById("f-name").value = resumeData.name || "";
         document.getElementById("f-title").value = resumeData.title || "";
@@ -674,20 +1650,32 @@
         document.getElementById("f-location").value = resumeData.location || "";
         document.getElementById("f-website").value = resumeData.website || "";
         document.getElementById("f-linkedin").value = resumeData.linkedin || "";
-        document.getElementById("f-github").value = resumeData.github || "";
+        document.getElementById("f-link-type").value = resumeData.linkType || "Custom";
+        document.getElementById("f-custom-link").value = resumeData.customLink || "";
         document.getElementById("f-summary").value = resumeData.summary || "";
 
-        document.getElementById("f-skills-lang").value = resumeData.skills?.languages || "";
-        document.getElementById("f-skills-backend").value = resumeData.skills?.backend || "";
-        document.getElementById("f-skills-mech").value = resumeData.skills?.mechanical || "";
-        document.getElementById("f-skills-tools").value = resumeData.skills?.tools || "";
+        // Section Titles
+        const titles = resumeData.sectionTitles || {};
+        document.getElementById("sec-title-summary").value = titles.summary || "Professional Summary";
+        document.getElementById("sec-title-exp").value = titles.experience || "Work Experience";
+        document.getElementById("sec-title-edu").value = titles.education || "Education";
+        document.getElementById("sec-title-proj").value = titles.projects || "Key Projects & Initiatives";
+        document.getElementById("sec-title-skills").value = titles.skills || "Skills & Core Competencies";
+        document.getElementById("sec-title-cert").value = titles.certifications || "Certifications & Licenses";
+        document.getElementById("sec-title-custom").value = titles.custom || "Additional Honors & Languages";
+
+        // Custom Section
+        document.getElementById("f-custom-sec-enable").checked = !!resumeData.showCustomSection;
+        document.getElementById("f-custom-sec-content").value = resumeData.customSectionContent || "";
 
         renderExpForm();
         renderEduForm();
         renderProjForm();
+        renderSkillsForm();
         renderCertForm();
       }
 
+      // Sync data model from form fields
       function syncDataFromForm() {
         resumeData.name = document.getElementById("f-name").value;
         resumeData.title = document.getElementById("f-title").value;
@@ -696,21 +1684,29 @@
         resumeData.location = document.getElementById("f-location").value;
         resumeData.website = document.getElementById("f-website").value;
         resumeData.linkedin = document.getElementById("f-linkedin").value;
-        resumeData.github = document.getElementById("f-github").value;
+        resumeData.linkType = document.getElementById("f-link-type").value;
+        resumeData.customLink = document.getElementById("f-custom-link").value;
         resumeData.summary = document.getElementById("f-summary").value;
 
-        resumeData.skills = {
-          languages: document.getElementById("f-skills-lang").value,
-          backend: document.getElementById("f-skills-backend").value,
-          mechanical: document.getElementById("f-skills-mech").value,
-          tools: document.getElementById("f-skills-tools").value
+        resumeData.sectionTitles = {
+          summary: document.getElementById("sec-title-summary").value,
+          experience: document.getElementById("sec-title-exp").value,
+          education: document.getElementById("sec-title-edu").value,
+          projects: document.getElementById("sec-title-proj").value,
+          skills: document.getElementById("sec-title-skills").value,
+          certifications: document.getElementById("sec-title-cert").value,
+          custom: document.getElementById("sec-title-custom").value
         };
+
+        resumeData.showCustomSection = document.getElementById("f-custom-sec-enable").checked;
+        resumeData.customSectionContent = document.getElementById("f-custom-sec-content").value;
 
         localStorage.setItem("sitendra_resume_data", JSON.stringify(resumeData));
         renderPaper();
+        calculateAtsScore();
       }
 
-      // Dynamic Form Renderers
+      // Render Dynamic Sub-forms
       function renderExpForm() {
         const container = document.getElementById("experience-list");
         container.innerHTML = "";
@@ -720,14 +1716,14 @@
           div.innerHTML = `
             <button type="button" class="item-delete-btn" data-type="exp" data-idx="${idx}">&times; Remove</button>
             <div class="form-row">
-              <input type="text" class="form-control exp-role" data-idx="${idx}" placeholder="Job Title" value="${exp.role || ''}">
-              <input type="text" class="form-control exp-company" data-idx="${idx}" placeholder="Company" value="${exp.company || ''}">
+              <input type="text" class="form-control exp-role" data-idx="${idx}" placeholder="Job / Role Title" value="${exp.role || ''}">
+              <input type="text" class="form-control exp-company" data-idx="${idx}" placeholder="Company / Organization" value="${exp.company || ''}">
             </div>
             <div class="form-row">
-              <input type="text" class="form-control exp-dates" data-idx="${idx}" placeholder="Dates (e.g. 2023 - Present)" value="${exp.dates || ''}">
-              <input type="text" class="form-control exp-loc" data-idx="${idx}" placeholder="Location" value="${exp.location || ''}">
+              <input type="text" class="form-control exp-dates" data-idx="${idx}" placeholder="Dates (e.g. 2022 - Present)" value="${exp.dates || ''}">
+              <input type="text" class="form-control exp-loc" data-idx="${idx}" placeholder="Location (e.g. New York, NY)" value="${exp.location || ''}">
             </div>
-            <textarea class="editor-textarea exp-bullets" data-idx="${idx}" rows="3" placeholder="Enter bullet points (one per line)">${(exp.bullets || []).join("\n")}</textarea>
+            <textarea class="editor-textarea exp-bullets" data-idx="${idx}" rows="3" placeholder="Quantifiable achievements (one bullet per line, start with strong action verbs)">${(exp.bullets || []).join("\n")}</textarea>
           `;
           container.appendChild(div);
         });
@@ -742,13 +1738,13 @@
           div.innerHTML = `
             <button type="button" class="item-delete-btn" data-type="edu" data-idx="${idx}">&times; Remove</button>
             <div class="form-group">
-              <input type="text" class="form-control edu-degree" data-idx="${idx}" placeholder="Degree / Major" value="${edu.degree || ''}">
+              <input type="text" class="form-control edu-degree" data-idx="${idx}" placeholder="Degree / Major / Credential" value="${edu.degree || ''}">
             </div>
             <div class="form-row">
-              <input type="text" class="form-control edu-school" data-idx="${idx}" placeholder="University / College" value="${edu.school || ''}">
-              <input type="text" class="form-control edu-year" data-idx="${idx}" placeholder="Year" value="${edu.year || ''}">
+              <input type="text" class="form-control edu-school" data-idx="${idx}" placeholder="University / College / Institution" value="${edu.school || ''}">
+              <input type="text" class="form-control edu-year" data-idx="${idx}" placeholder="Year (e.g. 2018 - 2022)" value="${edu.year || ''}">
             </div>
-            <input type="text" class="form-control edu-gpa" data-idx="${idx}" placeholder="GPA / Honors (Optional)" value="${edu.gpa || ''}">
+            <input type="text" class="form-control edu-gpa" data-idx="${idx}" placeholder="GPA / Honors / Key Coursework (Optional)" value="${edu.gpa || ''}">
           `;
           container.appendChild(div);
         });
@@ -763,11 +1759,28 @@
           div.innerHTML = `
             <button type="button" class="item-delete-btn" data-type="proj" data-idx="${idx}">&times; Remove</button>
             <div class="form-row">
-              <input type="text" class="form-control proj-name" data-idx="${idx}" placeholder="Project Title" value="${proj.name || ''}">
-              <input type="text" class="form-control proj-tools" data-idx="${idx}" placeholder="Tools / Stack" value="${proj.tools || ''}">
+              <input type="text" class="form-control proj-name" data-idx="${idx}" placeholder="Project / Initiative Title" value="${proj.name || ''}">
+              <input type="text" class="form-control proj-tools" data-idx="${idx}" placeholder="Tools / Scope / Stack" value="${proj.tools || ''}">
             </div>
-            <input type="text" class="form-control proj-link" data-idx="${idx}" placeholder="Project Link (Optional)" value="${proj.link || ''}" style="margin-bottom: 0.5rem;">
-            <textarea class="editor-textarea proj-bullets" data-idx="${idx}" rows="2" placeholder="Key achievements (one per line)">${(proj.bullets || []).join("\n")}</textarea>
+            <input type="text" class="form-control proj-link" data-idx="${idx}" placeholder="Link / Reference (Optional)" value="${proj.link || ''}" style="margin-bottom: 0.5rem;">
+            <textarea class="editor-textarea proj-bullets" data-idx="${idx}" rows="2" placeholder="Key outcomes and contributions (one per line)">${(proj.bullets || []).join("\n")}</textarea>
+          `;
+          container.appendChild(div);
+        });
+      }
+
+      function renderSkillsForm() {
+        const container = document.getElementById("skills-category-list");
+        container.innerHTML = "";
+        (resumeData.skills || []).forEach((cat, idx) => {
+          const div = document.createElement("div");
+          div.className = "skill-category-card";
+          div.innerHTML = `
+            <button type="button" class="item-delete-btn" data-type="skill" data-idx="${idx}">&times; Remove</button>
+            <div style="margin-bottom: 0.5rem; width: calc(100% - 70px);">
+              <input type="text" class="form-control skill-cat-name" data-idx="${idx}" placeholder="Category Name (e.g. Core Competencies, Tools, Clinical Skills)" value="${cat.category || ''}" style="font-weight: 600;">
+            </div>
+            <textarea class="editor-textarea skill-cat-items" data-idx="${idx}" rows="2" placeholder="Comma-separated skills (e.g. Strategy, Budgeting, Risk Analysis)">${cat.items || ''}</textarea>
           `;
           container.appendChild(div);
         });
@@ -781,16 +1794,17 @@
           div.className = "item-card";
           div.innerHTML = `
             <button type="button" class="item-delete-btn" data-type="cert" data-idx="${idx}">&times; Remove</button>
-            <div class="form-row">
-              <input type="text" class="form-control cert-name" data-idx="${idx}" placeholder="Certification Name" value="${cert.name || ''}">
-              <input type="text" class="form-control cert-issuer" data-idx="${idx}" placeholder="Issuer &amp; Year" value="${cert.issuer || ''} ${cert.year ? '(' + cert.year + ')' : ''}">
+            <div class="form-row-3">
+              <input type="text" class="form-control cert-name" data-idx="${idx}" placeholder="Certification / License" value="${cert.name || ''}">
+              <input type="text" class="form-control cert-issuer" data-idx="${idx}" placeholder="Issuer / Organization" value="${cert.issuer || ''}">
+              <input type="text" class="form-control cert-year" data-idx="${idx}" placeholder="Year / Status" value="${cert.year || ''}">
             </div>
           `;
           container.appendChild(div);
         });
       }
 
-      // Add Buttons
+      // Add Button Listeners
       document.getElementById("btn-add-exp").addEventListener("click", () => {
         resumeData.experience = resumeData.experience || [];
         resumeData.experience.push({ role: "", company: "", dates: "", location: "", bullets: [] });
@@ -812,6 +1826,13 @@
         syncDataFromForm();
       });
 
+      document.getElementById("btn-add-skill-cat").addEventListener("click", () => {
+        resumeData.skills = resumeData.skills || [];
+        resumeData.skills.push({ category: "New Competency", items: "" });
+        renderSkillsForm();
+        syncDataFromForm();
+      });
+
       document.getElementById("btn-add-cert").addEventListener("click", () => {
         resumeData.certifications = resumeData.certifications || [];
         resumeData.certifications.push({ name: "", issuer: "", year: "" });
@@ -827,6 +1848,7 @@
           if (type === "exp") resumeData.experience.splice(idx, 1);
           if (type === "edu") resumeData.education.splice(idx, 1);
           if (type === "proj") resumeData.projects.splice(idx, 1);
+          if (type === "skill") resumeData.skills.splice(idx, 1);
           if (type === "cert") resumeData.certifications.splice(idx, 1);
           syncFormFromData();
           syncDataFromForm();
@@ -836,40 +1858,79 @@
       // Dynamic Item Inputs
       document.addEventListener("input", (e) => {
         const t = e.target;
-        if (t.classList.contains("exp-role")) resumeData.experience[t.dataset.idx].role = t.value;
-        if (t.classList.contains("exp-company")) resumeData.experience[t.dataset.idx].company = t.value;
-        if (t.classList.contains("exp-dates")) resumeData.experience[t.dataset.idx].dates = t.value;
-        if (t.classList.contains("exp-loc")) resumeData.experience[t.dataset.idx].location = t.value;
-        if (t.classList.contains("exp-bullets")) resumeData.experience[t.dataset.idx].bullets = t.value.split("\n").filter(x => x.trim());
+        if (t.dataset.idx !== undefined) {
+          const idx = parseInt(t.dataset.idx);
+          if (t.classList.contains("exp-role") && resumeData.experience[idx]) resumeData.experience[idx].role = t.value;
+          if (t.classList.contains("exp-company") && resumeData.experience[idx]) resumeData.experience[idx].company = t.value;
+          if (t.classList.contains("exp-dates") && resumeData.experience[idx]) resumeData.experience[idx].dates = t.value;
+          if (t.classList.contains("exp-loc") && resumeData.experience[idx]) resumeData.experience[idx].location = t.value;
+          if (t.classList.contains("exp-bullets") && resumeData.experience[idx]) resumeData.experience[idx].bullets = t.value.split("\n").filter(x => x.trim());
 
-        if (t.classList.contains("edu-degree")) resumeData.education[t.dataset.idx].degree = t.value;
-        if (t.classList.contains("edu-school")) resumeData.education[t.dataset.idx].school = t.value;
-        if (t.classList.contains("edu-year")) resumeData.education[t.dataset.idx].year = t.value;
-        if (t.classList.contains("edu-gpa")) resumeData.education[t.dataset.idx].gpa = t.value;
+          if (t.classList.contains("edu-degree") && resumeData.education[idx]) resumeData.education[idx].degree = t.value;
+          if (t.classList.contains("edu-school") && resumeData.education[idx]) resumeData.education[idx].school = t.value;
+          if (t.classList.contains("edu-year") && resumeData.education[idx]) resumeData.education[idx].year = t.value;
+          if (t.classList.contains("edu-gpa") && resumeData.education[idx]) resumeData.education[idx].gpa = t.value;
 
-        if (t.classList.contains("proj-name")) resumeData.projects[t.dataset.idx].name = t.value;
-        if (t.classList.contains("proj-tools")) resumeData.projects[t.dataset.idx].tools = t.value;
-        if (t.classList.contains("proj-link")) resumeData.projects[t.dataset.idx].link = t.value;
-        if (t.classList.contains("proj-bullets")) resumeData.projects[t.dataset.idx].bullets = t.value.split("\n").filter(x => x.trim());
+          if (t.classList.contains("proj-name") && resumeData.projects[idx]) resumeData.projects[idx].name = t.value;
+          if (t.classList.contains("proj-tools") && resumeData.projects[idx]) resumeData.projects[idx].tools = t.value;
+          if (t.classList.contains("proj-link") && resumeData.projects[idx]) resumeData.projects[idx].link = t.value;
+          if (t.classList.contains("proj-bullets") && resumeData.projects[idx]) resumeData.projects[idx].bullets = t.value.split("\n").filter(x => x.trim());
 
-        if (t.classList.contains("cert-name")) resumeData.certifications[t.dataset.idx].name = t.value;
-        if (t.classList.contains("cert-issuer")) resumeData.certifications[t.dataset.idx].issuer = t.value;
+          if (t.classList.contains("skill-cat-name") && resumeData.skills[idx]) resumeData.skills[idx].category = t.value;
+          if (t.classList.contains("skill-cat-items") && resumeData.skills[idx]) resumeData.skills[idx].items = t.value;
 
-        syncDataFromForm();
+          if (t.classList.contains("cert-name") && resumeData.certifications[idx]) resumeData.certifications[idx].name = t.value;
+          if (t.classList.contains("cert-issuer") && resumeData.certifications[idx]) resumeData.certifications[idx].issuer = t.value;
+          if (t.classList.contains("cert-year") && resumeData.certifications[idx]) resumeData.certifications[idx].year = t.value;
+
+          syncDataFromForm();
+        }
       });
 
       // Static Inputs listener
-      document.querySelectorAll(".editor-pane input, .editor-pane textarea").forEach(el => {
+      document.querySelectorAll(".editor-pane input, .editor-pane textarea, .editor-pane select").forEach(el => {
         el.addEventListener("input", syncDataFromForm);
+        el.addEventListener("change", syncDataFromForm);
       });
 
-      // Template & Color Switcher
+      // Template & Font & Density Switchers
+      function applyPaperClasses() {
+        paper.className = `resume-paper tpl-${tplSelect.value} ${densitySelect.value}`;
+        const fontMap = {
+          "font-inter": "'Inter', sans-serif",
+          "font-merriweather": "'Merriweather', serif",
+          "font-roboto": "'Roboto', sans-serif",
+          "font-outfit": "'Outfit', sans-serif",
+          "font-jetbrains": "'JetBrains Mono', monospace"
+        };
+        paper.style.setProperty("--paper-font-family", fontMap[fontSelect.value] || "'Inter', sans-serif");
+      }
+
       tplSelect.addEventListener("change", () => {
-        paper.className = `resume-paper tpl-${tplSelect.value}`;
+        applyPaperClasses();
         renderPaper();
       });
 
+      fontSelect.addEventListener("change", () => {
+        applyPaperClasses();
+      });
+
+      densitySelect.addEventListener("change", () => {
+        applyPaperClasses();
+      });
+
+      // Quick Color Palette
+      document.querySelectorAll(".color-dot").forEach(dot => {
+        dot.addEventListener("click", () => {
+          document.querySelectorAll(".color-dot").forEach(d => d.classList.remove("active"));
+          dot.classList.add("active");
+          accentColorInput.value = dot.dataset.color;
+          paper.style.setProperty("--resume-accent", dot.dataset.color);
+        });
+      });
+
       accentColorInput.addEventListener("input", () => {
+        document.querySelectorAll(".color-dot").forEach(d => d.classList.remove("active"));
         paper.style.setProperty("--resume-accent", accentColorInput.value);
       });
 
@@ -891,7 +1952,7 @@
       document.getElementById("btn-export-json").addEventListener("click", () => {
         const blob = new Blob([JSON.stringify(resumeData, null, 2)], { type: "application/json" });
         const link = document.createElement("a");
-        link.download = `${(resumeData.name || "resume").toLowerCase().replace(/\s+/g, "_")}_profile.json`;
+        link.download = `${(resumeData.name || "resume").toLowerCase().replace(/[^a-z0-9]+/g, "_")}_profile.json`;
         link.href = URL.createObjectURL(blob);
         link.click();
       });
@@ -903,10 +1964,19 @@
           const reader = new FileReader();
           reader.onload = (ev) => {
             try {
-              resumeData = JSON.parse(ev.target.result);
+              const imported = JSON.parse(ev.target.result);
+              if (imported.skills && typeof imported.skills === "object" && !Array.isArray(imported.skills)) {
+                const newSkills = [];
+                if (imported.skills.languages) newSkills.push({ category: "Languages & Core", items: imported.skills.languages });
+                if (imported.skills.backend) newSkills.push({ category: "Frameworks & Backend", items: imported.skills.backend });
+                if (imported.skills.mechanical) newSkills.push({ category: "Engineering & CAD", items: imported.skills.mechanical });
+                if (imported.skills.tools) newSkills.push({ category: "Databases & Tools", items: imported.skills.tools });
+                imported.skills = newSkills;
+              }
+              resumeData = imported;
               syncFormFromData();
               syncDataFromForm();
-              alert("Resume data restored successfully!");
+              alert("Resume profile restored successfully!");
             } catch (err) {
               alert("Invalid JSON profile file.");
             }
@@ -915,33 +1985,94 @@
         }
       });
 
-      // Reset & Sample buttons
+      // Reset
       document.getElementById("btn-reset").addEventListener("click", () => {
         if (confirm("Clear all resume fields?")) {
-          resumeData = { name: "", title: "", email: "", phone: "", location: "", website: "", linkedin: "", github: "", summary: "", experience: [], education: [], projects: [], skills: {}, certifications: [] };
+          resumeData = {
+            name: "", title: "", email: "", phone: "", location: "", website: "", linkedin: "", linkType: "Custom", customLink: "",
+            summary: "", sectionTitles: { summary: "Professional Summary", experience: "Work Experience", education: "Education", projects: "Key Projects", skills: "Skills", certifications: "Certifications", custom: "Additional Details" },
+            experience: [], education: [], projects: [], skills: [], certifications: [], showCustomSection: false, customSectionContent: ""
+          };
           syncFormFromData();
           syncDataFromForm();
         }
       });
 
-      document.getElementById("btn-load-sample").addEventListener("click", () => {
-        localStorage.removeItem("sitendra_resume_data");
-        location.reload();
-      });
+      // ATS Checklist Audit
+      function calculateAtsScore() {
+        let score = 0;
+        const total = 100;
 
-      // Render Paper Output
+        if (resumeData.name && resumeData.name.trim().length > 2) score += 15;
+        if (resumeData.title && resumeData.title.trim().length > 2) score += 15;
+        if (resumeData.email && resumeData.email.includes("@")) score += 15;
+        if (resumeData.phone && resumeData.phone.trim().length > 5) score += 10;
+        if (resumeData.summary && resumeData.summary.trim().length > 40) score += 15;
+        if (resumeData.experience && resumeData.experience.length > 0) score += 15;
+        if (resumeData.skills && resumeData.skills.length > 0) score += 10;
+        if (resumeData.education && resumeData.education.length > 0) score += 5;
+
+        const badge = document.getElementById("btn-ats-modal");
+        const scoreText = document.getElementById("ats-score-text");
+        scoreText.textContent = `${score}% ATS Ready`;
+
+        if (score >= 80) {
+          badge.className = "ats-score-badge";
+        } else {
+          badge.className = "ats-score-badge warning";
+        }
+      }
+
+      function updateAtsAuditList() {
+        const itemsContainer = document.getElementById("ats-checklist-items");
+        const checks = [
+          { label: "Full Name & Professional Headline provided", pass: !!(resumeData.name && resumeData.title), tip: "Helps ATS index your target job title immediately." },
+          { label: "Valid Email & Contact Phone number", pass: !!(resumeData.email && resumeData.phone), tip: "Essential for recruiter outreach." },
+          { label: "Tailored Professional Summary (> 40 chars)", pass: !!(resumeData.summary && resumeData.summary.trim().length > 40), tip: "Engages human reviewers and includes crucial keyword density." },
+          { label: "Detailed Work Experience with bullet points", pass: !!(resumeData.experience && resumeData.experience.length > 0 && resumeData.experience.some(e => e.bullets && e.bullets.length > 0)), tip: "Ensure each role starts with strong action verbs (Led, Spearheaded, Reduced)." },
+          { label: "Categorized Skills & Core Competencies", pass: !!(resumeData.skills && resumeData.skills.length > 0), tip: "Using dynamic categories improves ATS parsing matching rates." },
+          { label: "Education & Academic Credentials", pass: !!(resumeData.education && resumeData.education.length > 0), tip: "Validates minimum degree requirements." }
+        ];
+
+        itemsContainer.innerHTML = checks.map(c => `
+          <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1rem; display: flex; align-items: flex-start; gap: 0.75rem;">
+            <span style="font-size: 1.1rem; line-height: 1;">${c.pass ? '✅' : '⚠️'}</span>
+            <div>
+              <div style="font-weight: 700; color: ${c.pass ? 'var(--text-main)' : '#F59E0B'}; font-size: 0.92rem;">${c.label}</div>
+              <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px;">${c.tip}</div>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      // Render Live Paper Document
       function renderPaper() {
+        const getSecondaryIcon = (type) => {
+          switch (type) {
+            case "GitHub": return "💻";
+            case "Behance": return "🎨";
+            case "Dribbble": return "🏀";
+            case "Medium": return "✍️";
+            case "Scholar": return "🎓";
+            case "ResearchGate": return "🔬";
+            default: return "🔗";
+          }
+        };
+
         const contacts = [
           resumeData.email ? `✉️ ${resumeData.email}` : "",
           resumeData.phone ? `📞 ${resumeData.phone}` : "",
           resumeData.location ? `📍 ${resumeData.location}` : "",
           resumeData.website ? `🌐 ${resumeData.website}` : "",
           resumeData.linkedin ? `💼 ${resumeData.linkedin}` : "",
-          resumeData.github ? `💻 ${resumeData.github}` : ""
+          resumeData.customLink ? `${getSecondaryIcon(resumeData.linkType)} ${resumeData.customLink}` : ""
         ].filter(Boolean);
+
+        const titles = resumeData.sectionTitles || {};
 
         let expHtml = "";
         (resumeData.experience || []).forEach(exp => {
+          if (!exp.role && !exp.company) return;
           expHtml += `
             <div class="resume-item">
               <div class="resume-item-header">
@@ -952,15 +2083,18 @@
                 <span>${exp.company || ''}</span>
                 <span>${exp.location || ''}</span>
               </div>
-              <ul class="resume-bullets">
-                ${(exp.bullets || []).map(b => `<li>${b}</li>`).join("")}
-              </ul>
+              ${(exp.bullets && exp.bullets.length > 0) ? `
+                <ul class="resume-bullets">
+                  ${exp.bullets.map(b => `<li>${b}</li>`).join("")}
+                </ul>
+              ` : ''}
             </div>
           `;
         });
 
         let eduHtml = "";
         (resumeData.education || []).forEach(edu => {
+          if (!edu.degree && !edu.school) return;
           eduHtml += `
             <div class="resume-item">
               <div class="resume-item-header">
@@ -977,24 +2111,38 @@
 
         let projHtml = "";
         (resumeData.projects || []).forEach(proj => {
+          if (!proj.name) return;
           projHtml += `
             <div class="resume-item">
               <div class="resume-item-header">
                 <span>${proj.name || ''} ${proj.tools ? '<span style="font-weight: 400; font-size: 8.5pt; color: #64748B;">| ' + proj.tools + '</span>' : ''}</span>
                 <span>${proj.link ? proj.link : ''}</span>
               </div>
-              <ul class="resume-bullets">
-                ${(proj.bullets || []).map(b => `<li>${b}</li>`).join("")}
-              </ul>
+              ${(proj.bullets && proj.bullets.length > 0) ? `
+                <ul class="resume-bullets">
+                  ${proj.bullets.map(b => `<li>${b}</li>`).join("")}
+                </ul>
+              ` : ''}
+            </div>
+          `;
+        });
+
+        let skillsHtml = "";
+        (resumeData.skills || []).forEach(cat => {
+          if (!cat.category && !cat.items) return;
+          skillsHtml += `
+            <div style="margin-bottom: 3px;">
+              <strong>${cat.category || 'Competencies'}:</strong> ${cat.items || ''}
             </div>
           `;
         });
 
         let certHtml = "";
         (resumeData.certifications || []).forEach(cert => {
+          if (!cert.name) return;
           certHtml += `
             <div style="display: flex; justify-content: space-between; font-size: 8.8pt; margin-bottom: 2px;">
-              <span><strong>${cert.name || ''}</strong> — ${cert.issuer || ''}</span>
+              <span><strong>${cert.name || ''}</strong> ${cert.issuer ? '— ' + cert.issuer : ''}</span>
               <span>${cert.year || ''}</span>
             </div>
           `;
@@ -1005,53 +2153,55 @@
         paper.innerHTML = `
           ${isExecutive ? `<div class="resume-header-bar">` : ''}
             <div class="resume-name">${resumeData.name || 'Your Full Name'}</div>
-            <div class="resume-headline">${resumeData.title || 'Target Job Title / Engineering Specialty'}</div>
+            <div class="resume-headline">${resumeData.title || 'Professional Title / Target Role'}</div>
             <div class="resume-contacts">
               ${contacts.map(c => `<span>${c}</span>`).join(" • ")}
             </div>
           ${isExecutive ? `</div>` : ''}
 
           ${resumeData.summary ? `
-            <div class="resume-sec-title">Professional Summary</div>
+            <div class="resume-sec-title">${titles.summary || 'Professional Summary'}</div>
             <div class="resume-summary-text">${resumeData.summary}</div>
           ` : ''}
 
           ${expHtml ? `
-            <div class="resume-sec-title">Work Experience</div>
+            <div class="resume-sec-title">${titles.experience || 'Work Experience'}</div>
             ${expHtml}
           ` : ''}
 
           ${projHtml ? `
-            <div class="resume-sec-title">Engineering &amp; Software Projects</div>
+            <div class="resume-sec-title">${titles.projects || 'Key Projects &amp; Initiatives'}</div>
             ${projHtml}
           ` : ''}
 
+          ${skillsHtml ? `
+            <div class="resume-sec-title">${titles.skills || 'Skills &amp; Core Competencies'}</div>
+            <div class="resume-skills-block">${skillsHtml}</div>
+          ` : ''}
+
           ${eduHtml ? `
-            <div class="resume-sec-title">Education</div>
+            <div class="resume-sec-title">${titles.education || 'Education'}</div>
             ${eduHtml}
           ` : ''}
 
-          ${(resumeData.skills?.languages || resumeData.skills?.backend || resumeData.skills?.mechanical) ? `
-            <div class="resume-sec-title">Technical Skills &amp; Core Competencies</div>
-            <div class="resume-skills-block">
-              ${resumeData.skills.languages ? `<div><strong>Languages:</strong> ${resumeData.skills.languages}</div>` : ''}
-              ${resumeData.skills.backend ? `<div><strong>Backend &amp; Web:</strong> ${resumeData.skills.backend}</div>` : ''}
-              ${resumeData.skills.mechanical ? `<div><strong>Mechanical &amp; CAD:</strong> ${resumeData.skills.mechanical}</div>` : ''}
-              ${resumeData.skills.tools ? `<div><strong>Databases &amp; Tools:</strong> ${resumeData.skills.tools}</div>` : ''}
-            </div>
+          ${certHtml ? `
+            <div class="resume-sec-title">${titles.certifications || 'Certifications &amp; Licenses'}</div>
+            ${certHtml}
           ` : ''}
 
-          ${certHtml ? `
-            <div class="resume-sec-title">Certifications &amp; Honors</div>
-            ${certHtml}
+          ${(resumeData.showCustomSection && resumeData.customSectionContent) ? `
+            <div class="resume-sec-title">${titles.custom || 'Additional Honors &amp; Details'}</div>
+            <div class="resume-custom-block">${resumeData.customSectionContent}</div>
           ` : ''}
         `;
       }
 
       // Initial Bootstrap
       paper.style.setProperty("--resume-accent", accentColorInput.value);
+      applyPaperClasses();
       syncFormFromData();
       renderPaper();
+      calculateAtsScore();
     });
   </script>
 </body>

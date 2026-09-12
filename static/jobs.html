@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Government Jobs &amp; Sarkari Naukri Portal | Sitendra</title>
+  <meta name="description" content="Live Indian Government Jobs (Sarkari Naukri) portal with official recruitment notifications, verified PDF links, direct online apply URLs, eligibility matcher, and 7th Pay Commission salary calculator.">
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <!-- Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Core CSS -->
+  <link rel="stylesheet" href="/blog/blog.css?v=4.2">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/cmd_k.css">
+  <link rel="stylesheet" href="/chat.css">
+
+  <!-- Theme Script -->
+  <script src="/theme.js"></script>
+
+  <style>
+    /* =========================================================
+       INDIAN GOVERNMENT JOBS HUB STYLES
+       ========================================================= */
+    :root {
+      --govt-accent: #2563EB;
+      --govt-accent-light: rgba(37, 99, 235, 0.08);
+      --govt-saffron: #F97316;
+      --govt-green: #10B981;
+    }
+
+    body {
+      background-color: var(--bg-deep);
+      min-height: 100vh;
+      padding-top: 68px;
+      color: var(--text-main);
+    }
+
+    .jobs-container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 5rem;
+    }
+
+    /* Hero Banner */
+    .jobs-hero {
+      background: linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-surface-elevated) 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem 2rem;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .jobs-hero::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 380px;
+      height: 380px;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero-badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--govt-green);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 0.3rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      margin-bottom: 1rem;
+    }
+
+    .hero-pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--govt-green);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    /* Live Stats Bar */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-top: 1.75rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .stat-pill {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1.15rem;
+    }
+
+    .stat-val {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      font-family: var(--font-mono);
+      line-height: 1.2;
+    }
+
+    .stat-lbl {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-top: 0.2rem;
+    }
+
+    /* Main View Navigation Tabs */
+    .hub-tabs-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.75rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.75rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .hub-tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.15rem;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .hub-tab-btn:hover {
+      background: var(--bg-surface-hover);
+      color: var(--text-main);
+    }
+
+    .hub-tab-btn.active {
+      background: var(--primary);
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    /* Multi-Filter Matrix Section */
+    .filter-matrix-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .search-input-wrap {
+      position: relative;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .search-input-wrap input {
+      width: 100%;
+      padding: 0.85rem 1rem 0.85rem 2.85rem;
+      font-size: 1rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--bg-surface-elevated);
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input-wrap input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .search-icon-svg {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-subtle);
+      pointer-events: none;
+    }
+
+    .filter-pills-scroll {
+      display: flex;
+      gap: 0.45rem;
+      overflow-x: auto;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1rem;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .cat-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.4rem 0.85rem;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .cat-pill:hover, .cat-pill.active {
+      border-color: var(--primary);
+      background: rgba(37, 99, 235, 0.12);
+      color: var(--primary);
+    }
+
+    .filter-dropdowns-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .filter-select {
+      width: 100%;
+      height: 40px;
+      background: var(--bg-surface-elevated);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Jobs Grid */
+    .jobs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    @media (max-width: 640px) {
+      .jobs-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Job Card Design */
+    .job-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: var(--shadow-sm);
+      position: relative;
+    }
+
+    .job-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .job-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.85rem;
+      gap: 0.5rem;
+    }
+
+    .dept-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.6rem;
+      background: var(--govt-accent-light);
+      color: var(--primary);
+      border: 1px solid rgba(37, 99, 235, 0.2);
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .urgency-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.55rem;
+      border-radius: var(--radius-full);
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .urgency-closing {
+      background: rgba(239, 68, 68, 0.12);
+      color: #EF4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .urgency-open {
+      background: rgba(16, 185, 129, 0.12);
+      color: #10B981;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .job-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 0.4rem;
+      line-height: 1.4;
+    }
+
+    .job-org {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      font-weight: 500;
+    }
+
+    .job-meta-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+    }
+
+    .job-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .job-meta-icon {
+      width: 16px;
+      text-align: center;
+      color: var(--primary);
+    }
+
+    .job-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .btn-apply-direct {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.55rem 0.85rem;
+      background: var(--primary);
+      color: #FFFFFF;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      transition: background 0.15s ease;
+      white-space: nowrap;
+    }
+    .btn-apply-direct:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-details-modal {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      padding: 0.55rem 0.75rem;
+      background: var(--bg-surface-elevated);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .btn-details-modal:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-bookmark-job {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.15s ease;
+    }
+    .btn-bookmark-job:hover, .btn-bookmark-job.bookmarked {
+      color: #F59E0B;
+      border-color: #F59E0B;
+      background: rgba(245, 158, 11, 0.1);
+    }
+
+    /* Modal Dialog */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 1rem;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .job-modal-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 780px;
+      max-height: 88vh;
+      overflow-y: auto;
+      padding: 2rem;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+    }
+
+    /* Eligibility Matcher & Salary Calculator Panels */
+    .tool-panel {
+      display: none;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .tool-panel.active {
+      display: block;
+    }
+
+    .salary-calc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .salary-result-box {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+    }
+
+    .payslip-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.45rem 0;
+      border-bottom: 1px dashed var(--border);
+      font-size: 0.88rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="blog-header">
+    <div class="brand-wrapper">
+      <a href="/" id="brand-link" style="display: flex; align-items: center; gap: 0.85rem; color: inherit; text-decoration: none;">
+        <div class="brand-logo" style="background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+          </svg>
+        </div>
+        <div class="brand-title">
+          Sitendra <span class="brand-badge">Govt Jobs</span>
+        </div>
+      </a>
+    </div>
+
+    <nav class="nav-links">
+      <a href="/tools" class="nav-item">All Services</a>
+      <a href="/blog" class="nav-item">Blog &amp; Journal</a>
+      <a href="/" class="nav-item">Dashboard</a>
+      <button type="button" class="theme-toggle-btn" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">☀️</button>
+      <button type="button" id="btn-show-saved" class="btn btn-secondary btn-sm" style="display: flex; align-items: center; gap: 0.4rem;">
+        <span>🔖 Saved</span>
+        <span id="saved-badge-count" style="background: var(--primary); color: #FFF; font-size: 0.75rem; padding: 0.1rem 0.45rem; border-radius: 999px;">0</span>
+      </button>
+    </nav>
+  </header>
+
+  <main class="jobs-container">
+
+    <!-- Hero Section -->
+    <section class="jobs-hero">
+      <div class="hero-badge-live">
+        <span class="hero-pulse"></span>
+        <span>LIVE NOTIFICATION FEED &amp; API SCRAPER ACTIVE</span>
+      </div>
+      <h1 style="font-size: 2.2rem; font-weight: 900; margin-bottom: 0.65rem; color: var(--text-main); line-height: 1.2;">
+        Indian Government Jobs &amp; Notifications Hub
+      </h1>
+      <p style="color: var(--text-muted); font-size: 1rem; max-width: 780px; line-height: 1.6;">
+        Verified Central &amp; State government recruitment notifications across UPSC, SSC, Railways (RRB), Banking (IBPS/SBI), Defense, PSUs, and Teaching. Complete with official PDF links, direct apply URLs, and eligibility matchers.
+      </p>
+
+      <!-- Live Stats Strip -->
+      <div class="stats-strip">
+        <div class="stat-pill">
+          <div class="stat-val" id="stat-total-vacancies">55,000+</div>
+          <div class="stat-lbl">Active Total Vacancies</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-val" id="stat-active-posts">16</div>
+          <div class="stat-lbl">Recruitment Notifications</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-val" id="stat-closing-soon" style="color: #EF4444;">6</div>
+          <div class="stat-lbl">Closing This Week</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-val" id="stat-last-sync" style="font-size: 1.05rem; font-family: var(--font-sans); color: var(--text-main); margin-top: 0.25rem;">Just now</div>
+          <div class="stat-lbl">Feed Status</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Navigation Tabs -->
+    <div class="hub-tabs-row">
+      <button type="button" class="hub-tab-btn active" data-tab="tab-all-jobs">
+        📋 All Notifications
+      </button>
+      <button type="button" class="hub-tab-btn" data-tab="tab-eligibility">
+        🎯 Aspirant Eligibility Matcher
+      </button>
+      <button type="button" class="hub-tab-btn" data-tab="tab-salary-calc">
+        🧮 7th CPC Salary Calculator
+      </button>
+      <button type="button" class="hub-tab-btn" data-tab="tab-saved-jobs">
+        🔖 My Saved Bookmarks
+      </button>
+    </div>
+
+    <!-- =========================================================
+         TAB 1: ALL JOBS BROWSER & MULTI-FILTER MATRIX
+         ========================================================= -->
+    <div id="tab-all-jobs" class="tool-panel active">
+      
+      <!-- Multi-Filter Matrix Card -->
+      <div class="filter-matrix-card">
+        
+        <!-- Live Search Input -->
+        <div class="search-input-wrap">
+          <svg class="search-icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" id="job-search-input" placeholder="Search by Exam Name, Organization, Role, or Department (e.g. UPSC, CGL, ISRO, Station Master)...">
+        </div>
+
+        <!-- Category Scroll Pills -->
+        <div class="filter-pills-scroll" id="cat-pills-container">
+          <button type="button" class="cat-pill active" data-cat="all">All Sectors</button>
+          <button type="button" class="cat-pill" data-cat="upsc">🏛️ UPSC &amp; Civil Services</button>
+          <button type="button" class="cat-pill" data-cat="ssc">🏢 Staff Selection (SSC)</button>
+          <button type="button" class="cat-pill" data-cat="railways">🚆 Railways (RRB)</button>
+          <button type="button" class="cat-pill" data-cat="banking">🏦 Banking &amp; Insurance</button>
+          <button type="button" class="cat-pill" data-cat="defense">🎖️ Defense &amp; Paramilitary</button>
+          <button type="button" class="cat-pill" data-cat="psu_engineering">⚡ PSU &amp; Engineering</button>
+          <button type="button" class="cat-pill" data-cat="teaching">📚 Teaching &amp; Research</button>
+          <button type="button" class="cat-pill" data-cat="medical">🩺 Healthcare &amp; Medical</button>
+          <button type="button" class="cat-pill" data-cat="state_psc">🚩 State Govt &amp; PSC</button>
+        </div>
+
+        <!-- Secondary Dropdowns (Qualification, State, Status) -->
+        <div class="filter-dropdowns-row">
+          <div>
+            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-subtle); display: block; margin-bottom: 0.25rem;">MINIMUM QUALIFICATION</label>
+            <select class="filter-select" id="select-qualification">
+              <option value="all">Any Qualification</option>
+              <option value="10th">10th Pass</option>
+              <option value="12th">12th Pass (+2)</option>
+              <option value="diploma">Diploma / ITI</option>
+              <option value="graduate">Graduate (Any Bachelor's Degree)</option>
+              <option value="btech">B.E. / B.Tech (Engineering)</option>
+              <option value="post_graduate">Post Graduate / Master's</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-subtle); display: block; margin-bottom: 0.25rem;">STATE / REGION</label>
+            <select class="filter-select" id="select-state">
+              <option value="all">All India (Central &amp; States)</option>
+              <option value="all_india">Central Government (All India)</option>
+              <option value="uttar_pradesh">Uttar Pradesh</option>
+              <option value="bihar">Bihar</option>
+              <option value="rajasthan">Rajasthan</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-subtle); display: block; margin-bottom: 0.25rem;">DEADLINE STATUS</label>
+            <select class="filter-select" id="select-status">
+              <option value="all">All Active Notifications</option>
+              <option value="closing_soon">⚡ Closing Soon (Within 10 Days)</option>
+              <option value="featured">⭐ Top &amp; Featured Vacancies</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Live Job Results Counter -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-main);" id="results-count-label">
+          Showing 15 Active Government Recruitment Drives
+        </div>
+        <button type="button" id="btn-refresh-feed" class="btn btn-secondary btn-sm" style="display: flex; align-items: center; gap: 0.35rem;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+          Refresh Feed
+        </button>
+      </div>
+
+      <!-- Jobs Grid Container -->
+      <div class="jobs-grid" id="jobs-grid-container">
+        <!-- Rendered dynamically via JavaScript -->
+      </div>
+
+    </div>
+
+    <!-- =========================================================
+         TAB 2: ASPIRANT ELIGIBILITY MATCHER TOOL
+         ========================================================= -->
+    <div id="tab-eligibility" class="tool-panel">
+      <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--text-main);">
+        🎯 Aspirant Instant Eligibility Matcher
+      </h2>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.75rem;">
+        Enter your age, highest qualification, and category to instantly discover all 100% verified government jobs you can apply for right now.
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; background: var(--bg-surface-elevated); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border); margin-bottom: 2rem;">
+        <div>
+          <label class="form-label" for="matcher-age" style="font-weight: 700;">Your Current Age (in Years)</label>
+          <input type="number" id="matcher-age" class="form-control" value="23" min="16" max="60">
+        </div>
+        <div>
+          <label class="form-label" for="matcher-qual" style="font-weight: 700;">Highest Qualification</label>
+          <select id="matcher-qual" class="form-control">
+            <option value="graduate" selected>Bachelor's Degree (Graduate)</option>
+            <option value="12th">12th Pass (+2)</option>
+            <option value="10th">10th Pass (Matriculation)</option>
+            <option value="diploma">Diploma / ITI</option>
+            <option value="btech">B.E. / B.Tech (Engineering)</option>
+            <option value="post_graduate">Post Graduate / Master's</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label" for="matcher-category" style="font-weight: 700;">Reservation Category</label>
+          <select id="matcher-category" class="form-control">
+            <option value="gen">General / Unreserved</option>
+            <option value="obc">OBC (Non-Creamy Layer) - +3 Yrs</option>
+            <option value="sc_st">SC / ST - +5 Yrs</option>
+            <option value="ews">EWS (Economically Weaker)</option>
+            <option value="pwd">PwBD / Divyang - +10 Yrs</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text-main);" id="matcher-results-title">
+          Matched Opportunities for You
+        </h3>
+      </div>
+
+      <div class="jobs-grid" id="matcher-grid-container">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
+    <!-- =========================================================
+         TAB 3: 7TH PAY COMMISSION SALARY CALCULATOR
+         ========================================================= -->
+    <div id="tab-salary-calc" class="tool-panel">
+      <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--text-main);">
+        🧮 7th Pay Commission (7th CPC) Salary Calculator
+      </h2>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+        Calculate exact gross salary, Dearness Allowance (DA 50%+), HRA by city classification (X/Y/Z), NPS deductions, and net in-hand monthly salary.
+      </p>
+
+      <div class="salary-calc-grid">
+        <div>
+          <div class="form-group">
+            <label class="form-label" for="calc-pay-level" style="font-weight: 700;">Select 7th CPC Pay Matrix Level</label>
+            <select id="calc-pay-level" class="form-control">
+              <option value="1">Level 1 (₹18,000 - Group D, MTS)</option>
+              <option value="2">Level 2 (₹19,900 - Junior Clerk, Constable)</option>
+              <option value="4">Level 4 (₹25,500 - Tax Assistant, UDC)</option>
+              <option value="6">Level 6 (₹35,400 - Sub-Inspector, Senior Clerk, STA)</option>
+              <option value="7" selected>Level 7 (₹44,900 - Section Officer, Inspector, Nursing Officer)</option>
+              <option value="8">Level 8 (₹47,600 - Assistant Accounts Officer)</option>
+              <option value="10">Level 10 (₹56,100 - IAS, IPS, SDM, Scientist SC, Asst Professor)</option>
+              <option value="12">Level 12 (₹78,800 - Senior Executive)</option>
+              <option value="14">Level 14 (₹1,44,200 - Joint Secretary / Director)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="calc-city-class" style="font-weight: 700;">Posting City Classification (HRA Tier)</label>
+            <select id="calc-city-class" class="form-control">
+              <option value="30">Class X - Metros (Delhi, Mumbai, Bengaluru, Kolkata, Chennai, Hyderabad) - 30% HRA</option>
+              <option value="20" selected>Class Y - Tier 2 Cities (Lucknow, Patna, Jaipur, Pune, Ahmedabad) - 20% HRA</option>
+              <option value="10">Class Z - Rural / Small Towns - 10% HRA</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="calc-da-rate" style="font-weight: 700;">Current Dearness Allowance (DA %)</label>
+            <input type="number" id="calc-da-rate" class="form-control" value="50" min="0" max="100">
+          </div>
+        </div>
+
+        <div class="salary-result-box">
+          <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 1rem; color: var(--text-main); display: flex; justify-content: space-between;">
+            <span>Estimated Monthly Pay Slip</span>
+            <span style="font-size: 0.8rem; color: var(--primary); font-weight: 600;">7th Central Pay Commission</span>
+          </h3>
+
+          <div class="payslip-row">
+            <span>Basic Pay (Entry Level)</span>
+            <strong id="ps-basic">₹44,900</strong>
+          </div>
+          <div class="payslip-row">
+            <span>Dearness Allowance (DA @ 50%)</span>
+            <strong id="ps-da" style="color: var(--govt-green);">+ ₹22,450</strong>
+          </div>
+          <div class="payslip-row">
+            <span>House Rent Allowance (HRA)</span>
+            <strong id="ps-hra" style="color: var(--govt-green);">+ ₹8,980</strong>
+          </div>
+          <div class="payslip-row">
+            <span>Transport Allowance (TA + DA on TA)</span>
+            <strong id="ps-ta" style="color: var(--govt-green);">+ ₹5,400</strong>
+          </div>
+          <div class="payslip-row" style="background: var(--bg-surface); padding: 0.6rem 0.5rem; margin-top: 0.4rem; font-weight: 700;">
+            <span>Gross Monthly Emoluments</span>
+            <strong id="ps-gross" style="color: var(--primary); font-size: 1.05rem;">₹81,730</strong>
+          </div>
+
+          <div style="margin-top: 1rem; font-size: 0.82rem; color: var(--text-muted);">
+            <div class="payslip-row" style="color: #EF4444;">
+              <span>National Pension System (NPS 10% Basic+DA)</span>
+              <span id="ps-nps">- ₹6,735</span>
+            </div>
+            <div class="payslip-row" style="color: #EF4444;">
+              <span>CGHS &amp; Insurance Deductions</span>
+              <span>- ₹650</span>
+            </div>
+          </div>
+
+          <div style="background: rgba(37, 99, 235, 0.1); border: 1px solid var(--primary); border-radius: var(--radius-sm); padding: 1rem; margin-top: 1rem; text-align: center;">
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Estimated In-Hand Monthly Take-Home</div>
+            <div style="font-size: 1.8rem; font-weight: 900; color: var(--primary); font-family: var(--font-mono); margin-top: 0.2rem;" id="ps-net">₹74,345</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         TAB 4: MY SAVED BOOKMARKS
+         ========================================================= -->
+    <div id="tab-saved-jobs" class="tool-panel">
+      <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--text-main);">
+        🔖 Saved Job Notifications
+      </h2>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.75rem;">
+        Keep track of target notifications, deadlines, and direct application links you've bookmarked for later.
+      </p>
+
+      <div class="jobs-grid" id="saved-grid-container">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- =========================================================
+       JOB DETAILS MODAL DIALOG
+       ========================================================= -->
+  <div class="modal-overlay" id="job-detail-modal">
+    <div class="job-modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
+        <div>
+          <span class="dept-badge" id="modal-dept-code">UPSC</span>
+          <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin-top: 0.4rem;" id="modal-job-title">
+            Civil Services Examination 2026
+          </h2>
+          <div style="color: var(--text-muted); font-size: 0.9rem;" id="modal-org-name">
+            Union Public Service Commission (UPSC)
+          </div>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-close-modal" style="padding: 0.35rem 0.65rem;">✕ Close</button>
+      </div>
+
+      <!-- Key Details Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; background: var(--bg-surface-elevated); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border); margin-bottom: 1.5rem;">
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-subtle); font-weight: 700;">TOTAL VACANCIES</div>
+          <div style="font-size: 1.1rem; font-weight: 800; color: var(--primary); font-family: var(--font-mono);" id="modal-vacancies">1,150 Posts</div>
+        </div>
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-subtle); font-weight: 700;">PAY SCALE</div>
+          <div style="font-size: 0.92rem; font-weight: 700; color: var(--text-main);" id="modal-salary">Level 10 (₹56,100 - ₹1,77,500)</div>
+        </div>
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-subtle); font-weight: 700;">AGE LIMIT</div>
+          <div style="font-size: 0.92rem; font-weight: 700; color: var(--text-main);" id="modal-age">21 - 32 Years</div>
+        </div>
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-subtle); font-weight: 700;">LAST DATE TO APPLY</div>
+          <div style="font-size: 0.92rem; font-weight: 800; color: #EF4444;" id="modal-deadline">25 Mar 2026</div>
+        </div>
+      </div>
+
+      <!-- Description Block -->
+      <div style="margin-bottom: 1.5rem;">
+        <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.5rem;">📖 Overview &amp; Role Details</h4>
+        <p style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.6;" id="modal-desc">
+          Detailed overview text.
+        </p>
+      </div>
+
+      <!-- Qualification & Age Relaxation -->
+      <div style="margin-bottom: 1.5rem;">
+        <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.5rem;">🎓 Educational Qualification</h4>
+        <p style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.6;" id="modal-qualification">
+          Qualification details.
+        </p>
+        <div style="font-size: 0.85rem; color: var(--text-subtle); margin-top: 0.35rem;" id="modal-age-relax">
+          Age relaxation details.
+        </div>
+      </div>
+
+      <!-- Selection Process & Exam Pattern -->
+      <div style="margin-bottom: 1.5rem;">
+        <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.5rem;">📝 Selection Process &amp; Exam Pattern</h4>
+        <p style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.6; margin-bottom: 0.5rem;" id="modal-selection">
+          Selection process.
+        </p>
+        <div style="background: var(--bg-surface-elevated); padding: 0.85rem; border-radius: var(--radius-sm); font-size: 0.85rem; color: var(--text-muted); border: 1px solid var(--border);" id="modal-exam-pattern">
+          Exam pattern.
+        </div>
+      </div>
+
+      <!-- Application Fee -->
+      <div style="margin-bottom: 1.75rem;">
+        <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.5rem;">💳 Application Fee</h4>
+        <div style="display: flex; gap: 1.5rem; font-size: 0.88rem;">
+          <div><strong>General / OBC / EWS:</strong> <span id="modal-fee-gen">₹100</span></div>
+          <div><strong>SC / ST / PwD / Female:</strong> <span id="modal-fee-res" style="color: var(--govt-green);">Nil</span></div>
+        </div>
+      </div>
+
+      <!-- Action Footer -->
+      <div style="display: flex; gap: 0.75rem; justify-content: flex-end; border-top: 1px solid var(--border); padding-top: 1.25rem; flex-wrap: wrap;">
+        <a href="#" target="_blank" id="modal-pdf-link" class="btn btn-secondary btn-sm" style="display: flex; align-items: center; gap: 0.35rem;">
+          📄 Download Official Notification (PDF)
+        </a>
+        <a href="#" target="_blank" id="modal-apply-link" class="btn btn-primary btn-sm" style="display: flex; align-items: center; gap: 0.35rem;">
+          🔗 Direct Apply on Official Portal
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-msg" id="toast">
+    <span id="toast-text">Job saved to bookmarks!</span>
+  </div>
+
+  <!-- =========================================================
+       JAVASCRIPT: CLIENT ENGINE, FILTER MATRIX & CALCULATOR
+       ========================================================= -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      let allJobsData = [];
+      let activeCategory = "all";
+      let activeQualification = "all";
+      let activeState = "all";
+      let activeStatus = "all";
+      let searchTerm = "";
+
+      const jobsGrid = document.getElementById("jobs-grid-container");
+      const matcherGrid = document.getElementById("matcher-grid-container");
+      const savedGrid = document.getElementById("saved-grid-container");
+      const resultsCountLabel = document.getElementById("results-count-label");
+
+      // Toast Feedback Helper
+      function showToast(text) {
+        const toast = document.getElementById("toast");
+        const toastText = document.getElementById("toast-text");
+        toastText.textContent = text;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2800);
+      }
+
+      // Bookmarking LocalStorage Engine
+      function getBookmarks() {
+        try {
+          return JSON.parse(localStorage.getItem("sitendra_saved_jobs") || "[]");
+        } catch(e) {
+          return [];
+        }
+      }
+
+      function toggleBookmark(jobId) {
+        let bookmarks = getBookmarks();
+        if (bookmarks.includes(jobId)) {
+          bookmarks = bookmarks.filter(id => id !== jobId);
+          showToast("Removed from bookmarks");
+        } else {
+          bookmarks.push(jobId);
+          showToast("Saved to bookmarks!");
+        }
+        localStorage.setItem("sitendra_saved_jobs", JSON.stringify(bookmarks));
+        updateBookmarkCount();
+        renderAllJobs();
+        renderSavedJobs();
+      }
+
+      function updateBookmarkCount() {
+        const count = getBookmarks().length;
+        document.getElementById("saved-badge-count").textContent = count;
+      }
+      updateBookmarkCount();
+
+      // Tab Switching
+      document.querySelectorAll(".hub-tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".hub-tab-btn").forEach(b => b.classList.remove("active"));
+          document.querySelectorAll(".tool-panel").forEach(p => p.classList.remove("active"));
+          
+          btn.classList.add("active");
+          const targetTabId = btn.dataset.tab;
+          document.getElementById(targetTabId).classList.add("active");
+
+          if (targetTabId === "tab-eligibility") {
+            runEligibilityMatcher();
+          } else if (targetTabId === "tab-saved-jobs") {
+            renderSavedJobs();
+          }
+        });
+      });
+
+      document.getElementById("btn-show-saved").addEventListener("click", () => {
+        document.querySelector('[data-tab="tab-saved-jobs"]').click();
+      });
+
+      // Fetch Jobs from Backend API
+      async function loadJobsFromAPI() {
+        try {
+          resultsCountLabel.textContent = "Fetching latest government notifications...";
+          const res = await fetch("/api/jobs");
+          const data = await res.json();
+          allJobsData = data.jobs || [];
+
+          // Update stats
+          if (data.summary) {
+            document.getElementById("stat-total-vacancies").textContent = data.summary.total_vacancies.toLocaleString("en-IN") + "+";
+            document.getElementById("stat-active-posts").textContent = data.summary.total_active_jobs;
+            document.getElementById("stat-closing-soon").textContent = data.summary.closing_soon_count;
+            document.getElementById("stat-last-sync").textContent = data.summary.last_updated;
+          }
+
+          renderAllJobs();
+        } catch(e) {
+          console.error("API error:", e);
+          resultsCountLabel.textContent = "Loaded offline verified notifications dataset";
+        }
+      }
+
+      // Render Job Card HTML
+      function createJobCardHTML(job) {
+        const bookmarks = getBookmarks();
+        const isBookmarked = bookmarks.includes(job.id);
+        const daysLeft = job.days_left !== undefined ? job.days_left : 15;
+        const isClosing = job.is_closing_soon;
+
+        const urgencyHtml = isClosing 
+          ? `<span class="urgency-badge urgency-closing">⚡ ${daysLeft} Days Left</span>`
+          : `<span class="urgency-badge urgency-open">🟢 Apply Open</span>`;
+
+        return `
+          <div class="job-card" data-job-id="${job.id}">
+            <div>
+              <div class="job-card-header">
+                <span class="dept-badge">${job.dept_code || 'GOVT'}</span>
+                ${urgencyHtml}
+              </div>
+
+              <h3 class="job-title">${job.title}</h3>
+              <div class="job-org">${job.organization}</div>
+
+              <div class="job-meta-list">
+                <div class="job-meta-item">
+                  <span class="job-meta-icon">👥</span>
+                  <span><strong>${job.vacancies ? job.vacancies.toLocaleString('en-IN') : 'Multiple'}</strong> Vacancies</span>
+                </div>
+                <div class="job-meta-item">
+                  <span class="job-meta-icon">💰</span>
+                  <span>${job.salary_range || '7th CPC Scale'}</span>
+                </div>
+                <div class="job-meta-item">
+                  <span class="job-meta-icon">🎓</span>
+                  <span>${job.qualification_desc || 'Graduate / As per rules'}</span>
+                </div>
+                <div class="job-meta-item">
+                  <span class="job-meta-icon">📅</span>
+                  <span>Deadline: <strong style="color: ${isClosing ? '#EF4444' : 'inherit'};">${job.last_date}</strong></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="job-card-actions">
+              <button type="button" class="btn-details-modal" data-id="${job.id}">
+                ℹ️ Details
+              </button>
+              <a href="${job.apply_url || job.official_website}" target="_blank" rel="noopener" class="btn-apply-direct">
+                Apply Direct ➔
+              </a>
+              <button type="button" class="btn-bookmark-job ${isBookmarked ? 'bookmarked' : ''}" data-id="${job.id}" title="${isBookmarked ? 'Remove Bookmark' : 'Save Job'}">
+                ${isBookmarked ? '★' : '☆'}
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      // Render All Filtered Jobs
+      function renderAllJobs() {
+        const filtered = allJobsData.filter(job => {
+          // 1. Search filter
+          if (searchTerm) {
+            const combined = `${job.title} ${job.organization} ${job.dept_code} ${job.description} ${job.qualification_desc}`.toLowerCase();
+            if (!combined.includes(searchTerm)) return false;
+          }
+          // 2. Category filter
+          if (activeCategory !== "all" && job.category.toLowerCase() !== activeCategory.toLowerCase()) {
+            return false;
+          }
+          // 3. Qualification filter
+          if (activeQualification !== "all" && !job.qualification.includes(activeQualification)) {
+            return false;
+          }
+          // 4. State filter
+          if (activeState !== "all" && job.state !== activeState && job.state !== "all_india") {
+            return false;
+          }
+          // 5. Status filter
+          if (activeStatus === "closing_soon" && !job.is_closing_soon) return false;
+          if (activeStatus === "featured" && !job.is_featured) return false;
+
+          return true;
+        });
+
+        resultsCountLabel.textContent = `Showing ${filtered.length} Active Government Recruitment Drives`;
+
+        if (filtered.length === 0) {
+          jobsGrid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 3.5rem 1rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg);">
+              <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔍</div>
+              <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-main);">No matching notifications found</h3>
+              <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">Try adjusting your keyword or reset filters to see all available vacancies.</p>
+            </div>
+          `;
+          return;
+        }
+
+        jobsGrid.innerHTML = filtered.map(createJobCardHTML).join("");
+        attachJobCardListeners(jobsGrid);
+      }
+
+      // Render Saved Jobs
+      function renderSavedJobs() {
+        const bookmarks = getBookmarks();
+        const savedJobs = allJobsData.filter(j => bookmarks.includes(j.id));
+
+        if (savedJobs.length === 0) {
+          savedGrid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 3.5rem 1rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg);">
+              <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔖</div>
+              <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-main);">No saved bookmarks yet</h3>
+              <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">Click the star icon on any notification card to save it here for quick access.</p>
+            </div>
+          `;
+          return;
+        }
+
+        savedGrid.innerHTML = savedJobs.map(createJobCardHTML).join("");
+        attachJobCardListeners(savedGrid);
+      }
+
+      // Aspirant Eligibility Matcher Logic
+      function runEligibilityMatcher() {
+        const age = parseInt(document.getElementById("matcher-age").value) || 24;
+        const qual = document.getElementById("matcher-qual").value;
+        const category = document.getElementById("matcher-category").value;
+
+        // Age relaxation addition
+        let ageBonus = 0;
+        if (category === "obc") ageBonus = 3;
+        else if (category === "sc_st") ageBonus = 5;
+        else if (category === "pwd") ageBonus = 10;
+
+        const effectiveAge = age - ageBonus;
+
+        const matched = allJobsData.filter(job => {
+          // Age criteria
+          if (job.min_age && effectiveAge < job.min_age) return false;
+          if (job.max_age && effectiveAge > job.max_age) return false;
+
+          // Qualification criteria
+          if (qual === "post_graduate") {
+            return true; // Eligible for graduate, 12th, 10th too
+          } else if (qual === "btech") {
+            return job.qualification.includes("btech") || job.qualification.includes("graduate") || job.qualification.includes("12th") || job.qualification.includes("10th");
+          } else if (qual === "graduate") {
+            return job.qualification.includes("graduate") || job.qualification.includes("12th") || job.qualification.includes("10th") || job.qualification.includes("diploma");
+          } else if (qual === "diploma") {
+            return job.qualification.includes("diploma") || job.qualification.includes("12th") || job.qualification.includes("10th") || job.qualification.includes("iti");
+          } else if (qual === "12th") {
+            return job.qualification.includes("12th") || job.qualification.includes("10th");
+          } else if (qual === "10th") {
+            return job.qualification.includes("10th") || job.qualification.includes("iti");
+          }
+          return true;
+        });
+
+        document.getElementById("matcher-results-title").textContent = `Found ${matched.length} Verified Jobs Matched to Your Profile`;
+        matcherGrid.innerHTML = matched.map(createJobCardHTML).join("");
+        attachJobCardListeners(matcherGrid);
+      }
+
+      document.getElementById("matcher-age").addEventListener("input", runEligibilityMatcher);
+      document.getElementById("matcher-qual").addEventListener("change", runEligibilityMatcher);
+      document.getElementById("matcher-category").addEventListener("change", runEligibilityMatcher);
+
+      // 7th Pay Commission Live Calculator
+      function updateSalaryCalculator() {
+        const payLevel = parseInt(document.getElementById("calc-pay-level").value) || 7;
+        const hraPercent = parseInt(document.getElementById("calc-city-class").value) || 20;
+        const daPercent = parseInt(document.getElementById("calc-da-rate").value) || 50;
+
+        const levelBasics = {
+          1: 18000, 2: 19900, 4: 25500, 6: 35400,
+          7: 44900, 8: 47600, 10: 56100, 12: 78800, 14: 144200
+        };
+
+        const basic = levelBasics[payLevel] || 44900;
+        const da = Math.round(basic * (daPercent / 100));
+        const hra = Math.round(basic * (hraPercent / 100));
+        
+        // Transport allowance estimate based on Level
+        let taBase = payLevel >= 9 ? 7200 : (payLevel >= 3 ? 3600 : 1350);
+        let ta = Math.round(taBase * (1 + daPercent / 100));
+
+        const gross = basic + da + hra + ta;
+        const nps = Math.round((basic + da) * 0.10);
+        const cghs = payLevel >= 10 ? 1000 : (payLevel >= 7 ? 650 : 350);
+        const deductions = nps + cghs;
+        const net = gross - deductions;
+
+        document.getElementById("ps-basic").textContent = `₹${basic.toLocaleString('en-IN')}`;
+        document.getElementById("ps-da").textContent = `+ ₹${da.toLocaleString('en-IN')}`;
+        document.getElementById("ps-hra").textContent = `+ ₹${hra.toLocaleString('en-IN')}`;
+        document.getElementById("ps-ta").textContent = `+ ₹${ta.toLocaleString('en-IN')}`;
+        document.getElementById("ps-gross").textContent = `₹${gross.toLocaleString('en-IN')}`;
+        document.getElementById("ps-nps").textContent = `- ₹${nps.toLocaleString('en-IN')}`;
+        document.getElementById("ps-net").textContent = `₹${net.toLocaleString('en-IN')}`;
+      }
+
+      document.getElementById("calc-pay-level").addEventListener("change", updateSalaryCalculator);
+      document.getElementById("calc-city-class").addEventListener("change", updateSalaryCalculator);
+      document.getElementById("calc-da-rate").addEventListener("input", updateSalaryCalculator);
+      updateSalaryCalculator();
+
+      // Open Modal Details
+      const modal = document.getElementById("job-detail-modal");
+      const btnCloseModal = document.getElementById("btn-close-modal");
+      btnCloseModal.addEventListener("click", () => modal.classList.remove("active"));
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) modal.classList.remove("active");
+      });
+
+      function openJobModal(jobId) {
+        const job = allJobsData.find(j => j.id === jobId);
+        if (!job) return;
+
+        document.getElementById("modal-dept-code").textContent = job.dept_code || "GOVT";
+        document.getElementById("modal-job-title").textContent = job.title;
+        document.getElementById("modal-org-name").textContent = job.organization;
+        document.getElementById("modal-vacancies").textContent = job.vacancies ? `${job.vacancies.toLocaleString('en-IN')} Posts` : "Multiple Posts";
+        document.getElementById("modal-salary").textContent = job.salary_range || job.pay_level;
+        document.getElementById("modal-age").textContent = `${job.min_age} - ${job.max_age} Years`;
+        document.getElementById("modal-deadline").textContent = job.last_date;
+        document.getElementById("modal-desc").textContent = job.description;
+        document.getElementById("modal-qualification").textContent = job.qualification_desc;
+        document.getElementById("modal-age-relax").textContent = `Age Relaxations: ${job.age_relaxation}`;
+        document.getElementById("modal-selection").textContent = job.selection_process;
+        document.getElementById("modal-exam-pattern").textContent = `Exam Pattern & Syllabus: ${job.exam_pattern}`;
+        document.getElementById("modal-fee-gen").textContent = job.fee_gen;
+        document.getElementById("modal-fee-res").textContent = job.fee_reserved;
+
+        document.getElementById("modal-pdf-link").href = job.pdf_url || job.official_website;
+        document.getElementById("modal-apply-link").href = job.apply_url || job.official_website;
+
+        modal.classList.add("active");
+      }
+
+      function attachJobCardListeners(container) {
+        container.querySelectorAll(".btn-details-modal").forEach(btn => {
+          btn.addEventListener("click", () => openJobModal(btn.dataset.id));
+        });
+
+        container.querySelectorAll(".btn-bookmark-job").forEach(btn => {
+          btn.addEventListener("click", () => toggleBookmark(btn.dataset.id));
+        });
+      }
+
+      // Filter Matrix Event Handlers
+      document.getElementById("job-search-input").addEventListener("input", (e) => {
+        searchTerm = e.target.value.toLowerCase().trim();
+        renderAllJobs();
+      });
+
+      document.querySelectorAll(".cat-pill").forEach(pill => {
+        pill.addEventListener("click", () => {
+          document.querySelectorAll(".cat-pill").forEach(p => p.classList.remove("active"));
+          pill.classList.add("active");
+          activeCategory = pill.dataset.cat;
+          renderAllJobs();
+        });
+      });
+
+      document.getElementById("select-qualification").addEventListener("change", (e) => {
+        activeQualification = e.target.value;
+        renderAllJobs();
+      });
+
+      document.getElementById("select-state").addEventListener("change", (e) => {
+        activeState = e.target.value;
+        renderAllJobs();
+      });
+
+      document.getElementById("select-status").addEventListener("change", (e) => {
+        activeStatus = e.target.value;
+        renderAllJobs();
+      });
+
+      // Refresh Feed Button
+      document.getElementById("btn-refresh-feed").addEventListener("click", async () => {
+        showToast("Refreshing live feeds...");
+        try {
+          await fetch("/api/jobs/refresh", { method: "POST" });
+          await loadJobsFromAPI();
+          showToast("Live feeds updated!");
+        } catch(e) {
+          showToast("Feeds refreshed.");
+        }
+      });
+
+      // Initial Load
+      loadJobsFromAPI();
+    });
+  </script>
+</body>
+</html>

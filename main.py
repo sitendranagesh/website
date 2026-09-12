@@ -35,6 +35,12 @@ from database.blog_operation import (
     add_reaction_to_blog,
     add_newsletter_subscriber,
 )
+from database.jobs_operation import (
+    get_all_jobs,
+    get_job_by_id,
+    get_jobs_summary_stats,
+    force_refresh_jobs_cache,
+)
 
 BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
@@ -165,6 +171,10 @@ def dynamic_root_dispatcher(request: Request):
     if subdomain in ("games", "game", "scrabble", "play"):
         return FileResponse(STATIC_DIR / "games.html")
 
+    # 9. Govt Jobs Subdomain (jobs.sitendra.store / govt.sitendra.store / sarkari.sitendra.store)
+    if subdomain in ("jobs", "job", "govt", "sarkari", "career", "careers"):
+        return FileResponse(STATIC_DIR / "jobs.html")
+
     # 9. About / Profile Subdomain (about.sitendra.store / me.sitendra.store)
     if subdomain in ("about", "me", "intro"):
         intro_file = INTRO_DIR / "index.html"
@@ -271,6 +281,15 @@ def projects_page():
     return FileResponse(STATIC_DIR / "projects.html")
 
 
+@app.get("/jobs")
+@app.get("/govt-jobs")
+@app.get("/sarkari")
+@app.get("/sarkari-jobs")
+@app.get("/careers")
+def govt_jobs_page():
+    return FileResponse(STATIC_DIR / "jobs.html")
+
+
 @app.get("/share/{share_id}")
 def view_shared_note_page(share_id: str):
     return FileResponse(STATIC_DIR / "share.html")
@@ -364,6 +383,7 @@ def sitemap_xml():
         {"loc": "https://sitendra.store/resume", "priority": "0.9", "changefreq": "monthly"},
         {"loc": "https://sitendra.store/games", "priority": "0.9", "changefreq": "weekly"},
         {"loc": "https://sitendra.store/word-search", "priority": "0.9", "changefreq": "weekly"},
+        {"loc": "https://sitendra.store/jobs", "priority": "0.95", "changefreq": "daily"},
         {"loc": "https://sitendra.store/tools", "priority": "0.85", "changefreq": "weekly"},
         {"loc": "https://sitendra.store/projects", "priority": "0.85", "changefreq": "monthly"},
     ]
@@ -637,6 +657,60 @@ async def api_post_chat_message(request: Request):
         return JSONResponse({"status": "success", "message": "Message saved successfully!"})
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
+
+
+# =========================================================
+# Government Jobs REST API Endpoints
+# =========================================================
+@app.get("/api/jobs")
+def api_get_govt_jobs(
+    search: Optional[str] = None,
+    category: Optional[str] = None,
+    qualification: Optional[str] = None,
+    state: Optional[str] = None,
+    status: Optional[str] = None,
+):
+    """Filterable list of Indian Government job notifications."""
+    jobs = get_all_jobs(
+        search=search,
+        category=category,
+        qualification=qualification,
+        state=state,
+        status=status,
+    )
+    summary = get_jobs_summary_stats()
+    return JSONResponse({
+        "status": "success",
+        "total": len(jobs),
+        "jobs": jobs,
+        "summary": summary,
+    })
+
+
+@app.get("/api/jobs/{job_id}")
+def api_get_job_detail(job_id: str):
+    """Get full details of a specific job notification."""
+    job = get_job_by_id(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Government job notification not found")
+    return JSONResponse({"status": "success", "job": job})
+
+
+@app.get("/api/jobs/stats/summary")
+def api_get_jobs_stats():
+    """Get overview statistics of active government jobs."""
+    return JSONResponse(get_jobs_summary_stats())
+
+
+@app.post("/api/jobs/refresh")
+def api_refresh_jobs_cache():
+    """Force re-scrape / refresh live feeds."""
+    jobs = force_refresh_jobs_cache()
+    return JSONResponse({
+        "status": "success",
+        "message": "Live government job feeds refreshed",
+        "count": len(jobs),
+    })
 
 
 # =========================================================

@@ -40,7 +40,7 @@
     },
     {
       keywords: ["resume", "cv", "curriculum", "career", "template", "job"],
-      response: "📄 Check out our **ATS Resume & CV Builder**! Choose between Modern Engineer, Minimalist, and Executive templates, customize colors, and download a vector-crisp PDF. <br><br>👉 <a href='/resume'>Open Resume Builder &rarr;</a>"
+      response: "📄 Check out our **Universal ATS Resume & CV Builder**! Choose from industry presets for Business, Healthcare, Marketing, Finance, Design, Academia & Tech, customize 4 templates, and download a vector-crisp PDF. <br><br>👉 <a href='/resume'>Open Resume Builder &rarr;</a>"
     },
     {
       keywords: ["contact", "email", "hire", "message", "touch", "reach"],
