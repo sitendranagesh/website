@@ -1,0 +1,1821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D CAD &amp; SolidWorks Lightweight Modeler Studio | Sitendra</title>
+  <meta name="description" content="Free in-browser lightweight 3D CAD modeling and SolidWorks component generator. Create parametric gears, fasteners, shafts, structural beams, and custom extrusions. Real-time WebGL 3D inspection, physical properties calculator, and instant STL, OBJ, GLTF &amp; CAD JSON export.">
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/blog/blog.css">
+  <link rel="stylesheet" href="/cmd_k.css">
+  <link rel="stylesheet" href="/chat.css">
+
+  <!-- Theme Script -->
+  <script src="/theme.js"></script>
+
+  <!-- Three.js 3D WebGL Library & Exporters -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/exporters/STLExporter.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/exporters/OBJExporter.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/exporters/GLTFExporter.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+
+  <style>
+    /* CAD Studio Full-Screen / Split Workspace */
+    .cad-workspace {
+      display: grid;
+      grid-template-columns: 440px 1fr;
+      gap: 1.5rem;
+      align-items: stretch;
+      min-height: calc(100vh - 160px);
+      margin-bottom: 2rem;
+    }
+
+    /* Left Control Sidebar */
+    .cad-sidebar {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      max-height: calc(100vh - 140px);
+      overflow-y: auto;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .cad-card {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+    }
+
+    .cad-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.85rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .cad-generator-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      margin-bottom: 1rem;
+    }
+    .cad-tab-btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.45rem 0.25rem;
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .cad-tab-btn:hover {
+      background: var(--bg-surface-hover);
+      color: var(--text-main);
+      border-color: var(--border-focus);
+    }
+    .cad-tab-btn.active {
+      background: var(--primary);
+      color: #FFFFFF;
+      border-color: var(--primary);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .form-row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .param-group {
+      margin-bottom: 0.65rem;
+    }
+    .param-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 0.25rem;
+    }
+    .param-unit {
+      color: var(--text-subtle);
+      font-weight: 400;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+    }
+
+    /* Right 3D Viewport Area */
+    .cad-viewport-container {
+      background: #0D1322;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 600px;
+      box-shadow: var(--shadow-md);
+    }
+
+    #cad-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab;
+    }
+    #cad-canvas:active {
+      cursor: grabbing;
+    }
+
+    /* Top Viewport Floating Toolbar */
+    .viewport-overlay-top {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .viewport-btn-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(19, 29, 49, 0.88);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 4px 6px;
+      pointer-events: auto;
+    }
+
+    .vp-tool-btn {
+      background: transparent;
+      border: none;
+      color: #E2E8F0;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 5px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+    .vp-tool-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #38BDF8;
+    }
+    .vp-tool-btn.active {
+      background: #0284C7;
+      color: #FFFFFF;
+    }
+
+    /* Bottom Info & Stats Bar */
+    .viewport-overlay-bottom {
+      position: absolute;
+      bottom: 14px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 8px;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .cad-stats-card {
+      background: rgba(19, 29, 49, 0.92);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #E2E8F0;
+      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      pointer-events: auto;
+      max-width: 320px;
+    }
+    .cad-stats-card strong {
+      color: #38BDF8;
+    }
+
+    /* View Orientation Cube Buttons */
+    .view-cube-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+      background: rgba(19, 29, 49, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      padding: 4px;
+      pointer-events: auto;
+    }
+    .view-cube-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid transparent;
+      color: #CBD5E1;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 6px;
+      border-radius: 3px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+    .view-cube-btn:hover {
+      background: #0284C7;
+      color: #fff;
+    }
+
+    /* Cross-section Slicer Slider */
+    .section-slider-row {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: rgba(19, 29, 49, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 6px 12px;
+      pointer-events: auto;
+    }
+    .section-slider-row.active {
+      display: flex;
+    }
+
+    /* Hidden File Input for import */
+    #cad-file-input {
+      display: none;
+    }
+
+    /* Drag and Drop dropzone highlight */
+    .cad-viewport-container.drag-active {
+      border: 2px dashed #38BDF8;
+      background: #131D31;
+    }
+
+    /* Material Selector Grid */
+    .material-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .material-btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      transition: all 0.15s ease;
+    }
+    .material-btn:hover {
+      border-color: var(--primary);
+      color: var(--text-main);
+    }
+    .material-btn.active {
+      border-color: var(--primary);
+      background: var(--bg-surface-hover);
+      color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-glow);
+    }
+    .material-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+    }
+
+    /* Responsive */
+    @media (max-width: 1080px) {
+      .cad-workspace {
+        grid-template-columns: 1fr;
+      }
+      .cad-sidebar {
+        max-height: none;
+      }
+      .cad-viewport-container {
+        min-height: 480px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header class="blog-header">
+    <div class="brand-wrapper">
+      <a href="/" id="brand-link" style="display: flex; align-items: center; gap: 0.85rem; color: inherit;">
+        <div class="brand-logo" style="background: linear-gradient(135deg, #0284C7, #6366F1);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+            <line x1="12" y1="22.08" x2="12" y2="12"/>
+          </svg>
+        </div>
+        <div class="brand-title">
+          Sitendra <span class="brand-badge" style="background: rgba(2, 132, 199, 0.15); color: #0284C7; border-color: rgba(2, 132, 199, 0.3);">3D CAD Studio</span>
+        </div>
+      </a>
+    </div>
+
+    <nav class="nav-links">
+      <a href="/calc" class="nav-item">Mechanical Calc</a>
+      <a href="/resume" class="nav-item">CV Studio</a>
+      <a href="/tools" class="nav-item">All Tools</a>
+      <a href="/projects" class="nav-item">Projects</a>
+      <a href="/about" class="nav-item">About</a>
+      <button type="button" class="theme-toggle-btn" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">☀️</button>
+      <button type="button" class="btn btn-secondary btn-sm" id="cmdk-btn" title="Quick Search (Cmd+K)">
+        <span style="font-family: var(--font-mono); font-size: 0.75rem;">⌘K</span>
+      </button>
+    </nav>
+  </header>
+
+  <main class="blog-container" style="max-width: 1560px; padding: 1.25rem 1.25rem 3rem;">
+    <!-- Title & Controls Header -->
+    <div class="hero-section" style="padding: 0.5rem 0 1.25rem;">
+      <div class="hero-eyebrow">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+        </svg>
+        Lightweight Parametric 3D CAD &amp; SolidWorks Studio
+      </div>
+      <h1 class="hero-title" style="font-size: 2.1rem;">
+        Mechanical 3D <span class="gradient-text">CAD Modeler &amp; Exporter</span>
+      </h1>
+      <p class="hero-desc">
+        Design lightweight parametric mechanical parts online: Involute Gears, ISO Fasteners, Flanged Shafts, Structural Beams &amp; 2D Extrusions. Export to <strong>STL, OBJ, GLTF &amp; CAD JSON</strong> for direct reuse in SolidWorks and 3D printing.
+      </p>
+    </div>
+
+    <!-- Main Split CAD Studio Workspace -->
+    <div class="cad-workspace">
+
+      <!-- LEFT SIDEBAR: Parametric Feature Tree & Generators -->
+      <div class="cad-sidebar">
+
+        <!-- Generator Selector Tabs -->
+        <div>
+          <label class="form-label" style="margin-bottom: 0.4rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Component Generator:</label>
+          <div class="cad-generator-tabs">
+            <button type="button" class="cad-tab-btn active" data-gen="gear">⚙️ Spur Gear</button>
+            <button type="button" class="cad-tab-btn" data-gen="fastener">🔩 Hex Bolt/Nut</button>
+            <button type="button" class="cad-tab-btn" data-gen="shaft">📐 Flanged Shaft</button>
+            <button type="button" class="cad-tab-btn" data-gen="beam">🏗️ Structural Beam</button>
+            <button type="button" class="cad-tab-btn" data-gen="bracket">📦 Bracket / Box</button>
+            <button type="button" class="cad-tab-btn" data-gen="sketch">✏️ Custom Sketch</button>
+          </div>
+        </div>
+
+        <!-- 1. SPUR GEAR GENERATOR -->
+        <div id="gen-panel-gear" class="cad-card gen-panel">
+          <div class="cad-card-header">
+            <span>⚙️ Involute Spur Gear Parameters</span>
+            <span style="font-size: 0.72rem; color: var(--primary); font-weight: 600;">ISO 53 Standard</span>
+          </div>
+
+          <div class="form-row">
+            <div class="param-group">
+              <div class="param-label">Teeth Count (z) <span class="param-unit" id="val-gear-z">24</span></div>
+              <input type="range" id="p-gear-z" min="6" max="120" step="1" value="24" class="form-control" style="padding: 0;">
+            </div>
+            <div class="param-group">
+              <div class="param-label">Module (m) <span class="param-unit">mm</span></div>
+              <input type="number" id="p-gear-m" min="0.5" max="25" step="0.5" value="3.0" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="param-group">
+              <div class="param-label">Face Width (b) <span class="param-unit">mm</span></div>
+              <input type="number" id="p-gear-b" min="2" max="200" step="1" value="20" class="form-control">
+            </div>
+            <div class="param-group">
+              <div class="param-label">Bore Diameter (d) <span class="param-unit">mm</span></div>
+              <input type="number" id="p-gear-bore" min="0" max="150" step="1" value="18" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="param-group">
+              <div class="param-label">Pressure Angle <span class="param-unit">deg</span></div>
+              <select id="p-gear-alpha" class="form-control">
+                <option value="20" selected>20° (Standard)</option>
+                <option value="14.5">14.5° (Classic)</option>
+                <option value="25">25° (Heavy Duty)</option>
+              </select>
+            </div>
+            <div class="param-group">
+              <div class="param-label">Keyway Slot</div>
+              <select id="p-gear-keyway" class="form-control">
+                <option value="none">None</option>
+                <option value="standard" selected>DIN 6885 (6x6 mm)</option>
+                <option value="wide">Wide (8x7 mm)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. ISO FASTENER GENERATOR -->
+        <div id="gen-panel-fastener" class="cad-card gen-panel" style="display: none;">
+          <div class="cad-card-header">
+            <span>🔩 ISO Metric Bolt &amp; Fastener</span>
+            <span style="font-size: 0.72rem; color: var(--primary); font-weight: 600;">DIN 933 / 912</span>
+          </div>
+
+          <div class="form-row">
+            <div class="param-group">
+              <div class="param-label">Thread Size</div>
+              <select id="p-bolt-size" class="form-control">
+                <option value="3">M3 (Pitch 0.5)</option>
+                <option value="4">M4 (Pitch 0.7)</option>
+                <option value="5">M5 (Pitch 0.8)</option>
+                <option value="6">M6 (Pitch 1.0)</option>
+                <option value="8">M8 (Pitch 1.25)</option>
+                <option value="10" selected>M10 (Pitch 1.5)</option>
+                <option value="12">M12 (Pitch 1.75)</option>
+                <option value="16">M16 (Pitch 2.0)</option>
+                <option value="20">M20 (Pitch 2.5)</option>
+                <option value="24">M24 (Pitch 3.0)</option>
+              </select>
+            </div>
+            <div class="param-group">
+              <div class="param-label">Head Style</div>
+              <select id="p-bolt-head" class="form-control">
+                <option value="hex" selected>Hexagon Head (DIN 933)</option>
+                <option value="socket">Socket Head Cap (DIN 912)</option>
+                <option value="countersunk">Countersunk Flat (DIN 7991)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="param-group">
+              <div class="param-label">Shaft Length (L) <span class="param-unit">mm</span></div>
+              <input type="number" id="p-bolt-len" min="10" max="300" step="5" value="50" class="form-control">
+            </div>
+            <div class="param-group">
+              <div class="param-label">Thread Length (b) <span class="param-unit">mm</span></div>
+              <input type="number" id="p-bolt-thread-len" min="5" max="300" step="5" value="35" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="param-group">
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; cursor: pointer;">
+                <input type="checkbox" id="p-bolt-nut" checked> Include Hex Nut
+              </label>
+            </div>
+            <div class="param-group">
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; cursor: pointer;">
+                <input type="checkbox" id="p-bolt-washer" checked> Include Flat Washer
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. FLANGED SHAFT & BUSHING GENERATOR -->
+        <div id="gen-panel-shaft" class="cad-card gen-panel" style="display: none;">
+          <div class="cad-card-header">
+            <span>📐 Flanged Shaft &amp; Bearing Mount</span>
+          </div>
+
+          <div class="form-row">
+            <div class="param-group">
+              <div class="param-label">Shaft Outer Dia (D) <span class="param-unit">mm</span></div>
+              <input type="number" id="p-shaft-od" min="5" max="200" step="1" value="30" class="form-control">
+            </div>
+            <div class="param-group">
+              <div class="param-label">Inner Bore (d) <span class="param-unit">mm</span></div>
+              <input type="number" id="p-shaft-id" min="0" max="180" step="1" value="12" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="param-group">
+              <div class="param-label">Shaft Length (L) <span class="param-unit">mm</span></div>
+              <input type="number" id="p-shaft-len" min="10" max="500" step="5" value="80" class="form-control">
+            </div>
+            <div class="param-group">
+              <div class="param-label">Flange Outer Dia (Df) <span class="param-unit">mm</span></div>
+              <input type="number" id="p-shaft-fod" min="20" max="300" step="5" value="70" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="param-group">
+              <div class="param-label">Flange Thickness (tf) <span class="param-unit">mm</span></div>
+              <input type="number" id="p-shaft-ft" min="2" max="50" step="1" value="12" class="form-control">
+            </div>
+            <div class="param-group">
+              <div class="param-label">Bolt Holes on Flange</div>
+              <select id="p-shaft-holes" class="form-control">
+                <option value="0">0 (Solid Flange)</option>
+                <option value="4" selected>4 Holes (PCD)</option>
+                <option value="6">6 Holes (PCD)</option>
+                <option value="8">8 Holes (PCD)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. STRUCTURAL BEAM GENERATOR -->
+        <div id="gen-panel-beam" class="cad-card gen-panel" style="display: none;">
+          <div class="cad-card-header">
+            <span>🏗️ Structural Beam Profile</span>
+            <span style="font-size: 0.72rem; color: var(--primary); font-weight: 600;">AISC / EN 10025</span>
+          </div>
+
+          <div class="param-group">
+            <div class="param-label">Cross-Section Type</div>
+            <select id="p-beam-type" class="form-control">
+              <option value="ibeam" selected>I-Beam / Universal Beam (UB)</option>
+              <option value="channel">C-Channel / PFC</option>
+              <option value="tube">Square / Rectangular Hollow Tube (SHS/RHS)</option>
+              <option value="pipe">Circular Hollow Pipe (CHS)</option>
+              <option value="tsection">T-Section</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="param-group">
+              <div class="param-label">Total Height (H) <span class="param-unit">mm</span></div>
+              <input type="number" id="p-beam-h" min="20" max="600" step="5" value="100" class="form-control">
+            </div>
+            <div class="param-group">
+              <div class="param-label">Flange Width (B) <span class="param-unit">mm</span></div>
+              <input type="number" id="p-beam-b" min="10" max="400" step="5" value="60" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="param-group">
+              <div class="param-label">Web Thickness (tw) <span class="param-unit">mm</span></div>
+              <input type="number" id="p-beam-tw" min="2" max="50" step="1" value="6" class="form-control">
+            </div>
+            <div class="param-group">
+              <div class="param-label">Flange Thickness (tf) <span class="param-unit">mm</span></div>
+              <input type="number" id="p-beam-tf" min="2" max="50" step="1" value="8" class="form-control">
+            </div>
+          </div>
+
+          <div class="param-group">
+            <div class="param-label">Beam Extrusion Length (L) <span class="param-unit">mm</span></div>
+            <input type="number" id="p-beam-len" min="50" max="3000" step="50" value="250" class="form-control">
+          </div>
+        </div>
+
+        <!-- 5. SHEET METAL BRACKET GENERATOR -->
+        <div id="gen-panel-bracket" class="cad-card gen-panel" style="display: none;">
+          <div class="cad-card-header">
+            <span>📦 Sheet Metal Bracket / Enclosure</span>
+          </div>
+
+          <div class="param-group">
+            <div class="param-label">Bracket Type</div>
+            <select id="p-bracket-type" class="form-control">
+              <option value="lbracket" selected>90° L-Bracket with Holes</option>
+              <option value="uchannel">U-Channel Bracket</option>
+              <option value="enclosure">Sheet Metal Enclosure Box</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="param-group">
+              <div class="param-label">Length (L) <span class="param-unit">mm</span></div>
+              <input type="number" id="p-bracket-l" min="20" max="400" step="5" value="80" class="form-control">
+            </div>
+            <div class="param-group">
+              <div class="param-label">Width / Height <span class="param-unit">mm</span></div>
+              <input type="number" id="p-bracket-w" min="20" max="400" step="5" value="60" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="param-group">
+              <div class="param-label">Sheet Thickness (t) <span class="param-unit">mm</span></div>
+              <input type="number" id="p-bracket-t" min="1" max="15" step="0.5" value="3" class="form-control">
+            </div>
+            <div class="param-group">
+              <div class="param-label">Mounting Holes (dia) <span class="param-unit">mm</span></div>
+              <input type="number" id="p-bracket-hole" min="0" max="30" step="1" value="6" class="form-control">
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. 2D SKETCH EXTRUDE / REVOLVE GENERATOR -->
+        <div id="gen-panel-sketch" class="cad-card gen-panel" style="display: none;">
+          <div class="cad-card-header">
+            <span>✏️ 2D Sketch Extrude / Revolve</span>
+          </div>
+
+          <div class="form-row">
+            <div class="param-group">
+              <div class="param-label">Base Shape</div>
+              <select id="p-sketch-shape" class="form-control">
+                <option value="circle">Circle / Cylinder</option>
+                <option value="rect" selected>Rounded Rectangle</option>
+                <option value="hexagon">Hexagon</option>
+                <option value="star">Star Wheel</option>
+              </select>
+            </div>
+            <div class="param-group">
+              <div class="param-label">Operation</div>
+              <select id="p-sketch-op" class="form-control">
+                <option value="extrude" selected>Extrude Linear</option>
+                <option value="revolve">Revolve 360° (Lathe)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="param-group">
+              <div class="param-label">Radius / Width <span class="param-unit">mm</span></div>
+              <input type="number" id="p-sketch-r" min="5" max="300" step="5" value="40" class="form-control">
+            </div>
+            <div class="param-group">
+              <div class="param-label">Extrude Depth (Z) <span class="param-unit">mm</span></div>
+              <input type="number" id="p-sketch-depth" min="2" max="500" step="5" value="30" class="form-control">
+            </div>
+          </div>
+
+          <div class="param-group">
+            <div class="param-label">Fillet / Bevel Radius <span class="param-unit">mm</span></div>
+            <input type="number" id="p-sketch-bevel" min="0" max="20" step="0.5" value="2" class="form-control">
+          </div>
+        </div>
+
+        <!-- Render Material & Appearance -->
+        <div class="cad-card">
+          <div class="cad-card-header">
+            <span>🎨 Surface Finish &amp; Material</span>
+            <span style="font-size: 0.72rem; color: var(--text-subtle);">PBR Shaders</span>
+          </div>
+          <div class="material-grid">
+            <button type="button" class="material-btn active" data-mat="aluminum">
+              <div class="material-dot" style="background: #D4D4D8;"></div>
+              <span>Aluminum</span>
+            </button>
+            <button type="button" class="material-btn" data-mat="steel">
+              <div class="material-dot" style="background: #71717A;"></div>
+              <span>Steel</span>
+            </button>
+            <button type="button" class="material-btn" data-mat="brass">
+              <div class="material-dot" style="background: #EAB308;"></div>
+              <span>Brass</span>
+            </button>
+            <button type="button" class="material-btn" data-mat="carbon">
+              <div class="material-dot" style="background: #27272A;"></div>
+              <span>Carbon</span>
+            </button>
+            <button type="button" class="material-btn" data-mat="blue_polymer">
+              <div class="material-dot" style="background: #0284C7;"></div>
+              <span>Blue PLA</span>
+            </button>
+            <button type="button" class="material-btn" data-mat="orange_abs">
+              <div class="material-dot" style="background: #F97316;"></div>
+              <span>Orange ABS</span>
+            </button>
+            <button type="button" class="material-btn" data-mat="emerald">
+              <div class="material-dot" style="background: #10B981;"></div>
+              <span>Emerald</span>
+            </button>
+            <button type="button" class="material-btn" data-mat="ghost">
+              <div class="material-dot" style="background: rgba(255,255,255,0.3); border: 1px dashed #fff;"></div>
+              <span>X-Ray</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Action / Export Buttons -->
+        <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
+            <button type="button" class="btn btn-primary" id="btn-export-stl" style="font-weight: 700; font-size: 0.85rem;" title="SolidWorks / 3D Print Compatible">
+              📥 Export STL
+            </button>
+            <button type="button" class="btn btn-secondary" id="btn-export-obj" style="font-weight: 700; font-size: 0.85rem;" title="Universal 3D Mesh">
+              📥 Export OBJ
+            </button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-export-gltf" title="Modern Compact Web 3D">
+              📦 Export GLTF
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-export-cad-json" title="Save parametric state for editing later">
+              💾 Save CAD Project
+            </button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-import-cad" title="Import STL, OBJ, or CAD JSON">
+              📂 Load Model / JSON
+            </button>
+            <input type="file" id="cad-file-input" accept=".stl,.obj,.json">
+            <button type="button" class="btn btn-danger btn-sm" id="btn-reset-cad">
+              🗑️ Reset Model
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT SIDE: Three.js Interactive 3D Viewport -->
+      <div class="cad-viewport-container" id="viewport-dropzone">
+        
+        <!-- Top Toolbar Overlay -->
+        <div class="viewport-overlay-top">
+          <div class="viewport-btn-group">
+            <button type="button" class="vp-tool-btn" id="btn-toggle-wireframe" title="Toggle Triangular Mesh Wireframe">
+              📐 Wireframe
+            </button>
+            <button type="button" class="vp-tool-btn active" id="btn-toggle-grid" title="Toggle Ground Coordinate Grid">
+              🌐 Grid
+            </button>
+            <button type="button" class="vp-tool-btn active" id="btn-toggle-axes" title="Toggle XYZ Origin Triad">
+              🎯 XYZ Axes
+            </button>
+            <button type="button" class="vp-tool-btn" id="btn-toggle-section" title="Toggle Slicing Cross-Section Plane">
+              ✂️ Section View
+            </button>
+          </div>
+
+          <!-- Quick Standard View Orientations -->
+          <div class="view-cube-buttons">
+            <button type="button" class="view-cube-btn" data-view="iso">ISO</button>
+            <button type="button" class="view-cube-btn" data-view="top">TOP</button>
+            <button type="button" class="view-cube-btn" data-view="front">FRONT</button>
+            <button type="button" class="view-cube-btn" data-view="right">RIGHT</button>
+            <button type="button" class="view-cube-btn" data-view="left">LEFT</button>
+            <button type="button" class="view-cube-btn" data-view="bottom">BTM</button>
+          </div>
+        </div>
+
+        <!-- Section Slider (Appears when Section View is active) -->
+        <div class="section-slider-row" id="section-control-bar" style="position: absolute; top: 62px; left: 14px; z-index: 10;">
+          <span style="font-size: 0.75rem; color: #38BDF8; font-weight: 700;">Section Cut:</span>
+          <select id="section-axis" style="background: #0D1322; color: #fff; border: 1px solid #334155; font-size: 0.75rem; padding: 2px 6px; border-radius: 4px;">
+            <option value="x">X Plane</option>
+            <option value="y">Y Plane</option>
+            <option value="z" selected>Z Plane</option>
+          </select>
+          <input type="range" id="section-slider" min="-100" max="100" value="0" style="width: 140px;">
+        </div>
+
+        <!-- 3D Canvas Canvas Element -->
+        <canvas id="cad-canvas"></canvas>
+
+        <!-- Bottom Stats & Physical Properties Overlay -->
+        <div class="viewport-overlay-bottom">
+          <div class="cad-stats-card" id="cad-stats-display">
+            <div><strong>Bounding Box:</strong> <span id="stat-dims">0 × 0 × 0 mm</span></div>
+            <div><strong>Volume:</strong> <span id="stat-volume">0.00 cm³</span> &bull; <strong>Area:</strong> <span id="stat-area">0.00 cm²</span></div>
+            <div><strong>Est. Mass (<span id="stat-mat-name">Aluminum</span>):</strong> <span id="stat-mass">0.00 g</span></div>
+          </div>
+
+          <div style="pointer-events: auto; display: flex; gap: 6px;">
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-fit-view" style="background: rgba(19, 29, 49, 0.88); color: #fff; border: 1px solid rgba(255,255,255,0.15);" title="Fit to Screen (F)">
+              🔍 Fit Screen [F]
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-screenshot" style="background: rgba(19, 29, 49, 0.88); color: #fff; border: 1px solid rgba(255,255,255,0.15);" title="High-Res CAD Screenshot">
+              📸 Snapshot
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="blog-footer">
+    <p>&copy; 2026 Sitendra Kumar Nagesh &bull; <a href="/calc">Mechanical Calc</a> &bull; <a href="/resume">CV Studio</a> &bull; <a href="/tools">All Tools</a> &bull; <a href="/projects">Projects</a> &bull; <a href="/about">About</a> &bull; <a href="/">Notes</a></p>
+  </footer>
+
+  <script src="/cmd_k.js"></script>
+  <script src="/chat.js"></script>
+
+  <!-- SolidWorks Lightweight CAD 3D Engine -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // 1. WebGL Scene & Engine Setup
+      const canvas = document.getElementById("cad-canvas");
+      const container = document.querySelector(".cad-viewport-container");
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0F172A); // Dark CAD Slate
+
+      const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 5000);
+      camera.position.set(160, 140, 180);
+
+      const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, preserveDrawingBuffer: true, alpha: false });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.localClippingEnabled = true;
+
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.08;
+      controls.maxDistance = 2500;
+      controls.minDistance = 2;
+
+      // 2. CAD Studio Lighting
+      const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.65);
+      scene.add(ambientLight);
+
+      const dirLight1 = new THREE.DirectionalLight(0xFFFFFF, 0.85);
+      dirLight1.position.set(150, 250, 150);
+      dirLight1.castShadow = true;
+      dirLight1.shadow.mapSize.width = 1024;
+      dirLight1.shadow.mapSize.height = 1024;
+      scene.add(dirLight1);
+
+      const dirLight2 = new THREE.DirectionalLight(0x38BDF8, 0.35);
+      dirLight2.position.set(-150, -100, -150);
+      scene.add(dirLight2);
+
+      // 3. Grid & Coordinate Axes
+      const gridHelper = new THREE.GridHelper(400, 40, 0x0284C7, 0x334155);
+      gridHelper.position.y = -0.1;
+      scene.add(gridHelper);
+
+      const axesHelper = new THREE.AxesHelper(60);
+      scene.add(axesHelper);
+
+      // 4. Section Clipping Plane
+      const clipPlane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 0);
+      let isSectionActive = false;
+
+      // 5. Materials Repository
+      const MATERIALS = {
+        aluminum: new THREE.MeshStandardMaterial({
+          color: 0xD4D4D8, metalness: 0.9, roughness: 0.25, name: "Aluminum", density: 2.70
+        }),
+        steel: new THREE.MeshStandardMaterial({
+          color: 0x71717A, metalness: 0.95, roughness: 0.18, name: "Stainless Steel", density: 7.85
+        }),
+        brass: new THREE.MeshStandardMaterial({
+          color: 0xEAB308, metalness: 0.85, roughness: 0.22, name: "Polished Brass", density: 8.50
+        }),
+        carbon: new THREE.MeshStandardMaterial({
+          color: 0x27272A, metalness: 0.2, roughness: 0.5, name: "Carbon Fiber", density: 1.60
+        }),
+        blue_polymer: new THREE.MeshStandardMaterial({
+          color: 0x0284C7, metalness: 0.1, roughness: 0.35, name: "Blue PLA", density: 1.25
+        }),
+        orange_abs: new THREE.MeshStandardMaterial({
+          color: 0xF97316, metalness: 0.1, roughness: 0.4, name: "Orange ABS", density: 1.04
+        }),
+        emerald: new THREE.MeshStandardMaterial({
+          color: 0x10B981, metalness: 0.3, roughness: 0.3, name: "Emerald Polymer", density: 1.20
+        }),
+        ghost: new THREE.MeshPhysicalMaterial({
+          color: 0xFFFFFF, transparent: true, opacity: 0.4, roughness: 0.1, transmission: 0.9, thickness: 1.5, name: "X-Ray Glass", density: 2.50
+        })
+      };
+
+      let currentMaterialKey = "aluminum";
+      let activeMeshGroup = new THREE.Group();
+      scene.add(activeMeshGroup);
+
+      let wireframeOverlay = null;
+      let isWireframeActive = false;
+
+      // 6. Parametric Model Generators
+      let currentGenerator = "gear";
+
+      // Tab Switching
+      document.querySelectorAll(".cad-tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".cad-tab-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          currentGenerator = btn.dataset.gen;
+
+          document.querySelectorAll(".gen-panel").forEach(p => p.style.display = "none");
+          const targetPanel = document.getElementById(`gen-panel-${currentGenerator}`);
+          if (targetPanel) targetPanel.style.display = "block";
+
+          rebuildActiveModel();
+        });
+      });
+
+      // Material Selector
+      document.querySelectorAll(".material-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".material-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          currentMaterialKey = btn.dataset.mat;
+          applyMaterialToModel();
+        });
+      });
+
+      function applyMaterialToModel() {
+        const mat = MATERIALS[currentMaterialKey] || MATERIALS.aluminum;
+        if (isSectionActive) {
+          mat.clippingPlanes = [clipPlane];
+          mat.clipShadows = true;
+        } else {
+          mat.clippingPlanes = [];
+        }
+
+        activeMeshGroup.traverse(child => {
+          if (child.isMesh && child !== wireframeOverlay) {
+            child.material = mat;
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+
+        updatePhysicalStats();
+      }
+
+      // --- GENERATOR 1: Involute Spur Gear ---
+      function generateSpurGearMesh() {
+        const z = parseInt(document.getElementById("p-gear-z").value) || 24;
+        const m = parseFloat(document.getElementById("p-gear-m").value) || 3.0;
+        const b = parseFloat(document.getElementById("p-gear-b").value) || 20.0;
+        const bore = parseFloat(document.getElementById("p-gear-bore").value) || 18.0;
+        const alphaDeg = parseFloat(document.getElementById("p-gear-alpha").value) || 20.0;
+        const keyway = document.getElementById("p-gear-keyway").value;
+
+        document.getElementById("val-gear-z").textContent = z;
+
+        const alpha = (alphaDeg * Math.PI) / 180;
+        const pitchR = (m * z) / 2;
+        const addendumR = pitchR + m;
+        const dedendumR = pitchR - 1.25 * m;
+        const baseR = pitchR * Math.cos(alpha);
+
+        const shape = new THREE.Shape();
+        const numTeeth = z;
+        const angleStep = (2 * Math.PI) / numTeeth;
+
+        // Generate approximate involute tooth profiles
+        for (let i = 0; i < numTeeth; i++) {
+          const theta = i * angleStep;
+          const tRoot1 = theta - angleStep * 0.25;
+          const tTip1 = theta - angleStep * 0.12;
+          const tTip2 = theta + angleStep * 0.12;
+          const tRoot2 = theta + angleStep * 0.25;
+
+          const p1 = new THREE.Vector2(dedendumR * Math.cos(tRoot1), dedendumR * Math.sin(tRoot1));
+          const p2 = new THREE.Vector2(addendumR * Math.cos(tTip1), addendumR * Math.sin(tTip1));
+          const p3 = new THREE.Vector2(addendumR * Math.cos(tTip2), addendumR * Math.sin(tTip2));
+          const p4 = new THREE.Vector2(dedendumR * Math.cos(tRoot2), dedendumR * Math.sin(tRoot2));
+
+          if (i === 0) shape.moveTo(p1.x, p1.y);
+          else shape.lineTo(p1.x, p1.y);
+
+          shape.lineTo(p2.x, p2.y);
+          shape.lineTo(p3.x, p3.y);
+          shape.lineTo(p4.x, p4.y);
+        }
+        shape.closePath();
+
+        // Center Bore Hole
+        if (bore > 0) {
+          const boreHole = new THREE.Path();
+          const boreR = bore / 2;
+
+          if (keyway !== "none") {
+            const kwWidth = keyway === "wide" ? 8 : 6;
+            const kwDepth = keyway === "wide" ? 3.5 : 2.8;
+            const kwHalf = kwWidth / 2;
+
+            boreHole.moveTo(boreR, 0);
+            boreHole.absarc(0, 0, boreR, 0, Math.PI / 2 - 0.2, false);
+            // keyway notch
+            boreHole.lineTo(kwHalf, boreR + kwDepth);
+            boreHole.lineTo(-kwHalf, boreR + kwDepth);
+            boreHole.lineTo(-kwHalf, boreR * Math.cos(0.2));
+            boreHole.absarc(0, 0, boreR, Math.PI / 2 + 0.2, Math.PI * 2, false);
+          } else {
+            boreHole.absarc(0, 0, boreR, 0, Math.PI * 2, true);
+          }
+          shape.holes.push(boreHole);
+        }
+
+        const extrudeSettings = {
+          depth: b,
+          bevelEnabled: true,
+          bevelSegments: 2,
+          steps: 1,
+          bevelSize: 0.6,
+          bevelThickness: 0.6
+        };
+
+        const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        geom.center();
+        return geom;
+      }
+
+      // --- GENERATOR 2: ISO Hex Bolt, Nut & Washer ---
+      function generateFastenerMesh() {
+        const d = parseFloat(document.getElementById("p-bolt-size").value) || 10.0;
+        const headType = document.getElementById("p-bolt-head").value;
+        const L = parseFloat(document.getElementById("p-bolt-len").value) || 50.0;
+        const b = Math.min(L, parseFloat(document.getElementById("p-bolt-thread-len").value) || 35.0);
+        const includeNut = document.getElementById("p-bolt-nut").checked;
+        const includeWasher = document.getElementById("p-bolt-washer").checked;
+
+        const group = new THREE.Group();
+        const mat = MATERIALS[currentMaterialKey] || MATERIALS.steel;
+
+        // Head Dimensions (ISO standard approx: s = 1.6*d, k = 0.65*d)
+        const s = d * 1.6;
+        const k = d * 0.65;
+        const radiusHex = s / Math.sqrt(3);
+
+        let headGeom;
+        if (headType === "hex") {
+          headGeom = new THREE.CylinderGeometry(radiusHex, radiusHex, k, 6);
+        } else if (headType === "socket") {
+          headGeom = new THREE.CylinderGeometry(d * 0.75, d * 0.75, d * 0.9, 32);
+        } else {
+          headGeom = new THREE.ConeGeometry(d * 1.1, k, 32);
+          headGeom.rotateX(Math.PI);
+        }
+
+        const headMesh = new THREE.Mesh(headGeom, mat);
+        headMesh.position.y = L / 2 + k / 2;
+        group.add(headMesh);
+
+        // Shaft (Smooth Shank)
+        const unthreadedLen = Math.max(0, L - b);
+        if (unthreadedLen > 0) {
+          const shankGeom = new THREE.CylinderGeometry(d / 2, d / 2, unthreadedLen, 32);
+          const shankMesh = new THREE.Mesh(shankGeom, mat);
+          shankMesh.position.y = L / 2 - unthreadedLen / 2;
+          group.add(shankMesh);
+        }
+
+        // Threaded Portion (with minor diameter cosmetic profile)
+        if (b > 0) {
+          const threadGeom = new THREE.CylinderGeometry((d * 0.95) / 2, (d * 0.95) / 2, b, 32);
+          const threadMesh = new THREE.Mesh(threadGeom, mat);
+          threadMesh.position.y = -L / 2 + b / 2;
+          group.add(threadMesh);
+        }
+
+        // Washer Assembly
+        let currentStackY = -L / 2 + b * 0.4;
+        if (includeWasher) {
+          const washerThick = Math.max(1, d * 0.15);
+          const washerShape = new THREE.Shape();
+          washerShape.absarc(0, 0, d * 1.1, 0, Math.PI * 2, false);
+          const washerHole = new THREE.Path();
+          washerHole.absarc(0, 0, (d * 1.05) / 2, 0, Math.PI * 2, true);
+          washerShape.holes.push(washerHole);
+
+          const washerGeom = new THREE.ExtrudeGeometry(washerShape, { depth: washerThick, bevelEnabled: false });
+          washerGeom.rotateX(Math.PI / 2);
+          const washerMesh = new THREE.Mesh(washerGeom, mat);
+          washerMesh.position.y = currentStackY;
+          group.add(washerMesh);
+          currentStackY -= washerThick;
+        }
+
+        // Nut Assembly
+        if (includeNut) {
+          const nutHeight = d * 0.8;
+          const nutShape = new THREE.Shape();
+          for (let i = 0; i < 6; i++) {
+            const a = (i * Math.PI) / 3;
+            const px = radiusHex * Math.cos(a);
+            const py = radiusHex * Math.sin(a);
+            if (i === 0) nutShape.moveTo(px, py);
+            else nutShape.lineTo(px, py);
+          }
+          nutShape.closePath();
+          const nutHole = new THREE.Path();
+          nutHole.absarc(0, 0, d / 2, 0, Math.PI * 2, true);
+          nutShape.holes.push(nutHole);
+
+          const nutGeom = new THREE.ExtrudeGeometry(nutShape, { depth: nutHeight, bevelEnabled: true, bevelSize: 0.4, bevelThickness: 0.4 });
+          nutGeom.rotateX(Math.PI / 2);
+          const nutMesh = new THREE.Mesh(nutGeom, mat);
+          nutMesh.position.y = currentStackY - nutHeight / 2;
+          group.add(nutMesh);
+        }
+
+        return group;
+      }
+
+      // --- GENERATOR 3: Flanged Shaft & Bushing ---
+      function generateShaftMesh() {
+        const od = parseFloat(document.getElementById("p-shaft-od").value) || 30.0;
+        const id = parseFloat(document.getElementById("p-shaft-id").value) || 12.0;
+        const len = parseFloat(document.getElementById("p-shaft-len").value) || 80.0;
+        const fod = parseFloat(document.getElementById("p-shaft-fod").value) || 70.0;
+        const ft = parseFloat(document.getElementById("p-shaft-ft").value) || 12.0;
+        const numHoles = parseInt(document.getElementById("p-shaft-holes").value) || 4;
+
+        const group = new THREE.Group();
+        const mat = MATERIALS[currentMaterialKey] || MATERIALS.aluminum;
+
+        // Main Shaft Tube
+        const shaftShape = new THREE.Shape();
+        shaftShape.absarc(0, 0, od / 2, 0, Math.PI * 2, false);
+        if (id > 0 && id < od) {
+          const innerHole = new THREE.Path();
+          innerHole.absarc(0, 0, id / 2, 0, Math.PI * 2, true);
+          shaftShape.holes.push(innerHole);
+        }
+        const shaftGeom = new THREE.ExtrudeGeometry(shaftShape, { depth: len, bevelEnabled: true, bevelSize: 0.5, bevelThickness: 0.5 });
+        shaftGeom.rotateX(Math.PI / 2);
+        shaftGeom.center();
+        const shaftMesh = new THREE.Mesh(shaftGeom, mat);
+        group.add(shaftMesh);
+
+        // Flange Disk
+        const flangeShape = new THREE.Shape();
+        flangeShape.absarc(0, 0, fod / 2, 0, Math.PI * 2, false);
+        if (id > 0) {
+          const fHole = new THREE.Path();
+          fHole.absarc(0, 0, id / 2, 0, Math.PI * 2, true);
+          flangeShape.holes.push(fHole);
+        }
+
+        // Flange Mounting Bolt Pattern
+        if (numHoles > 0) {
+          const pcd = (od + fod) / 2;
+          const holeR = Math.max(2, (fod - od) * 0.12);
+          for (let i = 0; i < numHoles; i++) {
+            const ang = (i * 2 * Math.PI) / numHoles;
+            const hx = (pcd / 2) * Math.cos(ang);
+            const hy = (pcd / 2) * Math.sin(ang);
+            const bHole = new THREE.Path();
+            bHole.absarc(hx, hy, holeR, 0, Math.PI * 2, true);
+            flangeShape.holes.push(bHole);
+          }
+        }
+
+        const flangeGeom = new THREE.ExtrudeGeometry(flangeShape, { depth: ft, bevelEnabled: true, bevelSize: 0.5, bevelThickness: 0.5 });
+        flangeGeom.rotateX(Math.PI / 2);
+        const flangeMesh = new THREE.Mesh(flangeGeom, mat);
+        flangeMesh.position.y = len / 2 - ft / 2;
+        group.add(flangeMesh);
+
+        return group;
+      }
+
+      // --- GENERATOR 4: Structural Beams ---
+      function generateBeamMesh() {
+        const type = document.getElementById("p-beam-type").value;
+        const H = parseFloat(document.getElementById("p-beam-h").value) || 100.0;
+        const B = parseFloat(document.getElementById("p-beam-b").value) || 60.0;
+        const tw = parseFloat(document.getElementById("p-beam-tw").value) || 6.0;
+        const tf = parseFloat(document.getElementById("p-beam-tf").value) || 8.0;
+        const L = parseFloat(document.getElementById("p-beam-len").value) || 250.0;
+
+        const shape = new THREE.Shape();
+
+        if (type === "ibeam") {
+          // I-Beam Profile
+          const hHalf = H / 2;
+          const bHalf = B / 2;
+          const wHalf = tw / 2;
+
+          shape.moveTo(-bHalf, -hHalf);
+          shape.lineTo(bHalf, -hHalf);
+          shape.lineTo(bHalf, -hHalf + tf);
+          shape.lineTo(wHalf, -hHalf + tf);
+          shape.lineTo(wHalf, hHalf - tf);
+          shape.lineTo(bHalf, hHalf - tf);
+          shape.lineTo(bHalf, hHalf);
+          shape.lineTo(-bHalf, hHalf);
+          shape.lineTo(-bHalf, hHalf - tf);
+          shape.lineTo(-wHalf, hHalf - tf);
+          shape.lineTo(-wHalf, -hHalf + tf);
+          shape.lineTo(-bHalf, -hHalf + tf);
+          shape.closePath();
+        } else if (type === "channel") {
+          // C-Channel Profile
+          const hHalf = H / 2;
+          shape.moveTo(0, -hHalf);
+          shape.lineTo(B, -hHalf);
+          shape.lineTo(B, -hHalf + tf);
+          shape.lineTo(tw, -hHalf + tf);
+          shape.lineTo(tw, hHalf - tf);
+          shape.lineTo(B, hHalf - tf);
+          shape.lineTo(B, hHalf);
+          shape.lineTo(0, hHalf);
+          shape.closePath();
+        } else if (type === "tube") {
+          // Square / Rectangular Hollow Tube
+          shape.moveTo(-B / 2, -H / 2);
+          shape.lineTo(B / 2, -H / 2);
+          shape.lineTo(B / 2, H / 2);
+          shape.lineTo(-B / 2, H / 2);
+          shape.closePath();
+
+          const inner = new THREE.Path();
+          const inB = Math.max(2, B / 2 - tw);
+          const inH = Math.max(2, H / 2 - tf);
+          inner.moveTo(-inB, -inH);
+          inner.lineTo(inB, -inH);
+          inner.lineTo(inB, inH);
+          inner.lineTo(-inB, inH);
+          inner.closePath();
+          shape.holes.push(inner);
+        } else if (type === "pipe") {
+          // Circular Pipe
+          shape.absarc(0, 0, H / 2, 0, Math.PI * 2, false);
+          const innerPipe = new THREE.Path();
+          innerPipe.absarc(0, 0, Math.max(1, H / 2 - tw), 0, Math.PI * 2, true);
+          shape.holes.push(innerPipe);
+        } else {
+          // T-Section
+          const hHalf = H / 2;
+          const bHalf = B / 2;
+          const wHalf = tw / 2;
+          shape.moveTo(-bHalf, hHalf);
+          shape.lineTo(bHalf, hHalf);
+          shape.lineTo(bHalf, hHalf - tf);
+          shape.lineTo(wHalf, hHalf - tf);
+          shape.lineTo(wHalf, -hHalf);
+          shape.lineTo(-wHalf, -hHalf);
+          shape.lineTo(-wHalf, hHalf - tf);
+          shape.lineTo(-bHalf, hHalf - tf);
+          shape.closePath();
+        }
+
+        const geom = new THREE.ExtrudeGeometry(shape, { depth: L, bevelEnabled: false });
+        geom.center();
+        return geom;
+      }
+
+      // --- GENERATOR 5: Sheet Metal Bracket ---
+      function generateBracketMesh() {
+        const type = document.getElementById("p-bracket-type").value;
+        const L = parseFloat(document.getElementById("p-bracket-l").value) || 80.0;
+        const W = parseFloat(document.getElementById("p-bracket-w").value) || 60.0;
+        const t = parseFloat(document.getElementById("p-bracket-t").value) || 3.0;
+        const holeDia = parseFloat(document.getElementById("p-bracket-hole").value) || 6.0;
+
+        const shape = new THREE.Shape();
+
+        if (type === "lbracket") {
+          shape.moveTo(0, 0);
+          shape.lineTo(L, 0);
+          shape.lineTo(L, t);
+          shape.lineTo(t, t);
+          shape.lineTo(t, W);
+          shape.lineTo(0, W);
+          shape.closePath();
+        } else if (type === "uchannel") {
+          shape.moveTo(0, W);
+          shape.lineTo(t, W);
+          shape.lineTo(t, t);
+          shape.lineTo(L - t, t);
+          shape.lineTo(L - t, W);
+          shape.lineTo(L, W);
+          shape.lineTo(L, 0);
+          shape.lineTo(0, 0);
+          shape.closePath();
+        } else {
+          // Enclosure Box Tray
+          shape.moveTo(0, 0);
+          shape.lineTo(L, 0);
+          shape.lineTo(L, W);
+          shape.lineTo(0, W);
+          shape.closePath();
+
+          const innerBox = new THREE.Path();
+          innerBox.moveTo(t, t);
+          innerBox.lineTo(L - t, t);
+          innerBox.lineTo(L - t, W - t);
+          innerBox.lineTo(t, W - t);
+          innerBox.closePath();
+          shape.holes.push(innerBox);
+        }
+
+        const extrudeDepth = W;
+        const geom = new THREE.ExtrudeGeometry(shape, { depth: extrudeDepth, bevelEnabled: true, bevelSize: 0.4, bevelThickness: 0.4 });
+        geom.center();
+        return geom;
+      }
+
+      // --- GENERATOR 6: Custom 2D Sketch Extrude / Revolve ---
+      function generateSketchMesh() {
+        const shapeType = document.getElementById("p-sketch-shape").value;
+        const op = document.getElementById("p-sketch-op").value;
+        const r = parseFloat(document.getElementById("p-sketch-r").value) || 40.0;
+        const depth = parseFloat(document.getElementById("p-sketch-depth").value) || 30.0;
+        const bevel = parseFloat(document.getElementById("p-sketch-bevel").value) || 2.0;
+
+        const shape = new THREE.Shape();
+
+        if (shapeType === "circle") {
+          shape.absarc(0, 0, r, 0, Math.PI * 2, false);
+        } else if (shapeType === "rect") {
+          const w = r * 1.5;
+          const h = r;
+          const rad = Math.min(w, h) * 0.2;
+          shape.moveTo(-w / 2 + rad, -h / 2);
+          shape.lineTo(w / 2 - rad, -h / 2);
+          shape.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 2 + rad);
+          shape.lineTo(w / 2, h / 2 - rad);
+          shape.quadraticCurveTo(w / 2, h / 2, w / 2 - rad, h / 2);
+          shape.lineTo(-w / 2 + rad, h / 2);
+          shape.quadraticCurveTo(-w / 2, h / 2, -w / 2, h / 2 - rad);
+          shape.lineTo(-w / 2, -h / 2 + rad);
+          shape.quadraticCurveTo(-w / 2, -h / 2, -w / 2 + rad, -h / 2);
+        } else if (shapeType === "hexagon") {
+          for (let i = 0; i < 6; i++) {
+            const a = (i * Math.PI) / 3;
+            const px = r * Math.cos(a);
+            const py = r * Math.sin(a);
+            if (i === 0) shape.moveTo(px, py);
+            else shape.lineTo(px, py);
+          }
+          shape.closePath();
+        } else {
+          // Star Wheel
+          const points = 5;
+          for (let i = 0; i < points * 2; i++) {
+            const rad = i % 2 === 0 ? r : r * 0.5;
+            const a = (i * Math.PI) / points;
+            const px = rad * Math.cos(a);
+            const py = rad * Math.sin(a);
+            if (i === 0) shape.moveTo(px, py);
+            else shape.lineTo(px, py);
+          }
+          shape.closePath();
+        }
+
+        let geom;
+        if (op === "revolve") {
+          const pts = shape.getPoints(32);
+          geom = new THREE.LatheGeometry(pts.map(p => new THREE.Vector2(Math.abs(p.x), p.y)), 36);
+        } else {
+          geom = new THREE.ExtrudeGeometry(shape, {
+            depth: depth,
+            bevelEnabled: bevel > 0,
+            bevelSegments: 3,
+            steps: 1,
+            bevelSize: bevel,
+            bevelThickness: bevel
+          });
+        }
+
+        geom.center();
+        return geom;
+      }
+
+      // --- Central Geometry Rebuild Dispatcher ---
+      function rebuildActiveModel() {
+        // Clean up previous meshes
+        while (activeMeshGroup.children.length > 0) {
+          const obj = activeMeshGroup.children[0];
+          if (obj.geometry) obj.geometry.dispose();
+          activeMeshGroup.remove(obj);
+        }
+        if (wireframeOverlay) {
+          scene.remove(wireframeOverlay);
+          wireframeOverlay = null;
+        }
+
+        let newModel;
+        if (currentGenerator === "gear") {
+          const geom = generateSpurGearMesh();
+          newModel = new THREE.Mesh(geom, MATERIALS[currentMaterialKey]);
+        } else if (currentGenerator === "fastener") {
+          newModel = generateFastenerMesh();
+        } else if (currentGenerator === "shaft") {
+          newModel = generateShaftMesh();
+        } else if (currentGenerator === "beam") {
+          const geom = generateBeamMesh();
+          newModel = new THREE.Mesh(geom, MATERIALS[currentMaterialKey]);
+        } else if (currentGenerator === "bracket") {
+          const geom = generateBracketMesh();
+          newModel = new THREE.Mesh(geom, MATERIALS[currentMaterialKey]);
+        } else if (currentGenerator === "sketch") {
+          const geom = generateSketchMesh();
+          newModel = new THREE.Mesh(geom, MATERIALS[currentMaterialKey]);
+        }
+
+        if (newModel) {
+          activeMeshGroup.add(newModel);
+        }
+
+        applyMaterialToModel();
+        updateWireframeOverlay();
+        updatePhysicalStats();
+      }
+
+      // Wireframe overlay updater
+      function updateWireframeOverlay() {
+        if (wireframeOverlay) {
+          scene.remove(wireframeOverlay);
+          wireframeOverlay = null;
+        }
+
+        if (!isWireframeActive) return;
+
+        const wireGroup = new THREE.Group();
+        const wireMat = new THREE.MeshBasicMaterial({ color: 0x38BDF8, wireframe: true });
+
+        activeMeshGroup.traverse(child => {
+          if (child.isMesh) {
+            const wireMesh = new THREE.Mesh(child.geometry.clone(), wireMat);
+            wireMesh.position.copy(child.position);
+            wireMesh.rotation.copy(child.rotation);
+            wireMesh.scale.copy(child.scale);
+            wireGroup.add(wireMesh);
+          }
+        });
+
+        wireframeOverlay = wireGroup;
+        scene.add(wireframeOverlay);
+      }
+
+      // --- Physical Properties & Dimensional Metrics Calculator ---
+      function updatePhysicalStats() {
+        const box = new THREE.Box3().setFromObject(activeMeshGroup);
+        const size = new THREE.Vector3();
+        if (box && !box.isEmpty()) {
+          box.getSize(size);
+        }
+
+        // Dimensions in mm
+        const lx = (size.x || 0).toFixed(1);
+        const ly = (size.y || 0).toFixed(1);
+        const lz = (size.z || 0).toFixed(1);
+        document.getElementById("stat-dims").textContent = `${lx} × ${ly} × ${lz} mm`;
+
+        // Calculate approximate volume and surface area
+        let totalVolumeMm3 = 0;
+        let totalAreaMm2 = 0;
+
+        activeMeshGroup.traverse(child => {
+          if (child.isMesh && child.geometry) {
+            const geom = child.geometry;
+            if (!geom.isBufferGeometry) return;
+            const pos = geom.attributes.position;
+            const index = geom.index;
+
+            if (index) {
+              for (let i = 0; i < index.count; i += 3) {
+                const a = new THREE.Vector3().fromBufferAttribute(pos, index.getX(i));
+                const b = new THREE.Vector3().fromBufferAttribute(pos, index.getX(i + 1));
+                const c = new THREE.Vector3().fromBufferAttribute(pos, index.getX(i + 2));
+
+                // Signed volume of tetrahedron from origin
+                totalVolumeMm3 += a.dot(b.cross(c)) / 6.0;
+
+                // Triangle area
+                const ab = new THREE.Vector3().subVectors(b, a);
+                const ac = new THREE.Vector3().subVectors(c, a);
+                totalAreaMm2 += ab.cross(ac).length() * 0.5;
+              }
+            }
+          }
+        });
+
+        const volumeCm3 = Math.abs(totalVolumeMm3) / 1000.0;
+        const areaCm2 = totalAreaMm2 / 100.0;
+        document.getElementById("stat-volume").textContent = `${volumeCm3.toFixed(2)} cm³`;
+        document.getElementById("stat-area").textContent = `${areaCm2.toFixed(2)} cm²`;
+
+        // Mass calculation based on active material density
+        const mat = MATERIALS[currentMaterialKey] || MATERIALS.aluminum;
+        const density = mat.density || 2.70;
+        const massGrams = volumeCm3 * density;
+        document.getElementById("stat-mat-name").textContent = mat.name;
+        document.getElementById("stat-mass").textContent = massGrams >= 1000 ? `${(massGrams / 1000).toFixed(2)} kg` : `${massGrams.toFixed(1)} g`;
+      }
+
+      // --- Viewport Toolbar Controls ---
+      // Wireframe
+      const btnWireframe = document.getElementById("btn-toggle-wireframe");
+      btnWireframe.addEventListener("click", () => {
+        isWireframeActive = !isWireframeActive;
+        btnWireframe.classList.toggle("active", isWireframeActive);
+        updateWireframeOverlay();
+      });
+
+      // Grid
+      const btnGrid = document.getElementById("btn-toggle-grid");
+      btnGrid.addEventListener("click", () => {
+        gridHelper.visible = !gridHelper.visible;
+        btnGrid.classList.toggle("active", gridHelper.visible);
+      });
+
+      // Axes
+      const btnAxes = document.getElementById("btn-toggle-axes");
+      btnAxes.addEventListener("click", () => {
+        axesHelper.visible = !axesHelper.visible;
+        btnAxes.classList.toggle("active", axesHelper.visible);
+      });
+
+      // Section Cut
+      const btnSection = document.getElementById("btn-toggle-section");
+      const sectionBar = document.getElementById("section-control-bar");
+      const sectionSlider = document.getElementById("section-slider");
+      const sectionAxis = document.getElementById("section-axis");
+
+      btnSection.addEventListener("click", () => {
+        isSectionActive = !isSectionActive;
+        btnSection.classList.toggle("active", isSectionActive);
+        sectionBar.classList.toggle("active", isSectionActive);
+        applyMaterialToModel();
+      });
+
+      function updateClippingPlane() {
+        const val = parseFloat(sectionSlider.value);
+        const axis = sectionAxis.value;
+        if (axis === "x") clipPlane.set(new THREE.Vector3(-1, 0, 0), val);
+        else if (axis === "y") clipPlane.set(new THREE.Vector3(0, -1, 0), val);
+        else clipPlane.set(new THREE.Vector3(0, 0, -1), val);
+      }
+      sectionSlider.addEventListener("input", updateClippingPlane);
+      sectionAxis.addEventListener("change", updateClippingPlane);
+
+      // Fit View [F]
+      function fitCameraToModel() {
+        const box = new THREE.Box3().setFromObject(activeMeshGroup);
+        if (box.isEmpty()) return;
+        const size = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const fov = camera.fov * (Math.PI / 180);
+        let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2)) * 1.8;
+        camera.position.set(center.x + cameraZ * 0.7, center.y + cameraZ * 0.5, center.z + cameraZ * 0.7);
+        camera.lookAt(center);
+        controls.target.copy(center);
+      }
+      document.getElementById("btn-fit-view").addEventListener("click", fitCameraToModel);
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "f" || e.key === "F") {
+          const tag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
+          if (tag !== "input" && tag !== "textarea") fitCameraToModel();
+        }
+      });
+
+      // Orientation Cube buttons
+      document.querySelectorAll(".view-cube-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const view = btn.dataset.view;
+          const box = new THREE.Box3().setFromObject(activeMeshGroup);
+          const center = box.getCenter(new THREE.Vector3());
+          const maxDim = Math.max(box.getSize(new THREE.Vector3()).length(), 50);
+          const dist = maxDim * 1.5;
+
+          if (view === "iso") camera.position.set(dist * 0.7, dist * 0.6, dist * 0.7);
+          else if (view === "top") camera.position.set(center.x, center.y + dist, center.z + 0.001);
+          else if (view === "bottom") camera.position.set(center.x, center.y - dist, center.z + 0.001);
+          else if (view === "front") camera.position.set(center.x, center.y, center.z + dist);
+          else if (view === "right") camera.position.set(center.x + dist, center.y, center.z);
+          else if (view === "left") camera.position.set(center.x - dist, center.y, center.z);
+
+          camera.lookAt(center);
+          controls.target.copy(center);
+        });
+      });
+
+      // Snapshot high-res
+      document.getElementById("btn-screenshot").addEventListener("click", () => {
+        renderer.render(scene, camera);
+        const imgData = renderer.domElement.toDataURL("image/png");
+        const a = document.createElement("a");
+        a.download = `solidworks_${currentGenerator}_model_${Date.now()}.png`;
+        a.href = imgData;
+        a.click();
+      });
+
+      // --- Parametric Inputs Real-Time Listener ---
+      document.querySelectorAll(".cad-sidebar input, .cad-sidebar select").forEach(el => {
+        el.addEventListener("input", rebuildActiveModel);
+      });
+
+      // --- EXPORT & SOLIDWORKS COMPATIBILITY SUITE ---
+      function downloadFile(content, fileName, mimeType) {
+        const blob = new Blob([content], { type: mimeType });
+        const link = document.createElement("a");
+        link.download = fileName;
+        link.href = URL.createObjectURL(blob);
+        link.click();
+      }
+
+      // 1. Export STL (Binary & ASCII for SolidWorks / 3D Printing)
+      document.getElementById("btn-export-stl").addEventListener("click", () => {
+        const exporter = new THREE.STLExporter();
+        const result = exporter.parse(activeMeshGroup, { binary: true });
+        downloadFile(result, `solidworks_${currentGenerator}_${Date.now()}.stl`, "application/octet-stream");
+      });
+
+      // 2. Export OBJ
+      document.getElementById("btn-export-obj").addEventListener("click", () => {
+        const exporter = new THREE.OBJExporter();
+        const result = exporter.parse(activeMeshGroup);
+        downloadFile(result, `cad_${currentGenerator}_${Date.now()}.obj`, "text/plain");
+      });
+
+      // 3. Export GLTF / GLB
+      document.getElementById("btn-export-gltf").addEventListener("click", () => {
+        const exporter = new THREE.GLTFExporter();
+        exporter.parse(activeMeshGroup, (gltf) => {
+          const output = JSON.stringify(gltf, null, 2);
+          downloadFile(output, `cad_${currentGenerator}_${Date.now()}.gltf`, "application/json");
+        }, { binary: false });
+      });
+
+      // 4. Save CAD Project JSON (For Reloading & Reusing)
+      document.getElementById("btn-export-cad-json").addEventListener("click", () => {
+        const projectData = {
+          generator: currentGenerator,
+          material: currentMaterialKey,
+          timestamp: new Date().toISOString(),
+          params: {}
+        };
+        document.querySelectorAll(`#gen-panel-${currentGenerator} input, #gen-panel-${currentGenerator} select`).forEach(inp => {
+          projectData.params[inp.id] = inp.type === "checkbox" ? inp.checked : inp.value;
+        });
+        downloadFile(JSON.stringify(projectData, null, 2), `project_${currentGenerator}_${Date.now()}.cad.json`, "application/json");
+      });
+
+      // 5. Import & Load STL / OBJ / CAD JSON
+      const fileInput = document.getElementById("cad-file-input");
+      document.getElementById("btn-import-cad").addEventListener("click", () => fileInput.click());
+
+      fileInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) {
+          loadCadFile(e.target.files[0]);
+        }
+      });
+
+      // Drag and Drop support
+      const dropzone = document.getElementById("viewport-dropzone");
+      dropzone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropzone.classList.add("drag-active");
+      });
+      dropzone.addEventListener("dragleave", () => dropzone.classList.remove("drag-active"));
+      dropzone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropzone.classList.remove("drag-active");
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          loadCadFile(e.dataTransfer.files[0]);
+        }
+      });
+
+      function loadCadFile(file) {
+        const name = file.name.toLowerCase();
+        const reader = new FileReader();
+
+        if (name.endsWith(".json") || name.endsWith(".cad.json")) {
+          reader.onload = (ev) => {
+            try {
+              const project = JSON.parse(ev.target.result);
+              if (project.generator) {
+                const tab = document.querySelector(`.cad-tab-btn[data-gen="${project.generator}"]`);
+                if (tab) tab.click();
+              }
+              if (project.material) {
+                const matBtn = document.querySelector(`.material-btn[data-mat="${project.material}"]`);
+                if (matBtn) matBtn.click();
+              }
+              if (project.params) {
+                Object.keys(project.params).forEach(id => {
+                  const el = document.getElementById(id);
+                  if (el) {
+                    if (el.type === "checkbox") el.checked = project.params[id];
+                    else el.value = project.params[id];
+                  }
+                });
+              }
+              rebuildActiveModel();
+              fitCameraToModel();
+              alert("CAD Project loaded successfully!");
+            } catch (err) {
+              alert("Invalid CAD JSON project file.");
+            }
+          };
+          reader.readAsText(file);
+        } else if (name.endsWith(".stl")) {
+          reader.onload = (ev) => {
+            try {
+              const loader = new THREE.STLLoader();
+              const geom = loader.parse(ev.target.result);
+              geom.center();
+              while (activeMeshGroup.children.length > 0) activeMeshGroup.remove(activeMeshGroup.children[0]);
+              const mesh = new THREE.Mesh(geom, MATERIALS[currentMaterialKey]);
+              activeMeshGroup.add(mesh);
+              applyMaterialToModel();
+              updateWireframeOverlay();
+              fitCameraToModel();
+            } catch (err) {
+              alert("Failed to parse STL file.");
+            }
+          };
+          reader.readAsArrayBuffer(file);
+        } else if (name.endsWith(".obj")) {
+          reader.onload = (ev) => {
+            try {
+              const loader = new THREE.OBJLoader();
+              const obj = loader.parse(ev.target.result);
+              while (activeMeshGroup.children.length > 0) activeMeshGroup.remove(activeMeshGroup.children[0]);
+              obj.traverse(child => {
+                if (child.isMesh) child.material = MATERIALS[currentMaterialKey];
+              });
+              activeMeshGroup.add(obj);
+              applyMaterialToModel();
+              updateWireframeOverlay();
+              fitCameraToModel();
+            } catch (err) {
+              alert("Failed to parse OBJ file.");
+            }
+          };
+          reader.readAsText(file);
+        }
+      }
+
+      // Reset
+      document.getElementById("btn-reset-cad").addEventListener("click", () => {
+        if (confirm("Reset current model to default parameters?")) {
+          const tab = document.querySelector(`.cad-tab-btn[data-gen="gear"]`);
+          if (tab) tab.click();
+          rebuildActiveModel();
+          fitCameraToModel();
+        }
+      });
+
+      // Window Resize Listener
+      window.addEventListener("resize", () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      });
+
+      // 7. Render Loop
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      // Initial Build & Fit
+      rebuildActiveModel();
+      setTimeout(fitCameraToModel, 100);
+    });
+  </script>
+</body>
+</html>

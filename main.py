@@ -179,19 +179,23 @@ def dynamic_root_dispatcher(request: Request):
     if subdomain in ("motivation", "focus", "mindset", "approach", "mind", "flow", "daily", "zen"):
         return FileResponse(STATIC_DIR / "motivation.html")
 
-    # 11. About / Profile Subdomain (about.sitendra.store / me.sitendra.store)
+    # 11. 3D CAD & SolidWorks Modeler Subdomain (cad.sitendra.store / solidworks.sitendra.store / 3d.sitendra.store / model.sitendra.store)
+    if subdomain in ("cad", "solidworks", "3d", "model", "modeler", "cadstudio"):
+        return FileResponse(STATIC_DIR / "cad.html")
+
+    # 12. About / Profile Subdomain (about.sitendra.store / me.sitendra.store)
     if subdomain in ("about", "me", "intro"):
         intro_file = INTRO_DIR / "index.html"
         if intro_file.exists():
             return FileResponse(intro_file)
 
-    # 12. Notes App Subdomain (app.sitendra.store / notes.sitendra.store)
+    # 13. Notes App Subdomain (app.sitendra.store / notes.sitendra.store)
     if subdomain in ("app", "notes", "my"):
         if not request.session.get("user_id"):
             return RedirectResponse(url="/login.html")
         return RedirectResponse(url="/index.html")
 
-    # 13. Main Root Domain Homepage (sitendra.store)
+    # 14. Main Root Domain Homepage (sitendra.store)
     return FileResponse(STATIC_DIR / "home.html")
 
 
@@ -303,6 +307,15 @@ def motivation_page():
     return FileResponse(STATIC_DIR / "motivation.html")
 
 
+@app.get("/cad")
+@app.get("/cad-studio")
+@app.get("/solidworks")
+@app.get("/3d")
+@app.get("/3d-modeler")
+def cad_studio_page():
+    return FileResponse(STATIC_DIR / "cad.html")
+
+
 @app.get("/share/{share_id}")
 def view_shared_note_page(share_id: str):
     return FileResponse(STATIC_DIR / "share.html")
@@ -390,6 +403,7 @@ def sitemap_xml():
         {"loc": "https://sitendra.store/about", "priority": "0.9", "changefreq": "monthly"},
         {"loc": "https://blog.sitendra.store/", "priority": "0.95", "changefreq": "daily"},
         {"loc": "https://sitendra.store/calc", "priority": "0.9", "changefreq": "weekly"},
+        {"loc": "https://sitendra.store/cad", "priority": "0.9", "changefreq": "weekly"},
         {"loc": "https://sitendra.store/security", "priority": "0.9", "changefreq": "weekly"},
         {"loc": "https://sitendra.store/dev", "priority": "0.9", "changefreq": "weekly"},
         {"loc": "https://sitendra.store/image-tools", "priority": "0.9", "changefreq": "weekly"},

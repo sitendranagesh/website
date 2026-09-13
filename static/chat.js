@@ -43,6 +43,10 @@
       response: "📄 Check out our **Universal ATS Resume & CV Builder**! Choose from industry presets for Business, Healthcare, Marketing, Finance, Design, Academia & Tech, customize 4 templates, and download a vector-crisp PDF. <br><br>👉 <a href='/resume'>Open Resume Builder &rarr;</a>"
     },
     {
+      keywords: ["cad", "3d", "solidworks", "model", "stl", "obj", "gear", "bolt", "step", "mesh"],
+      response: "🧊 Check out our **3D CAD & SolidWorks Lightweight Modeler Studio**! Design parametric spur gears, ISO hex bolts/nuts, flanged shafts, structural beams, and custom 2D sketch extrusions with instant STL, OBJ, GLTF & CAD JSON export. <br><br>👉 <a href='/cad'>Open 3D CAD Studio &rarr;</a>"
+    },
+    {
       keywords: ["contact", "email", "hire", "message", "touch", "reach"],
       response: "📬 You can leave a quick message right here in this chat, or email Sitendra directly at <a href='mailto:sitendranagesh@gmail.com'>sitendranagesh@gmail.com</a>."
     }
@@ -68,13 +72,13 @@
       </svg>
     `;
 
-    // 2. Chat Window
-    const win = document.createElement("div");
-    win.id = "chat-widget-window";
-    win.className = "chat-widget-window";
-    win.innerHTML = `
+    // 2. Chat Container Window
+    const windowDiv = document.createElement("div");
+    windowDiv.id = "chat-widget-window";
+    windowDiv.className = "chat-widget-window";
+    windowDiv.innerHTML = `
       <div class="chat-header">
-        <div class="chat-header-user">
+        <div class="chat-header-info">
           <div class="chat-avatar">S</div>
           <div>
             <div class="chat-title">Sitendra Assistant</div>
@@ -88,11 +92,11 @@
         <div class="chat-msg bot">
           👋 Hi there! I'm Sitendra's interactive assistant. Ask me anything about his projects, tools, or drop a quick note.
           <div class="chat-quick-chips">
-            <button type="button" class="chat-chip" data-query="projects">🚀 Projects</button>
+            <button type="button" class="chat-chip" data-query="cad">🧊 3D CAD Studio</button>
             <button type="button" class="chat-chip" data-query="image tools">🖼️ Image Studio</button>
             <button type="button" class="chat-chip" data-query="resume">📄 Resume Builder</button>
+            <button type="button" class="chat-chip" data-query="calc">🧮 Mechanical Calc</button>
             <button type="button" class="chat-chip" data-query="blog">📖 Blog</button>
-            <button type="button" class="chat-chip" data-query="about">👤 Who is Sitendra?</button>
             <button type="button" class="chat-chip" data-query="contact">📬 Contact</button>
           </div>
         </div>
