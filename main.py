@@ -183,19 +183,23 @@ def dynamic_root_dispatcher(request: Request):
     if subdomain in ("cad", "solidworks", "3d", "model", "modeler", "cadstudio"):
         return FileResponse(STATIC_DIR / "cad.html")
 
-    # 12. About / Profile Subdomain (about.sitendra.store / me.sitendra.store)
+    # 12. Smart Deal & Global Landed-Cost Finder Subdomain (deals.sitendra.store / landedcost.sitendra.store / price.sitendra.store)
+    if subdomain in ("deals", "deal", "smartdeals", "landedcost", "price", "shopping", "import"):
+        return FileResponse(STATIC_DIR / "deals.html")
+
+    # 13. About / Profile Subdomain (about.sitendra.store / me.sitendra.store)
     if subdomain in ("about", "me", "intro"):
         intro_file = INTRO_DIR / "index.html"
         if intro_file.exists():
             return FileResponse(intro_file)
 
-    # 13. Notes App Subdomain (app.sitendra.store / notes.sitendra.store)
+    # 14. Notes App Subdomain (app.sitendra.store / notes.sitendra.store)
     if subdomain in ("app", "notes", "my"):
         if not request.session.get("user_id"):
             return RedirectResponse(url="/login.html")
         return RedirectResponse(url="/index.html")
 
-    # 14. Main Root Domain Homepage (sitendra.store)
+    # 15. Main Root Domain Homepage (sitendra.store)
     return FileResponse(STATIC_DIR / "home.html")
 
 
@@ -316,6 +320,15 @@ def cad_studio_page():
     return FileResponse(STATIC_DIR / "cad.html")
 
 
+@app.get("/deals")
+@app.get("/smart-deals")
+@app.get("/landed-cost")
+@app.get("/price-finder")
+@app.get("/shopping")
+def smart_deals_page():
+    return FileResponse(STATIC_DIR / "deals.html")
+
+
 @app.get("/share/{share_id}")
 def view_shared_note_page(share_id: str):
     return FileResponse(STATIC_DIR / "share.html")
@@ -411,6 +424,7 @@ def sitemap_xml():
         {"loc": "https://sitendra.store/games", "priority": "0.9", "changefreq": "weekly"},
         {"loc": "https://sitendra.store/word-search", "priority": "0.9", "changefreq": "weekly"},
         {"loc": "https://sitendra.store/jobs", "priority": "0.95", "changefreq": "daily"},
+        {"loc": "https://sitendra.store/deals", "priority": "0.95", "changefreq": "daily"},
         {"loc": "https://sitendra.store/tools", "priority": "0.85", "changefreq": "weekly"},
         {"loc": "https://sitendra.store/projects", "priority": "0.85", "changefreq": "monthly"},
     ]

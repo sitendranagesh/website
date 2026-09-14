@@ -9,6 +9,11 @@
 
   // Predefined navigation items
   const defaultItems = [
+    { title: 'Personal Smart Deal & Global Landed-Cost Finder', url: '/deals', category: 'Shopping & Deals', icon: '🏷️' },
+    { title: 'India Customs Duty & Forex Calculator (HS 9804)', url: '/deals', category: 'Shopping & Deals', icon: '🛃' },
+    { title: 'Bank Card Cashback & PIN Code Delivery Resolver', url: '/deals', category: 'Shopping & Deals', icon: '💳' },
+    { title: 'Govt Jobs & Sarkari Naukri Hub (Live Notifications)', url: '/jobs', category: 'Govt Jobs', icon: '🇮🇳' },
+    { title: 'Universal ATS Resume & CV Builder', url: '/resume', category: 'Career', icon: '📄' },
     { title: 'Blog Feed & Articles', url: '/blog', category: 'Blog', icon: '📖' },
     { title: 'Image Manipulation Studio', url: '/image-tools', category: 'Image Tool', icon: '🖼️' },
     { title: 'Target KB Compressor (20KB, 50KB, 100KB)', url: '/image-tools', category: 'Image Tool', icon: '🎯' },

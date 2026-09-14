@@ -47,6 +47,14 @@
       response: "🧊 Check out our **3D CAD & SolidWorks Lightweight Modeler Studio**! Design parametric spur gears, ISO hex bolts/nuts, flanged shafts, structural beams, and custom 2D sketch extrusions with instant STL, OBJ, GLTF & CAD JSON export. <br><br>👉 <a href='/cad'>Open 3D CAD Studio &rarr;</a>"
     },
     {
+      keywords: ["deal", "deals", "landed cost", "import", "customs", "shopping", "price", "amazon", "flipkart", "discount"],
+      response: "🏷️ Check out our **Personal Smart Deal & Global Landed-Cost Finder (India)**! Compare Amazon.in, Flipkart & Croma with bank card discounts vs importing from US/Japan with exact 42.08% customs duty and forex calculations. <br><br>👉 <a href='/deals'>Open Smart Deals Finder &rarr;</a>"
+    },
+    {
+      keywords: ["jobs", "govt", "sarkari", "upsc", "ssc", "rrb", "railways", "banking", "ibps"],
+      response: "🇮🇳 Explore our **Govt Jobs & Sarkari Naukri Hub** for real-time notifications, 7th CPC salary calculator, and instant eligibility checks! <br><br>👉 <a href='/jobs'>Open Govt Jobs Hub &rarr;</a>"
+    },
+    {
       keywords: ["contact", "email", "hire", "message", "touch", "reach"],
       response: "📬 You can leave a quick message right here in this chat, or email Sitendra directly at <a href='mailto:sitendranagesh@gmail.com'>sitendranagesh@gmail.com</a>."
     }
@@ -92,6 +100,8 @@
         <div class="chat-msg bot">
           👋 Hi there! I'm Sitendra's interactive assistant. Ask me anything about his projects, tools, or drop a quick note.
           <div class="chat-quick-chips">
+            <button type="button" class="chat-chip" data-query="deals">🏷️ Deals &amp; Import Calc</button>
+            <button type="button" class="chat-chip" data-query="jobs">🇮🇳 Govt Jobs</button>
             <button type="button" class="chat-chip" data-query="cad">🧊 3D CAD Studio</button>
             <button type="button" class="chat-chip" data-query="image tools">🖼️ Image Studio</button>
             <button type="button" class="chat-chip" data-query="resume">📄 Resume Builder</button>
