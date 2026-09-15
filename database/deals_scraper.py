@@ -253,6 +253,69 @@ def _estimate_price_range(query: str, snippets: List[str], titles: List[str]) ->
     }
 
 
+def _build_store_url(platform_or_store: str, query_name: str) -> str:
+    """Build reliable, direct search / landing URL for the given storefront."""
+    encoded = urllib.parse.quote_plus(query_name)
+    name_clean = urllib.parse.quote(re.sub(r'[^a-zA-Z0-9\s]', '', query_name).strip())
+    p_lower = platform_or_store.lower()
+
+    if "1mg" in p_lower:
+        return f"https://www.1mg.com/search/all?name={encoded}"
+    elif "nykaa" in p_lower:
+        return f"https://www.nykaa.com/search/result/?q={encoded}"
+    elif "apollo" in p_lower:
+        return f"https://www.apollopharmacy.in/search-medicines/{name_clean}"
+    elif "flipkart" in p_lower:
+        return f"https://www.flipkart.com/search?q={encoded}"
+    elif "croma" in p_lower:
+        return f"https://www.croma.com/searchB?q={encoded}"
+    elif "cliq" in p_lower:
+        return f"https://www.tatacliq.com/search/?searchCategory=all&text={encoded}"
+    elif "amazon.in" in p_lower:
+        return f"https://www.amazon.in/s?k={encoded}"
+    elif "amazon japan" in p_lower or "japan" in p_lower:
+        return f"https://www.amazon.co.jp/s?k={encoded}"
+    elif "amazon uae" in p_lower or "uae" in p_lower:
+        return f"https://www.amazon.ae/s?k={encoded}"
+    elif "b&h" in p_lower or "bh" in p_lower:
+        return f"https://www.bhphotovideo.com/c/search?Ntt={encoded}"
+    elif "iherb" in p_lower:
+        return f"https://www.iherb.com/search?kw={encoded}"
+    elif "ebay" in p_lower:
+        return f"https://www.ebay.com/sch/i.html?_nkw={encoded}"
+    elif "amazon" in p_lower:
+        return f"https://www.amazon.com/s?k={encoded}"
+    else:
+        return f"https://www.google.com/search?q={encoded}+buy+online"
+
+
+def _generate_product_variants(canonical_name: str, category: str, base_inr: float, weight_kg: float) -> List[Dict[str, Any]]:
+    """Generate intelligent grams / size / storage variants."""
+    c_lower = category.lower()
+    name_lower = canonical_name.lower()
+
+    if "skin" in c_lower or "sun" in c_lower or "cosmetics" in c_lower or "cream" in name_lower or "gel" in name_lower or "serum" in name_lower or "lotion" in name_lower:
+        return [
+            {"id": "50g", "label": "50g (Standard Tube)", "grams": 50, "multiplier": 1.0, "unit": "g", "weightKg": 0.12},
+            {"id": "100g", "label": "100g (Value Pack)", "grams": 100, "multiplier": 1.85, "unit": "g", "weightKg": 0.22},
+            {"id": "150g", "label": "150g (Triple / Combo Pack)", "grams": 150, "multiplier": 2.70, "unit": "g", "weightKg": 0.32},
+            {"id": "200g", "label": "200g (Family Pack)", "grams": 200, "multiplier": 3.45, "unit": "g", "weightKg": 0.42}
+        ]
+    elif "phone" in c_lower or "laptop" in c_lower or "computing" in c_lower or "tablet" in c_lower or "gaming" in c_lower:
+        return [
+            {"id": "base", "label": "Standard / Base Storage", "grams": 0, "multiplier": 1.0, "unit": "Unit", "weightKg": weight_kg},
+            {"id": "tier2", "label": "256GB / Enhanced Tier", "grams": 0, "multiplier": 1.15, "unit": "Unit", "weightKg": weight_kg},
+            {"id": "tier3", "label": "512GB / Pro Tier", "grams": 0, "multiplier": 1.32, "unit": "Unit", "weightKg": weight_kg},
+            {"id": "tier4", "label": "1TB / Max Tier", "grams": 0, "multiplier": 1.55, "unit": "Unit", "weightKg": weight_kg}
+        ]
+    else:
+        return [
+            {"id": "single", "label": "1 Unit (Single Pack)", "grams": 0, "multiplier": 1.0, "unit": "Unit", "weightKg": weight_kg},
+            {"id": "double", "label": "2 Units (Duo Pack - 5% Off)", "grams": 0, "multiplier": 1.90, "unit": "Unit", "weightKg": weight_kg * 1.8},
+            {"id": "triple", "label": "3 Units (Triple Value Pack - 10% Off)", "grams": 0, "multiplier": 2.70, "unit": "Unit", "weightKg": weight_kg * 2.6}
+        ]
+
+
 def search_live_product_deals(query: str) -> Dict[str, Any]:
     """
     Core search entrypoint. Searches web for the given product query and returns
@@ -278,10 +341,8 @@ def search_live_product_deals(query: str) -> Dict[str, Any]:
     # 2. Determine Canonical Product Name & Brand
     canonical_name = clean_q.title()
     if suggestions:
-        # Prefer rich suggestion with detailed specs (e.g. "UV Doux Silicone Sunscreen Gel SPF 50 PA+++")
         canonical_name = suggestions[0].title()
     elif titles:
-        # Clean title from e-commerce suffix
         t0 = titles[0]
         t_cleaned = re.sub(r'\s*[-|–]\s*(?:Amazon|Flipkart|1mg|Nykaa|Tata|Croma|Buy Online).*$', '', t0, flags=re.IGNORECASE).strip()
         if len(t_cleaned) > 5:
@@ -309,7 +370,7 @@ def search_live_product_deals(query: str) -> Dict[str, Any]:
     base_jpy = pricing["base_jpy"]
     base_aed = pricing["base_aed"]
 
-    # 4. Construct Domestic Storefronts
+    # 4. Construct Domestic Storefronts with Direct Store Visit URLs
     domestic_stores = []
     if meta["store_type"] == "beauty_pharma":
         domestic_stores = [
@@ -320,7 +381,8 @@ def search_live_product_deals(query: str) -> Dict[str, Any]:
                 "rating": 4.8,
                 "deliveryDays": 1,
                 "returnPolicy": "7 Days Returnable",
-                "warranty": "100% Genuine Certified Batch"
+                "warranty": "100% Genuine Certified Batch",
+                "visitUrl": _build_store_url("Tata 1mg", canonical_name)
             },
             {
                 "platform": "Nykaa",
@@ -329,7 +391,8 @@ def search_live_product_deals(query: str) -> Dict[str, Any]:
                 "rating": 4.7,
                 "deliveryDays": 2,
                 "returnPolicy": "15 Days Return",
-                "warranty": "Authorised Brand Partner"
+                "warranty": "Authorised Brand Partner",
+                "visitUrl": _build_store_url("Nykaa", canonical_name)
             },
             {
                 "platform": "Amazon.in",
@@ -338,7 +401,8 @@ def search_live_product_deals(query: str) -> Dict[str, Any]:
                 "rating": 4.6,
                 "deliveryDays": 1,
                 "returnPolicy": "Replacement if damaged",
-                "warranty": "Official Manufacturer Seal"
+                "warranty": "Official Manufacturer Seal",
+                "visitUrl": _build_store_url("Amazon.in", canonical_name)
             },
             {
                 "platform": "Flipkart",
@@ -347,7 +411,8 @@ def search_live_product_deals(query: str) -> Dict[str, Any]:
                 "rating": 4.5,
                 "deliveryDays": 2,
                 "returnPolicy": "Replacement Only",
-                "warranty": "Authorised Seller"
+                "warranty": "Authorised Seller",
+                "visitUrl": _build_store_url("Flipkart", canonical_name)
             },
             {
                 "platform": "Apollo Pharmacy",
@@ -356,7 +421,8 @@ def search_live_product_deals(query: str) -> Dict[str, Any]:
                 "rating": 4.9,
                 "deliveryDays": 1,
                 "returnPolicy": "Immediate Verification",
-                "warranty": "Direct Pharmacy Dispensed"
+                "warranty": "Direct Pharmacy Dispensed",
+                "visitUrl": _build_store_url("Apollo Pharmacy", canonical_name)
             }
         ]
         global_stores = [
@@ -366,7 +432,8 @@ def search_live_product_deals(query: str) -> Dict[str, Any]:
                 "currency": "USD",
                 "foreignPrice": base_usd,
                 "shippingForeign": 14.00,
-                "deliveryDays": 8
+                "deliveryDays": 8,
+                "visitUrl": _build_store_url("Amazon US", canonical_name)
             },
             {
                 "store": "Amazon UAE",
@@ -374,7 +441,8 @@ def search_live_product_deals(query: str) -> Dict[str, Any]:
                 "currency": "AED",
                 "foreignPrice": base_aed,
                 "shippingForeign": 38.00,
-                "deliveryDays": 5
+                "deliveryDays": 5,
+                "visitUrl": _build_store_url("Amazon UAE", canonical_name)
             },
             {
                 "store": "eBay Global",
@@ -382,7 +450,8 @@ def search_live_product_deals(query: str) -> Dict[str, Any]:
                 "currency": "USD",
                 "foreignPrice": round(base_usd * 1.08, 2),
                 "shippingForeign": 16.00,
-                "deliveryDays": 10
+                "deliveryDays": 10,
+                "visitUrl": _build_store_url("eBay Global", canonical_name)
             }
         ]
     else:
@@ -395,7 +464,8 @@ def search_live_product_deals(query: str) -> Dict[str, Any]:
                 "rating": 4.7,
                 "deliveryDays": 1,
                 "returnPolicy": "7 Days Replacement",
-                "warranty": f"1 Year {brand} India Warranty"
+                "warranty": f"1 Year {brand} India Warranty",
+                "visitUrl": _build_store_url("Amazon.in", canonical_name)
             },
             {
                 "platform": "Flipkart",
@@ -404,7 +474,8 @@ def search_live_product_deals(query: str) -> Dict[str, Any]:
                 "rating": 4.6,
                 "deliveryDays": 2,
                 "returnPolicy": "7 Days Replacement",
-                "warranty": f"1 Year {brand} India Warranty"
+                "warranty": f"1 Year {brand} India Warranty",
+                "visitUrl": _build_store_url("Flipkart", canonical_name)
             },
             {
                 "platform": "Croma Retail",
@@ -413,7 +484,8 @@ def search_live_product_deals(query: str) -> Dict[str, Any]:
                 "rating": 4.8,
                 "deliveryDays": 1,
                 "returnPolicy": "14 Days Return",
-                "warranty": f"1 Year {brand} India Warranty"
+                "warranty": f"1 Year {brand} India Warranty",
+                "visitUrl": _build_store_url("Croma Retail", canonical_name)
             },
             {
                 "platform": "Tata CLiQ",
@@ -422,7 +494,8 @@ def search_live_product_deals(query: str) -> Dict[str, Any]:
                 "rating": 4.5,
                 "deliveryDays": 3,
                 "returnPolicy": "7 Days Return",
-                "warranty": f"1 Year {brand} India Warranty"
+                "warranty": f"1 Year {brand} India Warranty",
+                "visitUrl": _build_store_url("Tata CLiQ", canonical_name)
             }
         ]
         global_stores = [
@@ -432,7 +505,8 @@ def search_live_product_deals(query: str) -> Dict[str, Any]:
                 "currency": "USD",
                 "foreignPrice": base_usd,
                 "shippingForeign": 42.00,
-                "deliveryDays": 8
+                "deliveryDays": 8,
+                "visitUrl": _build_store_url("Amazon US", canonical_name)
             },
             {
                 "store": "Amazon Japan",
@@ -440,7 +514,8 @@ def search_live_product_deals(query: str) -> Dict[str, Any]:
                 "currency": "JPY",
                 "foreignPrice": base_jpy,
                 "shippingForeign": 5500,
-                "deliveryDays": 7
+                "deliveryDays": 7,
+                "visitUrl": _build_store_url("Amazon Japan", canonical_name)
             },
             {
                 "store": "B&H Photo Video",
@@ -448,7 +523,8 @@ def search_live_product_deals(query: str) -> Dict[str, Any]:
                 "currency": "USD",
                 "foreignPrice": round(base_usd * 1.02, 2),
                 "shippingForeign": 45.00,
-                "deliveryDays": 8
+                "deliveryDays": 8,
+                "visitUrl": _build_store_url("B&H Photo Video", canonical_name)
             },
             {
                 "store": "Amazon UAE",
@@ -456,9 +532,13 @@ def search_live_product_deals(query: str) -> Dict[str, Any]:
                 "currency": "AED",
                 "foreignPrice": base_aed,
                 "shippingForeign": 130.00,
-                "deliveryDays": 5
+                "deliveryDays": 5,
+                "visitUrl": _build_store_url("Amazon UAE", canonical_name)
             }
         ]
+
+    # Generate product variants
+    variants = _generate_product_variants(canonical_name, meta["category"], base_inr, meta["weightKg"])
 
     product_obj = {
         "id": f"live-{re.sub(r'[^a-zA-Z0-9]', '-', clean_q.lower())}",
@@ -473,6 +553,7 @@ def search_live_product_deals(query: str) -> Dict[str, Any]:
         "customsDutyRate": meta["customsDutyRate"],
         "isLiveWebResult": True,
         "sourceQuery": clean_q,
+        "variants": variants,
         "domestic": domestic_stores,
         "global": global_stores
     }
