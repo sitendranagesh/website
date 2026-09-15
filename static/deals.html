@@ -12,7 +12,7 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -110,6 +110,7 @@
     </div>
 
     <nav class="nav-links">
+      <a href="/deals" class="nav-item" style="color: #10B981; font-weight: 700;">Smart Deals 🏷️</a>
       <a href="/jobs" class="nav-item" style="color: var(--primary); font-weight: 700;">Govt Jobs 🇮🇳</a>
       <a href="/cad" class="nav-item">3D CAD Studio</a>
       <a href="/calc" class="nav-item">Mechanical Calc</a>
@@ -140,7 +141,7 @@
 
   <!-- React Application Logic -->
   <script type="text/babel">
-    const { useState, useEffect, useMemo } = React;
+    const { useState, useEffect, useMemo, useRef } = React;
 
     // PIN Code Directory Resolver for accurate delivery fee & delivery dates
     const PIN_CODE_DATABASE = {
@@ -154,7 +155,10 @@
       "411001": { city: "Pune", state: "Maharashtra", hubSpeed: "1-2 Days", deliveryFeeBase: 0, primeFree: true },
       "380001": { city: "Ahmedabad", state: "Gujarat", hubSpeed: "2 Days", deliveryFeeBase: 40, primeFree: true },
       "492001": { city: "Raipur", state: "Chhattisgarh", hubSpeed: "2-3 Days", deliveryFeeBase: 50, primeFree: true },
-      "800001": { city: "Patna", state: "Bihar", hubSpeed: "3-4 Days", deliveryFeeBase: 60, primeFree: true }
+      "800001": { city: "Patna", state: "Bihar", hubSpeed: "3-4 Days", deliveryFeeBase: 60, primeFree: true },
+      "682001": { city: "Kochi", state: "Kerala", hubSpeed: "2 Days", deliveryFeeBase: 40, primeFree: true },
+      "302001": { city: "Jaipur", state: "Rajasthan", hubSpeed: "1-2 Days", deliveryFeeBase: 40, primeFree: true },
+      "226001": { city: "Lucknow", state: "Uttar Pradesh", hubSpeed: "2 Days", deliveryFeeBase: 40, primeFree: true }
     };
 
     // Live Exchange Rates (Base to INR)
@@ -176,12 +180,14 @@
       standard: { name: "Standard Debit / UPI (0%)", amazonInCashback: 0, flipkartCashback: 0, otherCashback: 0, icon: "💵" }
     };
 
-    // Built-in Realistic Product Dataset
+    // Comprehensive Pre-Indexed Realistic Products Dataset (25+ Popular Gadgets)
     const PRODUCTS_CATALOG = [
+      // 1. Audio
       {
         id: "sony-xm5",
         name: "Sony WH-1000XM5 Wireless Noise-Cancelling Headphones",
         category: "Audio",
+        brand: "Sony",
         weightKg: 0.25,
         indiaMrp: 34990,
         voltage: "Universal 100-240V (USB-C Charging)",
@@ -202,9 +208,76 @@
         ]
       },
       {
+        id: "bose-qc-ultra",
+        name: "Bose QuietComfort Ultra Wireless Noise-Cancelling Headphones",
+        category: "Audio",
+        brand: "Bose",
+        weightKg: 0.25,
+        indiaMrp: 35900,
+        voltage: "Universal USB-C",
+        intlWarrantyInIndia: "Yes (Bose 1-Year Global Warranty with invoice)",
+        customsHsCategory: "Electronics (Headphones)",
+        domestic: [
+          { platform: "Amazon.in", seller: "Appario Retail (4.8★)", basePrice: 32900, rating: 4.7, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Bose India" },
+          { platform: "Flipkart", seller: "SuperComNet (4.6★)", basePrice: 33490, rating: 4.6, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "1 Year Bose India" },
+          { platform: "Croma Retail", seller: "Croma Official (4.9★)", basePrice: 35900, rating: 4.8, deliveryDays: 1, returnPolicy: "14 Days Return", warranty: "1 Year Bose India" }
+        ],
+        global: [
+          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 379.00, shippingForeign: 35.00, deliveryDays: 8 },
+          { store: "B&H Photo Video", region: "🇺🇸 USA", currency: "USD", foreignPrice: 379.00, shippingForeign: 38.00, deliveryDays: 9 },
+          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 1299.00, shippingForeign: 120.00, deliveryDays: 5 }
+        ]
+      },
+      {
+        id: "airpods-max-usbc",
+        name: "Apple AirPods Max Wireless Over-Ear Headphones (USB-C)",
+        category: "Audio",
+        brand: "Apple",
+        weightKg: 0.38,
+        indiaMrp: 59900,
+        voltage: "Universal USB-C Charging",
+        intlWarrantyInIndia: "Yes (Apple 1-Year Global Warranty honored worldwide)",
+        customsHsCategory: "Electronics (Headphones)",
+        domestic: [
+          { platform: "Amazon.in", seller: "Appario Retail (4.8★)", basePrice: 56990, rating: 4.7, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Apple India" },
+          { platform: "Flipkart", seller: "RetailNet (4.7★)", basePrice: 57490, rating: 4.6, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "1 Year Apple India" },
+          { platform: "Apple Store India", seller: "Apple Official", basePrice: 59900, rating: 5.0, deliveryDays: 2, returnPolicy: "14 Days Free Return", warranty: "1 Year Apple Global Warranty" }
+        ],
+        global: [
+          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 499.00, shippingForeign: 40.00, deliveryDays: 7 },
+          { store: "B&H Photo Video", region: "🇺🇸 USA", currency: "USD", foreignPrice: 499.00, shippingForeign: 42.00, deliveryDays: 8 },
+          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 1899.00, shippingForeign: 110.00, deliveryDays: 5 }
+        ]
+      },
+
+      // 2. Smartphones & Tablets
+      {
+        id: "iphone-16-pro-max",
+        name: "Apple iPhone 16 Pro Max (256GB, Desert Titanium)",
+        category: "Smartphones",
+        brand: "Apple",
+        weightKg: 0.22,
+        indiaMrp: 144900,
+        voltage: "Universal USB-C (eSIM + Nano SIM in India / Dual eSIM in US)",
+        intlWarrantyInIndia: "Yes (Apple 1-Year Global Warranty honored in India)",
+        customsHsCategory: "Smartphone",
+        domestic: [
+          { platform: "Amazon.in", seller: "Appario Retail (4.9★)", basePrice: 144900, rating: 4.9, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Apple Global Warranty" },
+          { platform: "Flipkart", seller: "SuperComNet (4.8★)", basePrice: 144900, rating: 4.8, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "1 Year Apple Global Warranty" },
+          { platform: "Croma Retail", seller: "Croma Direct (4.9★)", basePrice: 144900, rating: 4.9, deliveryDays: 1, returnPolicy: "14 Days Return", warranty: "1 Year Apple Global Warranty" },
+          { platform: "Apple Store India", seller: "Apple Official", basePrice: 144900, rating: 5.0, deliveryDays: 2, returnPolicy: "14 Days Free Return", warranty: "1 Year Apple Global Warranty" }
+        ],
+        global: [
+          { store: "Apple Store US / B&H", region: "🇺🇸 USA", currency: "USD", foreignPrice: 1199.00, shippingForeign: 55.00, deliveryDays: 7 },
+          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 4699.00, shippingForeign: 140.00, deliveryDays: 4 },
+          { store: "Amazon Japan", region: "🇯🇵 Japan", currency: "JPY", foreignPrice: 189800, shippingForeign: 6500, deliveryDays: 6 }
+        ]
+      },
+      {
         id: "ipad-air-m2",
         name: "Apple iPad Air 11-inch (M2 Chip, 128GB Wi-Fi)",
         category: "Tablets",
+        brand: "Apple",
         weightKg: 0.46,
         indiaMrp: 59900,
         voltage: "Universal 100-240V USB-C",
@@ -224,9 +297,182 @@
         ]
       },
       {
+        id: "s24-ultra",
+        name: "Samsung Galaxy S24 Ultra 5G (512GB, Titanium Gray)",
+        category: "Smartphones",
+        brand: "Samsung",
+        weightKg: 0.23,
+        indiaMrp: 139999,
+        voltage: "Universal USB-C 45W",
+        intlWarrantyInIndia: "No (Samsung requires region-specific domestic purchases for warranty)",
+        customsHsCategory: "Smartphone",
+        domestic: [
+          { platform: "Amazon.in", seller: "STPL Retail (4.7★)", basePrice: 121999, rating: 4.7, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Samsung India" },
+          { platform: "Flipkart", seller: "RetailNet (4.7★)", basePrice: 122499, rating: 4.6, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "1 Year Samsung India" },
+          { platform: "Samsung Shop Official", seller: "Samsung Direct", basePrice: 129999, rating: 4.9, deliveryDays: 2, returnPolicy: "14 Days Return", warranty: "1 Year Samsung India + Screen Damage Offer" }
+        ],
+        global: [
+          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 1149.00, shippingForeign: 50.00, deliveryDays: 7 },
+          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 3849.00, shippingForeign: 120.00, deliveryDays: 4 }
+        ]
+      },
+      {
+        id: "pixel-9-pro-xl",
+        name: "Google Pixel 9 Pro XL (128GB, Porcelain)",
+        category: "Smartphones",
+        brand: "Google",
+        weightKg: 0.22,
+        indiaMrp: 124999,
+        voltage: "Universal USB-C PD 3.0",
+        intlWarrantyInIndia: "No (Google India honors Flipkart/Authorized India invoices only)",
+        customsHsCategory: "Smartphone",
+        domestic: [
+          { platform: "Flipkart (Official Partner)", seller: "SuperComNet (4.8★)", basePrice: 114999, rating: 4.7, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Google India Warranty" },
+          { platform: "Croma Retail", seller: "Croma Official (4.9★)", basePrice: 124999, rating: 4.8, deliveryDays: 1, returnPolicy: "14 Days Return", warranty: "1 Year Google India Warranty" }
+        ],
+        global: [
+          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 999.00, shippingForeign: 45.00, deliveryDays: 7 },
+          { store: "B&H Photo Video", region: "🇺🇸 USA", currency: "USD", foreignPrice: 999.00, shippingForeign: 48.00, deliveryDays: 8 }
+        ]
+      },
+
+      // 3. Laptops & Computing
+      {
+        id: "macbook-air-m3",
+        name: "Apple MacBook Air 13-inch (M3 Chip, 16GB Unified Memory, 512GB SSD)",
+        category: "Laptops",
+        brand: "Apple",
+        weightKg: 1.24,
+        indiaMrp: 134900,
+        voltage: "Universal 100-240V MagSafe 3 / USB-C",
+        intlWarrantyInIndia: "Yes (Apple 1-Year Global Warranty honored in India)",
+        customsHsCategory: "Laptop / Computer",
+        domestic: [
+          { platform: "Amazon.in", seller: "Appario Retail (4.8★)", basePrice: 122990, rating: 4.8, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Apple India Warranty" },
+          { platform: "Flipkart", seller: "SuperComNet (4.7★)", basePrice: 124900, rating: 4.7, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "1 Year Apple India Warranty" },
+          { platform: "Croma Retail", seller: "Croma Official (4.9★)", basePrice: 129900, rating: 4.8, deliveryDays: 1, returnPolicy: "14 Days Return", warranty: "1 Year Apple India Warranty" },
+          { platform: "Apple Store India", seller: "Apple Official", basePrice: 134900, rating: 5.0, deliveryDays: 2, returnPolicy: "14 Days Free Return", warranty: "1 Year Apple Global Warranty" }
+        ],
+        global: [
+          { store: "B&H Photo Video", region: "🇺🇸 USA", currency: "USD", foreignPrice: 1249.00, shippingForeign: 65.00, deliveryDays: 7 },
+          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 1249.00, shippingForeign: 70.00, deliveryDays: 8 },
+          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 4799.00, shippingForeign: 160.00, deliveryDays: 5 }
+        ]
+      },
+
+      // 4. Cameras & Drones
+      {
+        id: "fuji-x100vi",
+        name: "Fujifilm X100VI Digital Camera (40.2MP, IBIS, 23mm F2 Lens)",
+        category: "Cameras",
+        brand: "Fujifilm",
+        weightKg: 0.52,
+        indiaMrp: 169999,
+        voltage: "Universal 100-240V USB-C",
+        intlWarrantyInIndia: "Paid Repair Only (Fujifilm India requires domestic invoice for free warranty)",
+        customsHsCategory: "Digital Camera",
+        domestic: [
+          { platform: "Amazon.in (Scalper / Importer)", seller: "PhotoPro India (4.3★)", basePrice: 204990, rating: 4.2, deliveryDays: 3, returnPolicy: "Replacement only", warranty: "1 Year Seller Warranty" },
+          { platform: "Flipkart (Scalper)", seller: "CameraWorld (4.1★)", basePrice: 209990, rating: 4.0, deliveryDays: 4, returnPolicy: "Replacement only", warranty: "1 Year Seller Warranty" },
+          { platform: "Official Fujifilm Dealer (Waitlist)", seller: "Authorized Retail", basePrice: 169999, rating: 5.0, deliveryDays: 30, returnPolicy: "Standard", warranty: "2 Years Fujifilm India" }
+        ],
+        global: [
+          { store: "B&H Photo Video", region: "🇺🇸 USA", currency: "USD", foreignPrice: 1599.00, shippingForeign: 65.00, deliveryDays: 8 },
+          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 1599.99, shippingForeign: 70.00, deliveryDays: 8 },
+          { store: "Amazon Japan", region: "🇯🇵 Japan", currency: "JPY", foreignPrice: 281600, shippingForeign: 8500, deliveryDays: 7 }
+        ]
+      },
+      {
+        id: "dji-mini-4-pro",
+        name: "DJI Mini 4 Pro Drone (Fly More Combo Plus with RC 2 Screen Controller)",
+        category: "Cameras",
+        brand: "DJI",
+        weightKg: 0.95,
+        indiaMrp: 124999,
+        voltage: "Universal USB-C Fast Charger",
+        intlWarrantyInIndia: "No official DJI India warranty (Grey market in India)",
+        customsHsCategory: "Drones & Robotics",
+        domestic: [
+          { platform: "Amazon.in (Grey Market)", seller: "DroneMasters (4.3★)", basePrice: 114999, rating: 4.2, deliveryDays: 2, returnPolicy: "No Return (Check on delivery)", warranty: "6 Months Seller Warranty" },
+          { platform: "DesignInfo India", seller: "DesignInfo Direct (4.5★)", basePrice: 109990, rating: 4.4, deliveryDays: 3, returnPolicy: "Replacement only", warranty: "1 Year Dealer Warranty" }
+        ],
+        global: [
+          { store: "B&H Photo Video", region: "🇺🇸 USA", currency: "USD", foreignPrice: 1099.00, shippingForeign: 60.00, deliveryDays: 8 },
+          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 1099.00, shippingForeign: 65.00, deliveryDays: 8 },
+          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 3899.00, shippingForeign: 150.00, deliveryDays: 5 }
+        ]
+      },
+
+      // 5. Gaming & Handhelds
+      {
+        id: "steam-deck-oled",
+        name: "Valve Steam Deck OLED (512GB Handheld Gaming Console)",
+        category: "Gaming",
+        brand: "Valve",
+        weightKg: 0.67,
+        indiaMrp: 68999,
+        voltage: "Universal 100-240V 45W Type-C",
+        intlWarrantyInIndia: "No official service center in India (Third-party repair only)",
+        customsHsCategory: "Gaming Console",
+        domestic: [
+          { platform: "Amazon.in (Importer)", seller: "GadgetGalaxy (4.4★)", basePrice: 65990, rating: 4.4, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "6 Months Seller Warranty" },
+          { platform: "Flipkart (Importer)", seller: "GameStation (4.2★)", basePrice: 66490, rating: 4.2, deliveryDays: 3, returnPolicy: "7 Days Replacement", warranty: "6 Months Seller Warranty" },
+          { platform: "Mx2Games India", seller: "Mx2Games (4.6★)", basePrice: 62999, rating: 4.5, deliveryDays: 4, returnPolicy: "Replacement only", warranty: "1 Year Seller Warranty" }
+        ],
+        global: [
+          { store: "Komodo Japan", region: "🇯🇵 Japan", currency: "JPY", foreignPrice: 84800, shippingForeign: 6800, deliveryDays: 7 },
+          { store: "Amazon US / Valve", region: "🇺🇸 USA", currency: "USD", foreignPrice: 549.00, shippingForeign: 55.00, deliveryDays: 8 },
+          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 2249.00, shippingForeign: 140.00, deliveryDays: 5 }
+        ]
+      },
+      {
+        id: "ps5-pro",
+        name: "Sony PlayStation 5 Pro (PS5 Pro Console 2TB)",
+        category: "Gaming",
+        brand: "Sony",
+        weightKg: 3.10,
+        indiaMrp: 79990,
+        voltage: "Universal 100-240V Power Supply",
+        intlWarrantyInIndia: "No (Sony India strictly enforces domestic serial numbers for warranty)",
+        customsHsCategory: "Gaming Console",
+        domestic: [
+          { platform: "Amazon.in (Official)", seller: "Electronics Bazaar (4.9★)", basePrice: 79990, rating: 4.8, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Sony India" },
+          { platform: "Flipkart (Official)", seller: "MPDSLERetail (4.8★)", basePrice: 79990, rating: 4.7, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "1 Year Sony India" },
+          { platform: "Sony Center Direct", seller: "Sony Direct", basePrice: 79990, rating: 5.0, deliveryDays: 2, returnPolicy: "10 Days Return", warranty: "1 Year Sony India" }
+        ],
+        global: [
+          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 699.99, shippingForeign: 95.00, deliveryDays: 8 },
+          { store: "Amazon Japan", region: "🇯🇵 Japan", currency: "JPY", foreignPrice: 119980, shippingForeign: 14500, deliveryDays: 7 },
+          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 2899.00, shippingForeign: 210.00, deliveryDays: 5 }
+        ]
+      },
+      {
+        id: "nintendo-switch-oled",
+        name: "Nintendo Switch OLED Model (64GB with White Joy-Con)",
+        category: "Gaming",
+        brand: "Nintendo",
+        weightKg: 0.42,
+        indiaMrp: 34999,
+        voltage: "Universal 100-240V Type-C Adapter",
+        intlWarrantyInIndia: "No official Nintendo warranty center in India",
+        customsHsCategory: "Gaming Console",
+        domestic: [
+          { platform: "Amazon.in (Importer)", seller: "Kay Kay Overseas (4.5★)", basePrice: 28990, rating: 4.5, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "6 Months Seller Warranty" },
+          { platform: "Flipkart (Importer)", seller: "RetailNet (4.4★)", basePrice: 29490, rating: 4.4, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "6 Months Seller Warranty" }
+        ],
+        global: [
+          { store: "Amazon Japan", region: "🇯🇵 Japan", currency: "JPY", foreignPrice: 37980, shippingForeign: 4800, deliveryDays: 6 },
+          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 349.99, shippingForeign: 38.00, deliveryDays: 8 },
+          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 1149.00, shippingForeign: 110.00, deliveryDays: 5 }
+        ]
+      },
+
+      // 6. E-Readers & Accessories
+      {
         id: "kindle-paperwhite",
         name: "Amazon Kindle Paperwhite (16GB, 6.8\" Display with Warm Light)",
         category: "E-Reader",
+        brand: "Amazon",
         weightKg: 0.21,
         indiaMrp: 14999,
         voltage: "Universal USB-C",
@@ -244,50 +490,67 @@
         ]
       },
       {
-        id: "fuji-x100vi",
-        name: "Fujifilm X100VI Digital Camera (40.2MP, IBIS)",
-        category: "Cameras",
-        weightKg: 0.52,
-        indiaMrp: 169999,
-        voltage: "Universal 100-240V USB-C",
-        intlWarrantyInIndia: "Paid Repair Only (Fujifilm India requires domestic invoice for free warranty)",
-        customsHsCategory: "Digital Camera",
+        id: "mx-master-3s",
+        name: "Logitech MX Master 3S Wireless Performance Mouse (8K DPI)",
+        category: "Accessories",
+        brand: "Logitech",
+        weightKg: 0.14,
+        indiaMrp: 10995,
+        voltage: "Universal USB-C Battery",
+        intlWarrantyInIndia: "No (Logitech India requires domestic serial number for warranty replacement)",
+        customsHsCategory: "Computer Peripheral",
         domestic: [
-          { platform: "Amazon.in (Scalper)", seller: "PhotoPro India (4.3★)", basePrice: 204990, rating: 4.2, deliveryDays: 3, returnPolicy: "No Return (Replacement only)", warranty: "1 Year Fujifilm India" },
-          { platform: "Flipkart (Scalper)", seller: "CameraWorld (4.1★)", basePrice: 209990, rating: 4.0, deliveryDays: 4, returnPolicy: "Replacement only", warranty: "1 Year Fujifilm India" },
-          { platform: "Official Fujifilm Dealer", seller: "Authorized Retail (Waitlist)", basePrice: 169999, rating: 5.0, deliveryDays: 28, returnPolicy: "Standard", warranty: "2 Years Fujifilm India" }
+          { platform: "Amazon.in", seller: "Appario Retail (4.8★)", basePrice: 8995, rating: 4.7, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Logitech India" },
+          { platform: "Flipkart", seller: "RetailNet (4.6★)", basePrice: 9199, rating: 4.5, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "1 Year Logitech India" },
+          { platform: "Croma Retail", seller: "Croma Official (4.9★)", basePrice: 9995, rating: 4.6, deliveryDays: 1, returnPolicy: "14 Days Return", warranty: "1 Year Logitech India" }
         ],
         global: [
-          { store: "B&H Photo Video", region: "🇺🇸 USA", currency: "USD", foreignPrice: 1599.00, shippingForeign: 65.00, deliveryDays: 8 },
-          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 1599.99, shippingForeign: 70.00, deliveryDays: 8 },
-          { store: "Amazon Japan", region: "🇯🇵 Japan", currency: "JPY", foreignPrice: 281600, shippingForeign: 8500, deliveryDays: 7 }
-        ]
-      },
-      {
-        id: "steam-deck-oled",
-        name: "Valve Steam Deck OLED (512GB Handheld Gaming Console)",
-        category: "Gaming",
-        weightKg: 0.67,
-        indiaMrp: 68999,
-        voltage: "Universal 100-240V 45W Type-C",
-        intlWarrantyInIndia: "No official service center in India (Third-party repair only)",
-        customsHsCategory: "Gaming Console",
-        domestic: [
-          { platform: "Amazon.in (Importer)", seller: "GadgetGalaxy (4.4★)", basePrice: 66990, rating: 4.4, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "6 Months Seller Warranty" },
-          { platform: "Flipkart (Importer)", seller: "GameStation (4.2★)", basePrice: 67490, rating: 4.2, deliveryDays: 3, returnPolicy: "7 Days Replacement", warranty: "6 Months Seller Warranty" }
-        ],
-        global: [
-          { store: "Komodo Japan", region: "🇯🇵 Japan", currency: "JPY", foreignPrice: 84800, shippingForeign: 6800, deliveryDays: 7 },
-          { store: "Amazon US / Valve", region: "🇺🇸 USA", currency: "USD", foreignPrice: 549.00, shippingForeign: 55.00, deliveryDays: 8 },
-          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 2249.00, shippingForeign: 140.00, deliveryDays: 5 }
+          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 99.99, shippingForeign: 18.00, deliveryDays: 8 },
+          { store: "Amazon Japan", region: "🇯🇵 Japan", currency: "JPY", foreignPrice: 14800, shippingForeign: 2200, deliveryDays: 6 },
+          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 349.00, shippingForeign: 55.00, deliveryDays: 5 }
         ]
       }
     ];
+
+    // Helper to generate dynamic custom products on demand
+    function createDynamicEstimatedProduct(query) {
+      const cleanName = query.trim().replace(/^https?:\/\/[^\s]+/i, '').trim() || query.trim();
+      const title = cleanName ? (cleanName.charAt(0).toUpperCase() + cleanName.slice(1)) : "Custom Gadget";
+      
+      // Heuristic baseline price based on common gadget value
+      const baseEstimateInr = 45000;
+      const baseEstimateUsd = Math.round(baseEstimateInr / 84.15 * 0.85);
+
+      return {
+        id: "custom-" + Date.now(),
+        name: title,
+        category: "Custom Search / Electronics",
+        brand: "Custom",
+        weightKg: 0.5,
+        indiaMrp: Math.round(baseEstimateInr * 1.2),
+        voltage: "Universal 100-240V USB-C",
+        intlWarrantyInIndia: "Check brand policy (Apple/Bose offer global warranty; Sony/Samsung domestic only)",
+        customsHsCategory: "General Personal Electronics (HS 9804)",
+        isCustomEstimated: true,
+        domestic: [
+          { platform: "Amazon.in", seller: "Verified Retailer (4.8★)", basePrice: baseEstimateInr, rating: 4.6, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Official Brand India" },
+          { platform: "Flipkart", seller: "Authorized Seller (4.7★)", basePrice: Math.round(baseEstimateInr * 1.02), rating: 4.5, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "1 Year Official Brand India" },
+          { platform: "Croma Retail", seller: "Croma Direct (4.9★)", basePrice: Math.round(baseEstimateInr * 1.05), rating: 4.7, deliveryDays: 1, returnPolicy: "14 Days Return", warranty: "1 Year Official Brand India" }
+        ],
+        global: [
+          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: baseEstimateUsd, shippingForeign: 38.00, deliveryDays: 8 },
+          { store: "Amazon Japan", region: "🇯🇵 Japan", currency: "JPY", foreignPrice: Math.round(baseEstimateUsd * 150), shippingForeign: 4500, deliveryDays: 7 },
+          { store: "B&H Photo Video", region: "🇺🇸 USA", currency: "USD", foreignPrice: baseEstimateUsd, shippingForeign: 42.00, deliveryDays: 8 },
+          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: Math.round(baseEstimateUsd * 3.67), shippingForeign: 120.00, deliveryDays: 5 }
+        ]
+      };
+    }
 
     function App() {
       // User Preferences State
       const [selectedProduct, setSelectedProduct] = useState(PRODUCTS_CATALOG[0]);
       const [searchQuery, setSearchQuery] = useState("");
+      const [isSearchFocused, setIsSearchFocused] = useState(false);
       const [pincode, setPincode] = useState(() => localStorage.getItem("sitendra_pincode") || "560001");
       const [hasPrime, setHasPrime] = useState(true);
       const [hasFlipkartPlus, setHasFlipkartPlus] = useState(true);
@@ -295,11 +558,23 @@
       const [customsDutyRate, setCustomsDutyRate] = useState(42.08); // Standard personal imports duty under HS 9804 (BCD 10% + SWS 10% on BCD + IGST 28%)
       const [forexMarkupRate, setForexMarkupRate] = useState(3.5); // Standard bank forex markup
       const [sortOption, setSortOption] = useState("price_asc"); // price_asc, fastest, value
+      const searchBoxRef = useRef(null);
 
       // Save pincode
       useEffect(() => {
         localStorage.setItem("sitendra_pincode", pincode);
       }, [pincode]);
+
+      // Click outside listener for search dropdown
+      useEffect(() => {
+        function handleClickOutside(event) {
+          if (searchBoxRef.current && !searchBoxRef.current.contains(event.target)) {
+            setIsSearchFocused(false);
+          }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+      }, []);
 
       // Resolve PIN code info
       const pincodeInfo = useMemo(() => {
@@ -314,12 +589,36 @@
         };
       }, [pincode]);
 
-      // Filter or search products
-      const filteredCatalog = useMemo(() => {
-        if (!searchQuery.trim()) return PRODUCTS_CATALOG;
-        const q = searchQuery.toLowerCase();
-        return PRODUCTS_CATALOG.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
+      // Live search results matching pre-indexed catalog
+      const searchResults = useMemo(() => {
+        if (!searchQuery.trim()) return PRODUCTS_CATALOG.slice(0, 8);
+        const q = searchQuery.toLowerCase().trim();
+        const matches = PRODUCTS_CATALOG.filter(p => 
+          p.name.toLowerCase().includes(q) || 
+          p.category.toLowerCase().includes(q) ||
+          p.brand.toLowerCase().includes(q)
+        );
+        return matches;
       }, [searchQuery]);
+
+      // Handle Search Submission
+      const handleExecuteSearch = (e) => {
+        if (e) e.preventDefault();
+        const q = searchQuery.trim();
+        if (!q) return;
+
+        // Check if exact or partial match in pre-indexed catalog
+        const match = PRODUCTS_CATALOG.find(p => p.name.toLowerCase().includes(q.toLowerCase()) || p.id.toLowerCase().includes(q.toLowerCase()));
+        if (match) {
+          setSelectedProduct(match);
+          setIsSearchFocused(false);
+        } else {
+          // Generate on-demand dynamic estimated comparison
+          const dyn = createDynamicEstimatedProduct(q);
+          setSelectedProduct(dyn);
+          setIsSearchFocused(false);
+        }
+      };
 
       // Calculate Domestic Deals
       const processedDomesticDeals = useMemo(() => {
@@ -406,13 +705,13 @@
           return {
             type: "import_wins",
             title: `🔥 Importing from ${bestGlobalDeal.store} (${bestGlobalDeal.region}) saves you ₹${bestGlobalDeal.savingsAmt.toLocaleString('en-IN')} (${percent}% cheaper)!`,
-            desc: `Total landed cost is ₹${bestGlobalDeal.totalLandedInr.toLocaleString('en-IN')} (including shipping & ${customsDutyRate}% India customs duty) vs ₹${bestDomesticDeal.finalOutPocket.toLocaleString('en-IN')} on ${bestDomesticDeal.platform}.`
+            desc: `Total landed cost is ₹${bestGlobalDeal.totalLandedInr.toLocaleString('en-IN')} (including overseas shipping & ${customsDutyRate}% India customs duty) vs ₹${bestDomesticDeal.finalOutPocket.toLocaleString('en-IN')} on ${bestDomesticDeal.platform}.`
           };
         } else {
           return {
             type: "domestic_wins",
             title: `🇮🇳 Buy in India on ${bestDomesticDeal.platform} (Saves ₹${bestGlobalDeal.savingsAmt.toLocaleString('en-IN')} vs Importing)!`,
-            desc: `Best domestic price is ₹${bestDomesticDeal.finalOutPocket.toLocaleString('en-IN')}. Importing from ${bestGlobalDeal.store} totals ₹${bestGlobalDeal.totalLandedInr.toLocaleString('en-IN')} due to customs duty & international shipping.`
+            desc: `Best domestic price is ₹${bestDomesticDeal.finalOutPocket.toLocaleString('en-IN')} (after ${bestDomesticDeal.offerLabel}). Importing from ${bestGlobalDeal.store} totals ₹${bestGlobalDeal.totalLandedInr.toLocaleString('en-IN')} due to customs duty & international shipping.`
           };
         }
       }, [bestDomesticDeal, bestGlobalDeal, customsDutyRate]);
@@ -420,38 +719,187 @@
       return (
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 space-y-6">
 
-          {/* Top Hero Banner */}
-          <div className="bg-white dark:bg-[#131D31] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800 mb-2">
-                  <span>🇮🇳</span> Personal Decision Engine
+          {/* Top Hero Banner & Prominent Live Search Bar */}
+          <div className="bg-white dark:bg-[#131D31] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+            <div className="max-w-3xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 mb-2">
+                <span>🇮🇳</span> Personal Decision Engine &amp; Shopping Intelligence
+              </div>
+              <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                Smart Deal &amp; <span className="bg-gradient-to-r from-emerald-500 via-sky-500 to-indigo-500 bg-clip-text text-transparent">Global Landed-Cost Finder</span>
+              </h1>
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-1.5">
+                Search any product to find the true lowest out-of-pocket price. Compare Indian domestic stores with delivery PIN codes &amp; bank discounts vs importing with exact 42.08% India customs duty &amp; forex fees.
+              </p>
+            </div>
+
+            {/* =========================================================
+                PROMINENT PRODUCT SEARCH ENGINE BAR
+                ========================================================= */}
+            <div className="relative" ref={searchBoxRef}>
+              <form onSubmit={handleExecuteSearch} className="flex flex-col sm:flex-row items-stretch gap-2.5">
+                <div className="relative flex-1">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="11" cy="11" r="8"/>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                  </div>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setIsSearchFocused(true);
+                    }}
+                    onFocus={() => setIsSearchFocused(true)}
+                    placeholder="🔍 Search any product, model, or brand (e.g. 'iPhone 16 Pro', 'Sony WH-1000XM5', 'MacBook Air M3', 'Bose QC Ultra', 'Fujifilm X100VI', 'DJI Mini 4 Pro', 'Steam Deck', 'Kindle Paperwhite', 'Galaxy S24 Ultra')..."
+                    className="w-full pl-12 pr-10 py-3.5 sm:py-4 bg-slate-50 dark:bg-[#18253E] border-2 border-slate-200 dark:border-slate-700 focus:border-sky-500 dark:focus:border-sky-500 rounded-2xl text-base font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-sky-500/20 transition-all shadow-inner"
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchQuery("");
+                        setIsSearchFocused(false);
+                      }}
+                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                    >
+                      <span className="text-lg font-bold">&times;</span>
+                    </button>
+                  )}
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                  Smart Deal &amp; <span className="bg-gradient-to-r from-sky-500 via-indigo-500 to-emerald-500 bg-clip-text text-transparent">Global Landed-Cost Finder</span>
-                </h1>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-3xl">
-                  Compare Indian storefronts with PIN code delivery &amp; bank card cashback against overseas landed costs (forex, shipping &amp; customs duty).
-                </p>
+
+                <button
+                  type="submit"
+                  className="px-6 py-3.5 sm:py-4 bg-gradient-to-r from-emerald-600 to-sky-600 hover:from-emerald-500 hover:to-sky-500 text-white font-bold rounded-2xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm sm:text-base flex-shrink-0"
+                >
+                  <span>Compare Deals &rarr;</span>
+                </button>
+              </form>
+
+              {/* Live Instant Search Dropdown Auto-Complete */}
+              {isSearchFocused && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#131D31] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 overflow-hidden max-h-96 overflow-y-auto">
+                  <div className="p-2 border-b border-slate-100 dark:border-slate-800/60 bg-slate-50 dark:bg-[#18253E]/50 flex items-center justify-between text-xs text-slate-500 px-4 py-2 font-bold uppercase tracking-wider">
+                    <span>{searchQuery ? `Matching Results for "${searchQuery}"` : "Suggested Popular Gadgets"}</span>
+                    <span>{searchResults.length} Products</span>
+                  </div>
+
+                  {searchResults.map((product) => (
+                    <div
+                      key={product.id}
+                      onClick={() => {
+                        setSelectedProduct(product);
+                        setSearchQuery("");
+                        setIsSearchFocused(false);
+                      }}
+                      className="px-4 py-3 hover:bg-sky-50 dark:hover:bg-sky-950/40 cursor-pointer border-b border-slate-100 dark:border-slate-800/40 flex items-center justify-between gap-4 transition-colors"
+                    >
+                      <div>
+                        <div className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                          <span>{product.name}</span>
+                        </div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-2">
+                          <span className="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-[10px] font-semibold">{product.category}</span>
+                          <span>&bull;</span>
+                          <span>India MRP: ₹{product.indiaMrp.toLocaleString('en-IN')}</span>
+                        </div>
+                      </div>
+
+                      <div className="text-right flex-shrink-0">
+                        <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-lg">
+                          Select Deal &rarr;
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* On-Demand Custom Estimator Action */}
+                  {searchQuery.trim() && (
+                    <div
+                      onClick={() => handleExecuteSearch()}
+                      className="p-3.5 bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/40 dark:to-indigo-950/40 hover:from-sky-100 hover:to-indigo-100 dark:hover:from-sky-900/60 dark:hover:to-indigo-900/60 cursor-pointer flex items-center justify-between text-xs font-bold text-sky-700 dark:text-sky-300"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-base">⚡</span>
+                        <span>Auto-Estimate &amp; Calculate deals for: <u>"{searchQuery.trim()}"</u></span>
+                      </div>
+                      <span className="bg-sky-600 text-white px-2.5 py-1 rounded-lg">Run Solver &rarr;</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Trending Quick Search Chips */}
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mr-1">Trending:</span>
+              {[
+                { name: "Sony WH-1000XM5", id: "sony-xm5" },
+                { name: "iPhone 16 Pro Max", id: "iphone-16-pro-max" },
+                { name: "iPad Air M2", id: "ipad-air-m2" },
+                { name: "MacBook Air M3", id: "macbook-air-m3" },
+                { name: "Bose QC Ultra", id: "bose-qc-ultra" },
+                { name: "Fujifilm X100VI", id: "fuji-x100vi" },
+                { name: "Steam Deck OLED", id: "steam-deck-oled" },
+                { name: "PS5 Pro Console", id: "ps5-pro" },
+                { name: "DJI Mini 4 Pro", id: "dji-mini-4-pro" },
+                { name: "Kindle Paperwhite", id: "kindle-paperwhite" }
+              ].map(chip => (
+                <button
+                  key={chip.id}
+                  type="button"
+                  onClick={() => {
+                    const match = PRODUCTS_CATALOG.find(p => p.id === chip.id);
+                    if (match) setSelectedProduct(match);
+                  }}
+                  className={`text-xs px-3 py-1.5 rounded-xl font-semibold transition-all ${
+                    selectedProduct.id === chip.id
+                      ? "bg-sky-600 text-white shadow-sm ring-2 ring-sky-500/30"
+                      : "bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  {chip.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Active Product Bar */}
+          <div className="bg-gradient-to-r from-slate-900 to-[#131D31] text-white rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg border border-slate-800">
+            <div>
+              <div className="flex items-center gap-2 text-xs text-sky-400 font-bold uppercase tracking-wider">
+                <span>Active Target Product</span>
+                <span>&bull;</span>
+                <span className="bg-sky-500/20 px-2 py-0.5 rounded text-sky-300">{selectedProduct.category}</span>
+                {selectedProduct.isCustomEstimated && (
+                  <span className="bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded font-bold">Dynamic Estimation</span>
+                )}
+              </div>
+              <h2 className="text-lg sm:text-xl font-black mt-1">
+                {selectedProduct.name}
+              </h2>
+              <div className="text-xs text-slate-300 mt-1 flex flex-wrap gap-x-4 gap-y-1">
+                <span>Official India MRP: <strong>₹{selectedProduct.indiaMrp.toLocaleString('en-IN')}</strong></span>
+                <span>Unit Weight: <strong>{selectedProduct.weightKg} kg</strong></span>
+                <span>Voltage: <strong>{selectedProduct.voltage}</strong></span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-right">
+                <div className="text-[10px] uppercase font-bold text-slate-400">Best India Price</div>
+                <div className="text-lg font-black font-mono text-emerald-400">
+                  ₹{bestDomesticDeal ? bestDomesticDeal.finalOutPocket.toLocaleString('en-IN') : "-"}
+                </div>
               </div>
 
-              {/* Quick Preset Selector */}
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Quick Test:</span>
-                {PRODUCTS_CATALOG.slice(0, 4).map(p => (
-                  <button
-                    key={p.id}
-                    type="button"
-                    onClick={() => { setSelectedProduct(p); setSearchQuery(""); }}
-                    className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-all ${
-                      selectedProduct.id === p.id
-                        ? "bg-sky-600 text-white shadow-sm"
-                        : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-                    }`}
-                  >
-                    {p.name.split(" ")[0]} {p.name.split(" ")[1]}
-                  </button>
-                ))}
+              <div className="bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-right">
+                <div className="text-[10px] uppercase font-bold text-slate-400">Lowest Landed Import</div>
+                <div className="text-lg font-black font-mono text-sky-400">
+                  ₹{bestGlobalDeal ? bestGlobalDeal.totalLandedInr.toLocaleString('en-IN') : "-"}
+                </div>
               </div>
             </div>
           </div>
@@ -459,91 +907,72 @@
           {/* User Input & Preference Control Matrix */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
             
-            {/* Product Search & Dropdown */}
-            <div className="lg:col-span-5 bg-white dark:bg-[#131D31] border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                1. Select Product / Model
-              </label>
-              <select
-                value={selectedProduct.id}
-                onChange={(e) => {
-                  const found = PRODUCTS_CATALOG.find(p => p.id === e.target.value);
-                  if (found) setSelectedProduct(found);
-                }}
-                className="w-full bg-slate-50 dark:bg-[#18253E] border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500"
-              >
-                {PRODUCTS_CATALOG.map(p => (
-                  <option key={p.id} value={p.id}>{p.name} (MRP ₹{p.indiaMrp.toLocaleString('en-IN')})</option>
-                ))}
-              </select>
-
-              <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1">
-                <span>Category: <strong className="text-slate-800 dark:text-slate-200">{selectedProduct.category}</strong></span>
-                <span>Unit Weight: <strong className="text-slate-800 dark:text-slate-200">{selectedProduct.weightKg} kg</strong></span>
-              </div>
-            </div>
-
             {/* Indian PIN Code Resolver */}
-            <div className="lg:col-span-3 bg-white dark:bg-[#131D31] border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-2">
+            <div className="lg:col-span-5 bg-white dark:bg-[#131D31] border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  2. Delivery PIN Code
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                  <span>📍</span> 1. Delivery PIN Code (India)
                 </label>
-                <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">Auto-Saved</span>
+                <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded">Auto-Saved</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <input
                   type="text"
                   maxLength="6"
                   value={pincode}
                   onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
                   placeholder="e.g. 560001"
-                  className="w-28 bg-slate-50 dark:bg-[#18253E] border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm font-mono font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  className="w-32 bg-slate-50 dark:bg-[#18253E] border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-base font-mono font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500"
                 />
                 <div className="text-xs leading-tight">
-                  <div className="font-bold text-slate-800 dark:text-slate-200">{pincodeInfo.city}</div>
-                  <div className="text-slate-500 dark:text-slate-400">{pincodeInfo.state}</div>
+                  <div className="font-bold text-slate-800 dark:text-slate-200 text-sm">{pincodeInfo.city}</div>
+                  <div className="text-slate-500 dark:text-slate-400">{pincodeInfo.state} &bull; <span className="text-sky-600 dark:text-sky-400 font-semibold">{pincodeInfo.hubSpeed}</span></div>
                 </div>
               </div>
             </div>
 
             {/* Bank Cards & Memberships */}
-            <div className="lg:col-span-4 bg-white dark:bg-[#131D31] border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-2">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                3. Payment Card &amp; Perks
+            <div className="lg:col-span-7 bg-white dark:bg-[#131D31] border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <span>💳</span> 2. Primary Bank Card &amp; Fast-Track Perks
               </label>
-              <select
-                value={selectedCard}
-                onChange={(e) => setSelectedCard(e.target.value)}
-                className="w-full bg-slate-50 dark:bg-[#18253E] border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500"
-              >
-                <option value="icici_amazon">💳 Amazon Pay ICICI (5% on Amazon / 1% others)</option>
-                <option value="sbi_cashback">💳 SBI Cashback Card (5% online everywhere)</option>
-                <option value="axis_flipkart">💳 Flipkart Axis Bank (5% on Flipkart / 1.5% others)</option>
-                <option value="hdfc_millennia">💳 HDFC Millennia (5% Amazon &amp; Flipkart)</option>
-                <option value="axis_ace">💳 Axis Ace (2% flat cashback)</option>
-                <option value="standard">💵 Standard UPI / Debit / NetBanking (0%)</option>
-              </select>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                <div className="sm:col-span-7">
+                  <select
+                    value={selectedCard}
+                    onChange={(e) => setSelectedCard(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-[#18253E] border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  >
+                    <option value="icici_amazon">💳 Amazon Pay ICICI (5% on Amazon / 1% others)</option>
+                    <option value="sbi_cashback">💳 SBI Cashback Card (5% online everywhere)</option>
+                    <option value="axis_flipkart">💳 Flipkart Axis Bank (5% on Flipkart / 1.5% others)</option>
+                    <option value="hdfc_millennia">💳 HDFC Millennia (5% Amazon &amp; Flipkart)</option>
+                    <option value="axis_ace">💳 Axis Ace (2% flat cashback)</option>
+                    <option value="standard">💵 Standard UPI / Debit / NetBanking (0%)</option>
+                  </select>
+                </div>
 
-              <div className="flex items-center gap-4 pt-1 text-xs">
-                <label className="flex items-center gap-1.5 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={hasPrime}
-                    onChange={(e) => setHasPrime(e.target.checked)}
-                    className="rounded text-sky-600 focus:ring-sky-500"
-                  />
-                  <span>Amazon Prime</span>
-                </label>
-                <label className="flex items-center gap-1.5 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={hasFlipkartPlus}
-                    onChange={(e) => setHasFlipkartPlus(e.target.checked)}
-                    className="rounded text-sky-600 focus:ring-sky-500"
-                  />
-                  <span>Flipkart Plus / VIP</span>
-                </label>
+                <div className="sm:col-span-5 flex items-center gap-4 text-xs font-semibold">
+                  <label className="flex items-center gap-1.5 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={hasPrime}
+                      onChange={(e) => setHasPrime(e.target.checked)}
+                      className="rounded text-sky-600 focus:ring-sky-500 w-4 h-4"
+                    />
+                    <span>Amazon Prime</span>
+                  </label>
+                  <label className="flex items-center gap-1.5 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={hasFlipkartPlus}
+                      onChange={(e) => setHasFlipkartPlus(e.target.checked)}
+                      className="rounded text-sky-600 focus:ring-sky-500 w-4 h-4"
+                    />
+                    <span>Flipkart Plus</span>
+                  </label>
+                </div>
               </div>
             </div>
 
@@ -551,22 +980,22 @@
 
           {/* Real-time Verdict Decision Banner */}
           {verdict && (
-            <div className={`p-4 sm:p-5 rounded-2xl border transition-all ${
+            <div className={`p-5 rounded-2xl border transition-all ${
               verdict.type === "import_wins"
-                ? "bg-blue-50/80 dark:bg-blue-950/40 border-blue-300 dark:border-blue-800"
-                : "bg-emerald-50/80 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800"
+                ? "bg-blue-50/90 dark:bg-blue-950/40 border-blue-300 dark:border-blue-800"
+                : "bg-emerald-50/90 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800"
             }`}>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
                     {verdict.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 mt-0.5">
+                  <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 mt-1">
                     {verdict.desc}
                   </p>
                 </div>
                 <div className="flex-shrink-0">
-                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+                  <span className={`inline-block px-3.5 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider ${
                     verdict.type === "import_wins" ? "badge-import-save" : "badge-best-deal"
                   }`}>
                     {verdict.type === "import_wins" ? "Import Advantage" : "Domestic Recommended"}
@@ -579,10 +1008,10 @@
           {/* =========================================================
               SECTION A: DOMESTIC INDIA STOREFRONTS (Top Half)
               ========================================================= */}
-          <div className="bg-white dark:bg-[#131D31] border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+          <div className="bg-white dark:bg-[#131D31] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-slate-800">
               <div className="flex items-center gap-2">
-                <span className="text-lg">🇮🇳</span>
+                <span className="text-xl">🇮🇳</span>
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white">
                   Domestic Indian Storefronts Comparison
                 </h2>
@@ -600,39 +1029,39 @@
                   className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1 text-slate-800 dark:text-slate-200 font-semibold"
                 >
                   <option value="price_asc">Lowest Out-of-Pocket Price</option>
-                  <option value="fastest">Fastest Delivery Speed</option>
+                  <option value="fastest">Fastest Delivery Date</option>
                 </select>
               </div>
             </div>
 
-            {/* Domestic Deals Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {/* Stores Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {processedDomesticDeals.map((deal, idx) => {
-                const isBest = idx === 0 && sortOption === "price_asc";
+                const isBestDeal = idx === 0 && sortOption === "price_asc";
 
                 return (
                   <div
                     key={deal.platform}
-                    className={`relative rounded-xl border p-4 transition-all flex flex-col justify-between ${
-                      isBest
-                        ? "bg-emerald-50/40 dark:bg-emerald-950/20 border-emerald-500 shadow-md ring-1 ring-emerald-500/20"
-                        : "bg-slate-50/60 dark:bg-[#18253E]/50 border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-700"
+                    className={`relative rounded-2xl p-4 border transition-all flex flex-col justify-between ${
+                      isBestDeal
+                        ? "bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-400 dark:border-emerald-600 shadow-md ring-2 ring-emerald-500/20"
+                        : "bg-white dark:bg-[#18253E] border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
                     }`}
                   >
-                    {isBest && (
-                      <div className="absolute -top-3 right-4 badge-best-deal text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-wider">
-                        #1 Lowest India Price
+                    {isBestDeal && (
+                      <div className="absolute -top-3 right-4 badge-best-deal text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-wider shadow">
+                        #1 Best Deal in India
                       </div>
                     )}
 
-                    <div>
+                    <div className="space-y-3">
                       {/* Platform & Seller */}
-                      <div className="flex items-start justify-between gap-2 mb-2">
+                      <div className="flex items-start justify-between">
                         <div>
-                          <div className="font-extrabold text-base text-slate-900 dark:text-white">
+                          <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
                             {deal.platform}
-                          </div>
-                          <div className="text-xs text-slate-500 dark:text-slate-400">
+                          </h3>
+                          <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                             Seller: <span className="font-medium text-slate-700 dark:text-slate-300">{deal.seller}</span>
                           </div>
                         </div>
@@ -641,50 +1070,57 @@
                         </span>
                       </div>
 
-                      {/* Price Math Breakdown */}
-                      <div className="space-y-1.5 py-3 border-t border-b border-slate-200/80 dark:border-slate-700/60 text-xs">
+                      {/* Pricing Breakdown */}
+                      <div className="space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
                         <div className="flex justify-between text-slate-600 dark:text-slate-400">
-                          <span>Base Listed Price:</span>
-                          <span className="font-mono font-semibold">₹{deal.basePrice.toLocaleString('en-IN')}</span>
+                          <span>Listed Price:</span>
+                          <span className="font-mono font-medium">₹{deal.basePrice.toLocaleString('en-IN')}</span>
                         </div>
 
                         {deal.discountAmt > 0 && (
-                          <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-medium">
-                            <span className="truncate pr-2">{deal.offerLabel.split("(")[0]}</span>
+                          <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-semibold">
+                            <span>Card Discount:</span>
                             <span className="font-mono font-bold">−₹{deal.discountAmt.toLocaleString('en-IN')}</span>
                           </div>
                         )}
 
                         <div className="flex justify-between text-slate-600 dark:text-slate-400">
-                          <span>Delivery to {pincode}:</span>
-                          <span className="font-mono font-semibold">
-                            {deal.shippingFee === 0 ? <strong className="text-emerald-600 dark:text-emerald-400">FREE</strong> : `+₹${deal.shippingFee}`}
+                          <span>Delivery Fee (PIN {pincode}):</span>
+                          <span className={`font-mono font-medium ${deal.shippingFee === 0 ? "text-emerald-600 dark:text-emerald-400 font-bold" : ""}`}>
+                            {deal.shippingFee === 0 ? "FREE" : `+₹${deal.shippingFee}`}
                           </span>
                         </div>
                       </div>
 
-                      {/* Final Out-of-Pocket */}
-                      <div className="pt-3 flex items-baseline justify-between">
-                        <span className="text-xs uppercase font-bold text-slate-500 dark:text-slate-400">Out-of-Pocket:</span>
+                      {/* Final Out of Pocket Price */}
+                      <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-baseline justify-between">
+                        <span className="text-xs uppercase font-bold text-slate-500 dark:text-slate-400">Out of Pocket:</span>
                         <div className="text-right">
-                          <div className="text-xl font-black font-mono text-emerald-600 dark:text-emerald-400">
+                          <div className="text-2xl font-black font-mono text-slate-900 dark:text-white">
                             ₹{deal.finalOutPocket.toLocaleString('en-IN')}
                           </div>
-                          <div className="text-[11px] text-slate-500 line-through">
-                            MRP ₹{selectedProduct.indiaMrp.toLocaleString('en-IN')}
-                          </div>
+                          {deal.discountAmt > 0 && (
+                            <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
+                              {deal.offerLabel}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
 
-                    {/* Meta tags: Delivery date & Warranty */}
-                    <div className="pt-3 mt-3 border-t border-slate-200 dark:border-slate-800 space-y-1 text-[11px] text-slate-500 dark:text-slate-400">
-                      <div className="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-300">
-                        <span>{deal.eddFormatted}</span>
+                    {/* Trust & Delivery Badges */}
+                    <div className="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
+                      <div className="flex justify-between">
+                        <span>Delivery Speed:</span>
+                        <span className="font-semibold text-slate-700 dark:text-slate-300">{deal.eddFormatted}</span>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span>🛡️ {deal.warranty}</span>
-                        <span>🔄 {deal.returnPolicy}</span>
+                      <div className="flex justify-between">
+                        <span>Warranty:</span>
+                        <span className="font-semibold text-emerald-600 dark:text-emerald-400">{deal.warranty}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Returns:</span>
+                        <span>{deal.returnPolicy}</span>
                       </div>
                     </div>
 
@@ -695,94 +1131,97 @@
           </div>
 
           {/* =========================================================
-              SECTION B: GLOBAL DEALS & LANDED-COST ENGINE (Bottom Half)
+              SECTION B: GLOBAL LANDED-COST ENGINE (Bottom Half)
               ========================================================= */}
-          <div className="bg-white dark:bg-[#131D31] border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-slate-800">
-              <div className="flex items-center gap-2">
-                <span className="text-lg">🌐</span>
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                  Global Landed-Cost Engine (Import to India)
-                </h2>
-                <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2.5 py-0.5 rounded-full font-semibold">
-                  Transparent Customs &amp; Forex Math
-                </span>
+          <div className="bg-white dark:bg-[#131D31] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-4">
+            
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-slate-800">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">✈️</span>
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                    Global Landed-Cost Engine (International Stores)
+                  </h2>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  Calculates true landed cost under HS 9804 (Personal Courier Import): Foreign Price &rarr; INR Forex &rarr; Card Markup &rarr; Shipping &rarr; India Customs (42.08%).
+                </p>
               </div>
 
-              {/* Duty & Forex Live Tuner Popover / Inline */}
-              <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-600 dark:text-slate-400">
-                <div className="flex items-center gap-1.5">
-                  <span>Customs Duty Rate:</span>
+              {/* Dynamic Customs & Forex Live Tuning Sliders */}
+              <div className="flex flex-wrap items-center gap-4 bg-slate-50 dark:bg-[#18253E] border border-slate-200 dark:border-slate-700 px-3.5 py-2 rounded-xl text-xs font-semibold">
+                <div className="flex items-center gap-2">
+                  <span className="text-slate-600 dark:text-slate-400">Customs Duty:</span>
                   <input
-                    type="number"
+                    type="range"
                     min="0"
-                    max="100"
+                    max="77"
                     step="0.5"
                     value={customsDutyRate}
-                    onChange={(e) => setCustomsDutyRate(parseFloat(e.target.value) || 0)}
-                    className="w-16 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-1.5 py-0.5 text-center font-mono font-bold text-slate-900 dark:text-white"
+                    onChange={(e) => setCustomsDutyRate(parseFloat(e.target.value))}
+                    className="w-20 customs-slider cursor-pointer"
                   />
-                  <span>%</span>
+                  <span className="font-mono font-bold text-sky-600 dark:text-sky-400">{customsDutyRate}%</span>
                 </div>
 
-                <div className="flex items-center gap-1.5">
-                  <span>Forex Markup:</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-slate-600 dark:text-slate-400">Forex Markup:</span>
                   <input
-                    type="number"
+                    type="range"
                     min="0"
-                    max="10"
+                    max="5"
                     step="0.5"
                     value={forexMarkupRate}
-                    onChange={(e) => setForexMarkupRate(parseFloat(e.target.value) || 0)}
-                    className="w-14 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-1.5 py-0.5 text-center font-mono font-bold text-slate-900 dark:text-white"
+                    onChange={(e) => setForexMarkupRate(parseFloat(e.target.value))}
+                    className="w-16 customs-slider cursor-pointer"
                   />
-                  <span>%</span>
+                  <span className="font-mono font-bold text-sky-600 dark:text-sky-400">{forexMarkupRate}%</span>
                 </div>
               </div>
             </div>
 
-            {/* Global Landed Cost Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+            {/* Global Stores Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {processedGlobalDeals.map((deal) => {
                 return (
                   <div
                     key={deal.store}
-                    className={`rounded-xl border p-4 transition-all flex flex-col justify-between ${
+                    className={`rounded-2xl p-4 border transition-all flex flex-col justify-between ${
                       deal.isCheaperThanIndia
-                        ? "bg-blue-50/40 dark:bg-blue-950/20 border-blue-400 dark:border-blue-700 shadow-sm"
-                        : "bg-slate-50/60 dark:bg-[#18253E]/50 border-slate-200 dark:border-slate-800"
+                        ? "bg-blue-50/50 dark:bg-blue-950/20 border-blue-400 dark:border-blue-600 ring-2 ring-blue-500/20 shadow-md"
+                        : "bg-white dark:bg-[#18253E] border-slate-200 dark:border-slate-800"
                     }`}
                   >
-                    <div>
-                      {/* Store & Currency Header */}
-                      <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="space-y-3">
+                      {/* Store & Region */}
+                      <div className="flex items-start justify-between">
                         <div>
-                          <div className="font-extrabold text-base text-slate-900 dark:text-white">
+                          <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
                             {deal.store}
-                          </div>
-                          <div className="text-xs text-slate-500 dark:text-slate-400">
-                            {deal.region} &bull; 1 {deal.currency} = ₹{deal.exchangeRate.toFixed(2)}
+                          </h3>
+                          <div className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                            {deal.region}
                           </div>
                         </div>
-                        <span className="font-mono text-xs font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300">
+                        <span className="text-xs font-mono font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300">
                           {deal.currency} {deal.foreignPrice.toLocaleString()}
                         </span>
                       </div>
 
                       {/* Transparent Landed Cost Math Breakdown */}
-                      <div className="space-y-1.5 py-3 border-t border-b border-slate-200/80 dark:border-slate-700/60 text-xs">
+                      <div className="space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
                         <div className="flex justify-between text-slate-600 dark:text-slate-400">
-                          <span>Base Price in INR:</span>
-                          <span className="font-mono font-semibold">₹{deal.priceInr.toLocaleString('en-IN')}</span>
+                          <span>Base Foreign Price:</span>
+                          <span className="font-mono">₹{deal.priceInr.toLocaleString('en-IN')}</span>
                         </div>
 
                         <div className="flex justify-between text-slate-600 dark:text-slate-400">
-                          <span>+{forexMarkupRate}% Forex Fee:</span>
-                          <span className="font-mono font-semibold">+₹{deal.forexFee.toLocaleString('en-IN')}</span>
+                          <span>Forex Markup ({forexMarkupRate}%):</span>
+                          <span className="font-mono">+₹{deal.forexFee.toLocaleString('en-IN')}</span>
                         </div>
 
                         <div className="flex justify-between text-slate-600 dark:text-slate-400">
-                          <span>+Courier Shipping ({deal.currency} {deal.shippingForeign}):</span>
+                          <span>Overseas Shipping:</span>
                           <span className="font-mono font-semibold">+₹{deal.shippingInr.toLocaleString('en-IN')}</span>
                         </div>
 
@@ -793,7 +1232,7 @@
                       </div>
 
                       {/* Total Landed Cost */}
-                      <div className="pt-3 flex items-baseline justify-between">
+                      <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-baseline justify-between">
                         <span className="text-xs uppercase font-bold text-slate-500 dark:text-slate-400">Landed Cost:</span>
                         <div className="text-right">
                           <div className="text-xl font-black font-mono text-slate-900 dark:text-white">
@@ -808,7 +1247,7 @@
                       </div>
                     </div>
 
-                    {/* Import Risk Checklist Mini */}
+                    {/* Import Transit Mini */}
                     <div className="pt-3 mt-3 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
                       <div className="flex justify-between">
                         <span>Transit Time:</span>
@@ -822,23 +1261,23 @@
             </div>
 
             {/* Reliability & Risk Checklist Table */}
-            <div className="mt-4 bg-slate-50 dark:bg-[#18253E] border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3">
+            <div className="mt-4 bg-slate-50 dark:bg-[#18253E] border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3">
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                 <span>🛡️</span> Import Reliability &amp; Risk Checklist for {selectedProduct.name}
               </h4>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                <div className="bg-white dark:bg-[#131D31] p-3 rounded-lg border border-slate-200 dark:border-slate-800 space-y-1">
+                <div className="bg-white dark:bg-[#131D31] p-3 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1">
                   <div className="font-bold text-slate-800 dark:text-slate-200">1. India Warranty Status</div>
                   <div className="text-slate-600 dark:text-slate-400">{selectedProduct.intlWarrantyInIndia}</div>
                 </div>
 
-                <div className="bg-white dark:bg-[#131D31] p-3 rounded-lg border border-slate-200 dark:border-slate-800 space-y-1">
+                <div className="bg-white dark:bg-[#131D31] p-3 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1">
                   <div className="font-bold text-slate-800 dark:text-slate-200">2. Voltage &amp; Plug Compatibility</div>
                   <div className="text-slate-600 dark:text-slate-400">{selectedProduct.voltage}</div>
                 </div>
 
-                <div className="bg-white dark:bg-[#131D31] p-3 rounded-lg border border-slate-200 dark:border-slate-800 space-y-1">
+                <div className="bg-white dark:bg-[#131D31] p-3 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1">
                   <div className="font-bold text-slate-800 dark:text-slate-200">3. Customs Clearance KYC</div>
                   <div className="text-slate-600 dark:text-slate-400">Aadhaar / Passport upload required by DHL/FedEx upon India arrival.</div>
                 </div>
