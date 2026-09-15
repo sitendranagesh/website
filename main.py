@@ -41,6 +41,7 @@ from database.jobs_operation import (
     get_jobs_summary_stats,
     force_refresh_jobs_cache,
 )
+from database.deals_scraper import search_live_product_deals
 
 BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
@@ -757,6 +758,26 @@ def api_refresh_jobs_cache():
         "message": "Live government job feeds refreshed",
         "count": len(jobs),
     })
+
+
+# =========================================================
+# Live Deals & Landed-Cost Search API
+# =========================================================
+@app.get("/api/deals/search")
+def api_search_deals(q: str = Query(..., min_length=1)):
+    """Real-time Web Search & Deals Intelligence Endpoint."""
+    try:
+        product = search_live_product_deals(q)
+        return JSONResponse({
+            "status": "success",
+            "query": q,
+            "product": product
+        })
+    except Exception as e:
+        return JSONResponse({
+            "status": "error",
+            "message": str(e)
+        }, status_code=500)
 
 
 # =========================================================

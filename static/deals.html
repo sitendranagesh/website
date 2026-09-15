@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Smart Deal &amp; Global Landed-Cost Finder (India) | Sitendra</title>
-  <meta name="description" content="Personal decision engine comparing Indian domestic stores (Amazon.in, Flipkart, Croma) with PIN-code delivery and bank discounts vs Global stores (Amazon US, Japan, UAE, B&H) calculating true landed cost with customs duty, forex, and shipping.">
+  <meta name="description" content="Personal decision engine searching the live internet for any product to compare Indian stores (Amazon.in, Flipkart, 1mg, Nykaa, Croma) with PIN-code delivery and bank discounts vs Global stores (Amazon US, Japan, UAE) calculating true landed cost with customs duty, forex, and shipping.">
 
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
@@ -87,6 +87,13 @@
       background: #0284C7;
       cursor: pointer;
       box-shadow: 0 0 5px rgba(2, 132, 199, 0.5);
+    }
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.01); }
+    }
+    .animate-pulse-glow {
+      animation: pulse-glow 2s infinite ease-in-out;
     }
   </style>
 </head>
@@ -180,9 +187,56 @@
       standard: { name: "Standard Debit / UPI (0%)", amazonInCashback: 0, flipkartCashback: 0, otherCashback: 0, icon: "💵" }
     };
 
-    // Comprehensive Pre-Indexed Realistic Products Dataset (25+ Popular Gadgets)
+    // Pre-indexed Catalog Base
     const PRODUCTS_CATALOG = [
-      // 1. Audio
+      // 1. Skincare & Sunscreens
+      {
+        id: "uv-doux-sunscreen",
+        name: "UV Doux Silicone Sunscreen Gel (SPF 50 PA+++, 50g)",
+        category: "Skincare & Sun Care",
+        brand: "Brinton Healthcare / UV Doux",
+        weightKg: 0.12,
+        indiaMrp: 880,
+        voltage: "N/A (Topical Formulation)",
+        intlWarrantyInIndia: "100% Genuine Certified Batch (Direct Manufacturer Distribution in India)",
+        customsHsCategory: "Cosmetics & Skincare (HS 3304)",
+        customsDutyRate: 39.2,
+        domestic: [
+          { platform: "Tata 1mg", seller: "Tata 1mg Official (4.8★)", basePrice: 734, rating: 4.8, deliveryDays: 1, returnPolicy: "7 Days Returnable", warranty: "100% Genuine Certified Batch" },
+          { platform: "Nykaa", seller: "Nykaa E-Retail (4.9★)", basePrice: 750, rating: 4.7, deliveryDays: 2, returnPolicy: "15 Days Return", warranty: "Authorised Brand Partner" },
+          { platform: "Amazon.in", seller: "Brinton Healthcare Official (4.7★)", basePrice: 765, rating: 4.6, deliveryDays: 1, returnPolicy: "Replacement if damaged", warranty: "Official Manufacturer Seal" },
+          { platform: "Flipkart", seller: "RetailNet (4.6★)", basePrice: 780, rating: 4.5, deliveryDays: 2, returnPolicy: "Replacement Only", warranty: "Authorised Seller" },
+          { platform: "Apollo Pharmacy", seller: "Apollo Direct (4.9★)", basePrice: 796, rating: 4.9, deliveryDays: 1, returnPolicy: "Immediate Verification", warranty: "Direct Pharmacy Dispensed" }
+        ],
+        global: [
+          { store: "Amazon US / iHerb", region: "🇺🇸 USA", currency: "USD", foreignPrice: 16.50, shippingForeign: 14.00, deliveryDays: 8 },
+          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 60.60, shippingForeign: 38.00, deliveryDays: 5 },
+          { store: "eBay Global", region: "🌍 International", currency: "USD", foreignPrice: 17.80, shippingForeign: 16.00, deliveryDays: 10 }
+        ]
+      },
+      {
+        id: "cosrx-snail-mucin",
+        name: "COSRX Advanced Snail 96 Mucin Power Essence (100ml)",
+        category: "Skincare & Sun Care",
+        brand: "COSRX",
+        weightKg: 0.18,
+        indiaMrp: 1450,
+        voltage: "N/A (Topical Essence)",
+        intlWarrantyInIndia: "Genuine Manufacturer Batch Guarantee",
+        customsHsCategory: "Cosmetics & Skincare (HS 3304)",
+        customsDutyRate: 39.2,
+        domestic: [
+          { platform: "Nykaa", seller: "Nykaa E-Retail (4.9★)", basePrice: 1050, rating: 4.8, deliveryDays: 2, returnPolicy: "15 Days Return", warranty: "Authorised Brand Partner" },
+          { platform: "Amazon.in", seller: "Maccaron Official (4.7★)", basePrice: 1080, rating: 4.7, deliveryDays: 1, returnPolicy: "Replacement only", warranty: "Official Importer Seal" },
+          { platform: "Tata 1mg", seller: "1mg Pharma (4.8★)", basePrice: 1099, rating: 4.7, deliveryDays: 1, returnPolicy: "7 Days Return", warranty: "Genuine Batch Verified" }
+        ],
+        global: [
+          { store: "Amazon US / iHerb", region: "🇺🇸 USA", currency: "USD", foreignPrice: 14.99, shippingForeign: 12.00, deliveryDays: 7 },
+          { store: "Olive Young Korea", region: "🇰🇷 Korea", currency: "USD", foreignPrice: 13.50, shippingForeign: 15.00, deliveryDays: 8 }
+        ]
+      },
+
+      // 2. Audio & Headphones
       {
         id: "sony-xm5",
         name: "Sony WH-1000XM5 Wireless Noise-Cancelling Headphones",
@@ -193,12 +247,12 @@
         voltage: "Universal 100-240V (USB-C Charging)",
         intlWarrantyInIndia: "No (Sony India honors domestic purchases only)",
         customsHsCategory: "Electronics (Headphones)",
+        customsDutyRate: 42.08,
         domestic: [
           { platform: "Amazon.in", seller: "Appario Retail (4.8★)", basePrice: 26990, rating: 4.6, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Official Sony India" },
           { platform: "Flipkart", seller: "RetailNet (4.7★)", basePrice: 27490, rating: 4.5, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "1 Year Official Sony India" },
           { platform: "Croma Retail", seller: "Croma Direct (4.9★)", basePrice: 28990, rating: 4.7, deliveryDays: 1, returnPolicy: "14 Days Return", warranty: "1 Year Official Sony India" },
-          { platform: "Tata CLiQ", seller: "Tata Luxury (4.6★)", basePrice: 27990, rating: 4.4, deliveryDays: 3, returnPolicy: "7 Days Return", warranty: "1 Year Official Sony India" },
-          { platform: "Sony Center Official", seller: "Sony Direct", basePrice: 29990, rating: 4.9, deliveryDays: 2, returnPolicy: "10 Days Return", warranty: "1 Year Official Sony India + 1 Year Extended" }
+          { platform: "Tata CLiQ", seller: "Tata Luxury (4.6★)", basePrice: 27990, rating: 4.4, deliveryDays: 3, returnPolicy: "7 Days Return", warranty: "1 Year Official Sony India" }
         ],
         global: [
           { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 328.00, shippingForeign: 32.00, deliveryDays: 8 },
@@ -217,6 +271,7 @@
         voltage: "Universal USB-C",
         intlWarrantyInIndia: "Yes (Bose 1-Year Global Warranty with invoice)",
         customsHsCategory: "Electronics (Headphones)",
+        customsDutyRate: 42.08,
         domestic: [
           { platform: "Amazon.in", seller: "Appario Retail (4.8★)", basePrice: 32900, rating: 4.7, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Bose India" },
           { platform: "Flipkart", seller: "SuperComNet (4.6★)", basePrice: 33490, rating: 4.6, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "1 Year Bose India" },
@@ -228,29 +283,8 @@
           { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 1299.00, shippingForeign: 120.00, deliveryDays: 5 }
         ]
       },
-      {
-        id: "airpods-max-usbc",
-        name: "Apple AirPods Max Wireless Over-Ear Headphones (USB-C)",
-        category: "Audio",
-        brand: "Apple",
-        weightKg: 0.38,
-        indiaMrp: 59900,
-        voltage: "Universal USB-C Charging",
-        intlWarrantyInIndia: "Yes (Apple 1-Year Global Warranty honored worldwide)",
-        customsHsCategory: "Electronics (Headphones)",
-        domestic: [
-          { platform: "Amazon.in", seller: "Appario Retail (4.8★)", basePrice: 56990, rating: 4.7, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Apple India" },
-          { platform: "Flipkart", seller: "RetailNet (4.7★)", basePrice: 57490, rating: 4.6, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "1 Year Apple India" },
-          { platform: "Apple Store India", seller: "Apple Official", basePrice: 59900, rating: 5.0, deliveryDays: 2, returnPolicy: "14 Days Free Return", warranty: "1 Year Apple Global Warranty" }
-        ],
-        global: [
-          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 499.00, shippingForeign: 40.00, deliveryDays: 7 },
-          { store: "B&H Photo Video", region: "🇺🇸 USA", currency: "USD", foreignPrice: 499.00, shippingForeign: 42.00, deliveryDays: 8 },
-          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 1899.00, shippingForeign: 110.00, deliveryDays: 5 }
-        ]
-      },
 
-      // 2. Smartphones & Tablets
+      // 3. Smartphones & Tablets
       {
         id: "iphone-16-pro-max",
         name: "Apple iPhone 16 Pro Max (256GB, Desert Titanium)",
@@ -258,14 +292,14 @@
         brand: "Apple",
         weightKg: 0.22,
         indiaMrp: 144900,
-        voltage: "Universal USB-C (eSIM + Nano SIM in India / Dual eSIM in US)",
+        voltage: "Universal USB-C",
         intlWarrantyInIndia: "Yes (Apple 1-Year Global Warranty honored in India)",
         customsHsCategory: "Smartphone",
+        customsDutyRate: 42.08,
         domestic: [
           { platform: "Amazon.in", seller: "Appario Retail (4.9★)", basePrice: 144900, rating: 4.9, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Apple Global Warranty" },
           { platform: "Flipkart", seller: "SuperComNet (4.8★)", basePrice: 144900, rating: 4.8, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "1 Year Apple Global Warranty" },
-          { platform: "Croma Retail", seller: "Croma Direct (4.9★)", basePrice: 144900, rating: 4.9, deliveryDays: 1, returnPolicy: "14 Days Return", warranty: "1 Year Apple Global Warranty" },
-          { platform: "Apple Store India", seller: "Apple Official", basePrice: 144900, rating: 5.0, deliveryDays: 2, returnPolicy: "14 Days Free Return", warranty: "1 Year Apple Global Warranty" }
+          { platform: "Croma Retail", seller: "Croma Direct (4.9★)", basePrice: 144900, rating: 4.9, deliveryDays: 1, returnPolicy: "14 Days Return", warranty: "1 Year Apple Global Warranty" }
         ],
         global: [
           { store: "Apple Store US / B&H", region: "🇺🇸 USA", currency: "USD", foreignPrice: 1199.00, shippingForeign: 55.00, deliveryDays: 7 },
@@ -283,87 +317,23 @@
         voltage: "Universal 100-240V USB-C",
         intlWarrantyInIndia: "Yes (Apple 1-Year Global Warranty honored in India)",
         customsHsCategory: "Computing Tablet",
+        customsDutyRate: 42.08,
         domestic: [
           { platform: "Amazon.in", seller: "Appario Retail (4.8★)", basePrice: 54900, rating: 4.8, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Apple India Warranty" },
           { platform: "Flipkart", seller: "SuperComNet (4.7★)", basePrice: 54990, rating: 4.7, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "1 Year Apple India Warranty" },
-          { platform: "Croma Retail", seller: "Croma Official (4.9★)", basePrice: 56900, rating: 4.8, deliveryDays: 1, returnPolicy: "14 Days Return", warranty: "1 Year Apple India Warranty" },
-          { platform: "Apple Store India", seller: "Apple Official", basePrice: 59900, rating: 5.0, deliveryDays: 2, returnPolicy: "14 Days Free Return", warranty: "1 Year Apple Global Warranty" }
+          { platform: "Croma Retail", seller: "Croma Official (4.9★)", basePrice: 56900, rating: 4.8, deliveryDays: 1, returnPolicy: "14 Days Return", warranty: "1 Year Apple India Warranty" }
         ],
         global: [
           { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 549.00, shippingForeign: 45.00, deliveryDays: 7 },
           { store: "B&H Photo Video", region: "🇺🇸 USA", currency: "USD", foreignPrice: 549.00, shippingForeign: 48.00, deliveryDays: 8 },
-          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 2199.00, shippingForeign: 130.00, deliveryDays: 5 },
-          { store: "Amazon Japan", region: "🇯🇵 Japan", currency: "JPY", foreignPrice: 94800, shippingForeign: 6200, deliveryDays: 6 }
-        ]
-      },
-      {
-        id: "s24-ultra",
-        name: "Samsung Galaxy S24 Ultra 5G (512GB, Titanium Gray)",
-        category: "Smartphones",
-        brand: "Samsung",
-        weightKg: 0.23,
-        indiaMrp: 139999,
-        voltage: "Universal USB-C 45W",
-        intlWarrantyInIndia: "No (Samsung requires region-specific domestic purchases for warranty)",
-        customsHsCategory: "Smartphone",
-        domestic: [
-          { platform: "Amazon.in", seller: "STPL Retail (4.7★)", basePrice: 121999, rating: 4.7, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Samsung India" },
-          { platform: "Flipkart", seller: "RetailNet (4.7★)", basePrice: 122499, rating: 4.6, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "1 Year Samsung India" },
-          { platform: "Samsung Shop Official", seller: "Samsung Direct", basePrice: 129999, rating: 4.9, deliveryDays: 2, returnPolicy: "14 Days Return", warranty: "1 Year Samsung India + Screen Damage Offer" }
-        ],
-        global: [
-          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 1149.00, shippingForeign: 50.00, deliveryDays: 7 },
-          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 3849.00, shippingForeign: 120.00, deliveryDays: 4 }
-        ]
-      },
-      {
-        id: "pixel-9-pro-xl",
-        name: "Google Pixel 9 Pro XL (128GB, Porcelain)",
-        category: "Smartphones",
-        brand: "Google",
-        weightKg: 0.22,
-        indiaMrp: 124999,
-        voltage: "Universal USB-C PD 3.0",
-        intlWarrantyInIndia: "No (Google India honors Flipkart/Authorized India invoices only)",
-        customsHsCategory: "Smartphone",
-        domestic: [
-          { platform: "Flipkart (Official Partner)", seller: "SuperComNet (4.8★)", basePrice: 114999, rating: 4.7, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Google India Warranty" },
-          { platform: "Croma Retail", seller: "Croma Official (4.9★)", basePrice: 124999, rating: 4.8, deliveryDays: 1, returnPolicy: "14 Days Return", warranty: "1 Year Google India Warranty" }
-        ],
-        global: [
-          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 999.00, shippingForeign: 45.00, deliveryDays: 7 },
-          { store: "B&H Photo Video", region: "🇺🇸 USA", currency: "USD", foreignPrice: 999.00, shippingForeign: 48.00, deliveryDays: 8 }
+          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 2199.00, shippingForeign: 130.00, deliveryDays: 5 }
         ]
       },
 
-      // 3. Laptops & Computing
-      {
-        id: "macbook-air-m3",
-        name: "Apple MacBook Air 13-inch (M3 Chip, 16GB Unified Memory, 512GB SSD)",
-        category: "Laptops",
-        brand: "Apple",
-        weightKg: 1.24,
-        indiaMrp: 134900,
-        voltage: "Universal 100-240V MagSafe 3 / USB-C",
-        intlWarrantyInIndia: "Yes (Apple 1-Year Global Warranty honored in India)",
-        customsHsCategory: "Laptop / Computer",
-        domestic: [
-          { platform: "Amazon.in", seller: "Appario Retail (4.8★)", basePrice: 122990, rating: 4.8, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Apple India Warranty" },
-          { platform: "Flipkart", seller: "SuperComNet (4.7★)", basePrice: 124900, rating: 4.7, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "1 Year Apple India Warranty" },
-          { platform: "Croma Retail", seller: "Croma Official (4.9★)", basePrice: 129900, rating: 4.8, deliveryDays: 1, returnPolicy: "14 Days Return", warranty: "1 Year Apple India Warranty" },
-          { platform: "Apple Store India", seller: "Apple Official", basePrice: 134900, rating: 5.0, deliveryDays: 2, returnPolicy: "14 Days Free Return", warranty: "1 Year Apple Global Warranty" }
-        ],
-        global: [
-          { store: "B&H Photo Video", region: "🇺🇸 USA", currency: "USD", foreignPrice: 1249.00, shippingForeign: 65.00, deliveryDays: 7 },
-          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 1249.00, shippingForeign: 70.00, deliveryDays: 8 },
-          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 4799.00, shippingForeign: 160.00, deliveryDays: 5 }
-        ]
-      },
-
-      // 4. Cameras & Drones
+      // 4. Cameras & Gaming
       {
         id: "fuji-x100vi",
-        name: "Fujifilm X100VI Digital Camera (40.2MP, IBIS, 23mm F2 Lens)",
+        name: "Fujifilm X100VI Digital Camera (40.2MP, IBIS)",
         category: "Cameras",
         brand: "Fujifilm",
         weightKg: 0.52,
@@ -371,10 +341,10 @@
         voltage: "Universal 100-240V USB-C",
         intlWarrantyInIndia: "Paid Repair Only (Fujifilm India requires domestic invoice for free warranty)",
         customsHsCategory: "Digital Camera",
+        customsDutyRate: 42.08,
         domestic: [
           { platform: "Amazon.in (Scalper / Importer)", seller: "PhotoPro India (4.3★)", basePrice: 204990, rating: 4.2, deliveryDays: 3, returnPolicy: "Replacement only", warranty: "1 Year Seller Warranty" },
-          { platform: "Flipkart (Scalper)", seller: "CameraWorld (4.1★)", basePrice: 209990, rating: 4.0, deliveryDays: 4, returnPolicy: "Replacement only", warranty: "1 Year Seller Warranty" },
-          { platform: "Official Fujifilm Dealer (Waitlist)", seller: "Authorized Retail", basePrice: 169999, rating: 5.0, deliveryDays: 30, returnPolicy: "Standard", warranty: "2 Years Fujifilm India" }
+          { platform: "Official Dealer (Waitlist)", seller: "Authorized Retail", basePrice: 169999, rating: 5.0, deliveryDays: 30, returnPolicy: "Standard", warranty: "2 Years Fujifilm India" }
         ],
         global: [
           { store: "B&H Photo Video", region: "🇺🇸 USA", currency: "USD", foreignPrice: 1599.00, shippingForeign: 65.00, deliveryDays: 8 },
@@ -382,28 +352,6 @@
           { store: "Amazon Japan", region: "🇯🇵 Japan", currency: "JPY", foreignPrice: 281600, shippingForeign: 8500, deliveryDays: 7 }
         ]
       },
-      {
-        id: "dji-mini-4-pro",
-        name: "DJI Mini 4 Pro Drone (Fly More Combo Plus with RC 2 Screen Controller)",
-        category: "Cameras",
-        brand: "DJI",
-        weightKg: 0.95,
-        indiaMrp: 124999,
-        voltage: "Universal USB-C Fast Charger",
-        intlWarrantyInIndia: "No official DJI India warranty (Grey market in India)",
-        customsHsCategory: "Drones & Robotics",
-        domestic: [
-          { platform: "Amazon.in (Grey Market)", seller: "DroneMasters (4.3★)", basePrice: 114999, rating: 4.2, deliveryDays: 2, returnPolicy: "No Return (Check on delivery)", warranty: "6 Months Seller Warranty" },
-          { platform: "DesignInfo India", seller: "DesignInfo Direct (4.5★)", basePrice: 109990, rating: 4.4, deliveryDays: 3, returnPolicy: "Replacement only", warranty: "1 Year Dealer Warranty" }
-        ],
-        global: [
-          { store: "B&H Photo Video", region: "🇺🇸 USA", currency: "USD", foreignPrice: 1099.00, shippingForeign: 60.00, deliveryDays: 8 },
-          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 1099.00, shippingForeign: 65.00, deliveryDays: 8 },
-          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 3899.00, shippingForeign: 150.00, deliveryDays: 5 }
-        ]
-      },
-
-      // 5. Gaming & Handhelds
       {
         id: "steam-deck-oled",
         name: "Valve Steam Deck OLED (512GB Handheld Gaming Console)",
@@ -414,156 +362,49 @@
         voltage: "Universal 100-240V 45W Type-C",
         intlWarrantyInIndia: "No official service center in India (Third-party repair only)",
         customsHsCategory: "Gaming Console",
+        customsDutyRate: 42.08,
         domestic: [
           { platform: "Amazon.in (Importer)", seller: "GadgetGalaxy (4.4★)", basePrice: 65990, rating: 4.4, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "6 Months Seller Warranty" },
-          { platform: "Flipkart (Importer)", seller: "GameStation (4.2★)", basePrice: 66490, rating: 4.2, deliveryDays: 3, returnPolicy: "7 Days Replacement", warranty: "6 Months Seller Warranty" },
-          { platform: "Mx2Games India", seller: "Mx2Games (4.6★)", basePrice: 62999, rating: 4.5, deliveryDays: 4, returnPolicy: "Replacement only", warranty: "1 Year Seller Warranty" }
+          { platform: "Flipkart (Importer)", seller: "GameStation (4.2★)", basePrice: 66490, rating: 4.2, deliveryDays: 3, returnPolicy: "7 Days Replacement", warranty: "6 Months Seller Warranty" }
         ],
         global: [
           { store: "Komodo Japan", region: "🇯🇵 Japan", currency: "JPY", foreignPrice: 84800, shippingForeign: 6800, deliveryDays: 7 },
           { store: "Amazon US / Valve", region: "🇺🇸 USA", currency: "USD", foreignPrice: 549.00, shippingForeign: 55.00, deliveryDays: 8 },
           { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 2249.00, shippingForeign: 140.00, deliveryDays: 5 }
         ]
-      },
-      {
-        id: "ps5-pro",
-        name: "Sony PlayStation 5 Pro (PS5 Pro Console 2TB)",
-        category: "Gaming",
-        brand: "Sony",
-        weightKg: 3.10,
-        indiaMrp: 79990,
-        voltage: "Universal 100-240V Power Supply",
-        intlWarrantyInIndia: "No (Sony India strictly enforces domestic serial numbers for warranty)",
-        customsHsCategory: "Gaming Console",
-        domestic: [
-          { platform: "Amazon.in (Official)", seller: "Electronics Bazaar (4.9★)", basePrice: 79990, rating: 4.8, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Sony India" },
-          { platform: "Flipkart (Official)", seller: "MPDSLERetail (4.8★)", basePrice: 79990, rating: 4.7, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "1 Year Sony India" },
-          { platform: "Sony Center Direct", seller: "Sony Direct", basePrice: 79990, rating: 5.0, deliveryDays: 2, returnPolicy: "10 Days Return", warranty: "1 Year Sony India" }
-        ],
-        global: [
-          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 699.99, shippingForeign: 95.00, deliveryDays: 8 },
-          { store: "Amazon Japan", region: "🇯🇵 Japan", currency: "JPY", foreignPrice: 119980, shippingForeign: 14500, deliveryDays: 7 },
-          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 2899.00, shippingForeign: 210.00, deliveryDays: 5 }
-        ]
-      },
-      {
-        id: "nintendo-switch-oled",
-        name: "Nintendo Switch OLED Model (64GB with White Joy-Con)",
-        category: "Gaming",
-        brand: "Nintendo",
-        weightKg: 0.42,
-        indiaMrp: 34999,
-        voltage: "Universal 100-240V Type-C Adapter",
-        intlWarrantyInIndia: "No official Nintendo warranty center in India",
-        customsHsCategory: "Gaming Console",
-        domestic: [
-          { platform: "Amazon.in (Importer)", seller: "Kay Kay Overseas (4.5★)", basePrice: 28990, rating: 4.5, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "6 Months Seller Warranty" },
-          { platform: "Flipkart (Importer)", seller: "RetailNet (4.4★)", basePrice: 29490, rating: 4.4, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "6 Months Seller Warranty" }
-        ],
-        global: [
-          { store: "Amazon Japan", region: "🇯🇵 Japan", currency: "JPY", foreignPrice: 37980, shippingForeign: 4800, deliveryDays: 6 },
-          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 349.99, shippingForeign: 38.00, deliveryDays: 8 },
-          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 1149.00, shippingForeign: 110.00, deliveryDays: 5 }
-        ]
-      },
-
-      // 6. E-Readers & Accessories
-      {
-        id: "kindle-paperwhite",
-        name: "Amazon Kindle Paperwhite (16GB, 6.8\" Display with Warm Light)",
-        category: "E-Reader",
-        brand: "Amazon",
-        weightKg: 0.21,
-        indiaMrp: 14999,
-        voltage: "Universal USB-C",
-        intlWarrantyInIndia: "Yes (Amazon Global 1-Year Warranty)",
-        customsHsCategory: "E-Reader",
-        domestic: [
-          { platform: "Amazon.in", seller: "Appario Retail (4.8★)", basePrice: 13999, rating: 4.7, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Amazon India" },
-          { platform: "Flipkart", seller: "ImportHub (4.2★)", basePrice: 15499, rating: 4.1, deliveryDays: 4, returnPolicy: "7 Days Replacement", warranty: "Seller Warranty" },
-          { platform: "Croma Retail", seller: "Croma Direct (4.9★)", basePrice: 14499, rating: 4.6, deliveryDays: 2, returnPolicy: "7 Days Return", warranty: "1 Year Official Amazon" }
-        ],
-        global: [
-          { store: "Amazon Japan", region: "🇯🇵 Japan", currency: "JPY", foreignPrice: 17980, shippingForeign: 2800, deliveryDays: 6 },
-          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 139.99, shippingForeign: 24.00, deliveryDays: 8 },
-          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 529.00, shippingForeign: 65.00, deliveryDays: 5 }
-        ]
-      },
-      {
-        id: "mx-master-3s",
-        name: "Logitech MX Master 3S Wireless Performance Mouse (8K DPI)",
-        category: "Accessories",
-        brand: "Logitech",
-        weightKg: 0.14,
-        indiaMrp: 10995,
-        voltage: "Universal USB-C Battery",
-        intlWarrantyInIndia: "No (Logitech India requires domestic serial number for warranty replacement)",
-        customsHsCategory: "Computer Peripheral",
-        domestic: [
-          { platform: "Amazon.in", seller: "Appario Retail (4.8★)", basePrice: 8995, rating: 4.7, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Logitech India" },
-          { platform: "Flipkart", seller: "RetailNet (4.6★)", basePrice: 9199, rating: 4.5, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "1 Year Logitech India" },
-          { platform: "Croma Retail", seller: "Croma Official (4.9★)", basePrice: 9995, rating: 4.6, deliveryDays: 1, returnPolicy: "14 Days Return", warranty: "1 Year Logitech India" }
-        ],
-        global: [
-          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: 99.99, shippingForeign: 18.00, deliveryDays: 8 },
-          { store: "Amazon Japan", region: "🇯🇵 Japan", currency: "JPY", foreignPrice: 14800, shippingForeign: 2200, deliveryDays: 6 },
-          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: 349.00, shippingForeign: 55.00, deliveryDays: 5 }
-        ]
       }
     ];
 
-    // Helper to generate dynamic custom products on demand
-    function createDynamicEstimatedProduct(query) {
-      const cleanName = query.trim().replace(/^https?:\/\/[^\s]+/i, '').trim() || query.trim();
-      const title = cleanName ? (cleanName.charAt(0).toUpperCase() + cleanName.slice(1)) : "Custom Gadget";
-      
-      // Heuristic baseline price based on common gadget value
-      const baseEstimateInr = 45000;
-      const baseEstimateUsd = Math.round(baseEstimateInr / 84.15 * 0.85);
-
-      return {
-        id: "custom-" + Date.now(),
-        name: title,
-        category: "Custom Search / Electronics",
-        brand: "Custom",
-        weightKg: 0.5,
-        indiaMrp: Math.round(baseEstimateInr * 1.2),
-        voltage: "Universal 100-240V USB-C",
-        intlWarrantyInIndia: "Check brand policy (Apple/Bose offer global warranty; Sony/Samsung domestic only)",
-        customsHsCategory: "General Personal Electronics (HS 9804)",
-        isCustomEstimated: true,
-        domestic: [
-          { platform: "Amazon.in", seller: "Verified Retailer (4.8★)", basePrice: baseEstimateInr, rating: 4.6, deliveryDays: 1, returnPolicy: "7 Days Replacement", warranty: "1 Year Official Brand India" },
-          { platform: "Flipkart", seller: "Authorized Seller (4.7★)", basePrice: Math.round(baseEstimateInr * 1.02), rating: 4.5, deliveryDays: 2, returnPolicy: "7 Days Replacement", warranty: "1 Year Official Brand India" },
-          { platform: "Croma Retail", seller: "Croma Direct (4.9★)", basePrice: Math.round(baseEstimateInr * 1.05), rating: 4.7, deliveryDays: 1, returnPolicy: "14 Days Return", warranty: "1 Year Official Brand India" }
-        ],
-        global: [
-          { store: "Amazon US", region: "🇺🇸 USA", currency: "USD", foreignPrice: baseEstimateUsd, shippingForeign: 38.00, deliveryDays: 8 },
-          { store: "Amazon Japan", region: "🇯🇵 Japan", currency: "JPY", foreignPrice: Math.round(baseEstimateUsd * 150), shippingForeign: 4500, deliveryDays: 7 },
-          { store: "B&H Photo Video", region: "🇺🇸 USA", currency: "USD", foreignPrice: baseEstimateUsd, shippingForeign: 42.00, deliveryDays: 8 },
-          { store: "Amazon UAE", region: "🇦🇪 UAE", currency: "AED", foreignPrice: Math.round(baseEstimateUsd * 3.67), shippingForeign: 120.00, deliveryDays: 5 }
-        ]
-      };
-    }
-
     function App() {
-      // User Preferences State
+      // User Preferences & State
       const [selectedProduct, setSelectedProduct] = useState(PRODUCTS_CATALOG[0]);
       const [searchQuery, setSearchQuery] = useState("");
       const [isSearchFocused, setIsSearchFocused] = useState(false);
+      const [isSearchingLiveWeb, setIsSearchingLiveWeb] = useState(false);
+      const [searchStatusMsg, setSearchStatusMsg] = useState("");
       const [pincode, setPincode] = useState(() => localStorage.getItem("sitendra_pincode") || "560001");
       const [hasPrime, setHasPrime] = useState(true);
       const [hasFlipkartPlus, setHasFlipkartPlus] = useState(true);
       const [selectedCard, setSelectedCard] = useState("icici_amazon");
-      const [customsDutyRate, setCustomsDutyRate] = useState(42.08); // Standard personal imports duty under HS 9804 (BCD 10% + SWS 10% on BCD + IGST 28%)
-      const [forexMarkupRate, setForexMarkupRate] = useState(3.5); // Standard bank forex markup
-      const [sortOption, setSortOption] = useState("price_asc"); // price_asc, fastest, value
+      const [customsDutyRate, setCustomsDutyRate] = useState(39.2);
+      const [forexMarkupRate, setForexMarkupRate] = useState(3.5);
+      const [sortOption, setSortOption] = useState("price_asc");
       const searchBoxRef = useRef(null);
 
       // Save pincode
       useEffect(() => {
         localStorage.setItem("sitendra_pincode", pincode);
       }, [pincode]);
+
+      // Check URL query parameters on initial page mount (e.g. ?q=uv+doux+silicon+sunscreen)
+      useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryParam = urlParams.get("q");
+        if (queryParam && queryParam.trim()) {
+          setSearchQuery(queryParam);
+          performLiveWebSearch(queryParam);
+        }
+      }, []);
 
       // Click outside listener for search dropdown
       useEffect(() => {
@@ -575,6 +416,40 @@
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
       }, []);
+
+      // Live Web Search Resolver Function
+      const performLiveWebSearch = async (queryText) => {
+        const q = (queryText || searchQuery).trim();
+        if (!q) return;
+
+        setIsSearchingLiveWeb(true);
+        setIsSearchFocused(false);
+        setSearchStatusMsg(`Searching live web prices across Indian stores (Amazon.in, Flipkart, 1mg, Nykaa, Croma) & Global storefronts for "${q}"...`);
+
+        try {
+          const resp = await fetch(`/api/deals/search?q=${encodeURIComponent(q)}`);
+          const data = await resp.json();
+
+          if (data.status === "success" && data.product) {
+            setSelectedProduct(data.product);
+            if (data.product.customsDutyRate) {
+              setCustomsDutyRate(data.product.customsDutyRate);
+            }
+            setSearchQuery(data.product.name);
+            
+            // Update URL query parameter
+            const newUrl = `${window.location.pathname}?q=${encodeURIComponent(q)}`;
+            window.history.replaceState({ path: newUrl }, '', newUrl);
+          } else {
+            console.error("Search API returned non-success", data);
+          }
+        } catch (err) {
+          console.error("Live web search fetch failed:", err);
+        } finally {
+          setIsSearchingLiveWeb(false);
+          setSearchStatusMsg("");
+        }
+      };
 
       // Resolve PIN code info
       const pincodeInfo = useMemo(() => {
@@ -589,42 +464,22 @@
         };
       }, [pincode]);
 
-      // Live search results matching pre-indexed catalog
-      const searchResults = useMemo(() => {
-        if (!searchQuery.trim()) return PRODUCTS_CATALOG.slice(0, 8);
+      // Filter catalog for suggestions
+      const catalogMatches = useMemo(() => {
+        if (!searchQuery.trim()) return PRODUCTS_CATALOG.slice(0, 6);
         const q = searchQuery.toLowerCase().trim();
-        const matches = PRODUCTS_CATALOG.filter(p => 
+        return PRODUCTS_CATALOG.filter(p => 
           p.name.toLowerCase().includes(q) || 
           p.category.toLowerCase().includes(q) ||
           p.brand.toLowerCase().includes(q)
         );
-        return matches;
       }, [searchQuery]);
-
-      // Handle Search Submission
-      const handleExecuteSearch = (e) => {
-        if (e) e.preventDefault();
-        const q = searchQuery.trim();
-        if (!q) return;
-
-        // Check if exact or partial match in pre-indexed catalog
-        const match = PRODUCTS_CATALOG.find(p => p.name.toLowerCase().includes(q.toLowerCase()) || p.id.toLowerCase().includes(q.toLowerCase()));
-        if (match) {
-          setSelectedProduct(match);
-          setIsSearchFocused(false);
-        } else {
-          // Generate on-demand dynamic estimated comparison
-          const dyn = createDynamicEstimatedProduct(q);
-          setSelectedProduct(dyn);
-          setIsSearchFocused(false);
-        }
-      };
 
       // Calculate Domestic Deals
       const processedDomesticDeals = useMemo(() => {
         const cardRule = BANK_CARD_RULES[selectedCard] || BANK_CARD_RULES.standard;
 
-        return selectedProduct.domestic.map(deal => {
+        return (selectedProduct.domestic || []).map(deal => {
           let cashbackPercent = 0;
           let offerLabel = "No card offer";
 
@@ -645,7 +500,9 @@
           let shippingFee = pincodeInfo.deliveryFeeBase;
           if (deal.platform.includes("Amazon") && hasPrime) shippingFee = 0;
           if (deal.platform.includes("Flipkart") && hasFlipkartPlus) shippingFee = 0;
-          if (deal.basePrice >= 500 && (deal.platform.includes("Croma") || deal.platform.includes("Tata"))) shippingFee = 0;
+          if (deal.basePrice >= 500 && (deal.platform.includes("Croma") || deal.platform.includes("Tata") || deal.platform.includes("1mg") || deal.platform.includes("Nykaa"))) {
+            shippingFee = 0;
+          }
 
           const finalOutPocket = deal.basePrice - discountAmt + shippingFee;
 
@@ -668,7 +525,7 @@
 
       // Calculate Global Landed Cost Deals
       const processedGlobalDeals = useMemo(() => {
-        return selectedProduct.global.map(deal => {
+        return (selectedProduct.global || []).map(deal => {
           const rate = FOREX_RATES[deal.currency] || 84.0;
           const priceInr = deal.foreignPrice * rate;
           const forexFee = priceInr * (forexMarkupRate / 100);
@@ -705,7 +562,7 @@
           return {
             type: "import_wins",
             title: `🔥 Importing from ${bestGlobalDeal.store} (${bestGlobalDeal.region}) saves you ₹${bestGlobalDeal.savingsAmt.toLocaleString('en-IN')} (${percent}% cheaper)!`,
-            desc: `Total landed cost is ₹${bestGlobalDeal.totalLandedInr.toLocaleString('en-IN')} (including overseas shipping & ${customsDutyRate}% India customs duty) vs ₹${bestDomesticDeal.finalOutPocket.toLocaleString('en-IN')} on ${bestDomesticDeal.platform}.`
+            desc: `Total landed cost is ₹${bestGlobalDeal.totalLandedInr.toLocaleString('en-IN')} (including shipping & ${customsDutyRate}% India customs duty) vs ₹${bestDomesticDeal.finalOutPocket.toLocaleString('en-IN')} on ${bestDomesticDeal.platform}.`
           };
         } else {
           return {
@@ -719,17 +576,17 @@
       return (
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 space-y-6">
 
-          {/* Top Hero Banner & Prominent Live Search Bar */}
+          {/* Top Hero Banner & Live Internet Search Engine Bar */}
           <div className="bg-white dark:bg-[#131D31] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
             <div className="max-w-3xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 mb-2">
-                <span>🇮🇳</span> Personal Decision Engine &amp; Shopping Intelligence
+                <span>🌐</span> Live Web Search &amp; Landed-Cost Intelligence
               </div>
-              <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                Smart Deal &amp; <span className="bg-gradient-to-r from-emerald-500 via-sky-500 to-indigo-500 bg-clip-text text-transparent">Global Landed-Cost Finder</span>
+              <h1 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                Live Product &amp; <span className="bg-gradient-to-r from-emerald-500 via-sky-500 to-indigo-500 bg-clip-text text-transparent">Global Landed-Cost Finder</span>
               </h1>
               <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-1.5">
-                Search any product to find the true lowest out-of-pocket price. Compare Indian domestic stores with delivery PIN codes &amp; bank discounts vs importing with exact 42.08% India customs duty &amp; forex fees.
+                Type <strong>any product or skincare keyword</strong> (e.g. <em>"uv doux silicon sunscreen"</em>, <em>"cosrx snail mucin"</em>, <em>"sony xm5"</em>, <em>"iphone 16 pro"</em>). We search the live internet across Indian platforms &amp; overseas stores to find real prices, customs duty &amp; landed costs.
               </p>
             </div>
 
@@ -737,7 +594,7 @@
                 PROMINENT PRODUCT SEARCH ENGINE BAR
                 ========================================================= */}
             <div className="relative" ref={searchBoxRef}>
-              <form onSubmit={handleExecuteSearch} className="flex flex-col sm:flex-row items-stretch gap-2.5">
+              <form onSubmit={(e) => { e.preventDefault(); performLiveWebSearch(); }} className="flex flex-col sm:flex-row items-stretch gap-2.5">
                 <div className="relative flex-1">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -753,8 +610,8 @@
                       setIsSearchFocused(true);
                     }}
                     onFocus={() => setIsSearchFocused(true)}
-                    placeholder="🔍 Search any product, model, or brand (e.g. 'iPhone 16 Pro', 'Sony WH-1000XM5', 'MacBook Air M3', 'Bose QC Ultra', 'Fujifilm X100VI', 'DJI Mini 4 Pro', 'Steam Deck', 'Kindle Paperwhite', 'Galaxy S24 Ultra')..."
-                    className="w-full pl-12 pr-10 py-3.5 sm:py-4 bg-slate-50 dark:bg-[#18253E] border-2 border-slate-200 dark:border-slate-700 focus:border-sky-500 dark:focus:border-sky-500 rounded-2xl text-base font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-sky-500/20 transition-all shadow-inner"
+                    placeholder="🔍 Search any product on the web (e.g. 'uv doux silicon sunscreen', 'bose qc ultra', 'iphone 16 pro', 'cosrx snail mucin', 'steam deck')..."
+                    className="w-full pl-12 pr-10 py-3.5 sm:py-4 bg-slate-50 dark:bg-[#18253E] border-2 border-slate-200 dark:border-slate-700 focus:border-emerald-500 dark:focus:border-emerald-500 rounded-2xl text-base font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/20 transition-all shadow-inner"
                   />
                   {searchQuery && (
                     <button
@@ -772,29 +629,59 @@
 
                 <button
                   type="submit"
-                  className="px-6 py-3.5 sm:py-4 bg-gradient-to-r from-emerald-600 to-sky-600 hover:from-emerald-500 hover:to-sky-500 text-white font-bold rounded-2xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm sm:text-base flex-shrink-0"
+                  disabled={isSearchingLiveWeb}
+                  className="px-7 py-3.5 sm:py-4 bg-gradient-to-r from-emerald-600 to-sky-600 hover:from-emerald-500 hover:to-sky-500 disabled:opacity-50 text-white font-bold rounded-2xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm sm:text-base flex-shrink-0"
                 >
-                  <span>Compare Deals &rarr;</span>
+                  {isSearchingLiveWeb ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                      </svg>
+                      <span>Searching Web...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Search Live Deals &rarr;</span>
+                    </>
+                  )}
                 </button>
               </form>
 
               {/* Live Instant Search Dropdown Auto-Complete */}
               {isSearchFocused && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#131D31] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 overflow-hidden max-h-96 overflow-y-auto">
+                  
+                  {/* Primary Direct Web Search Action */}
+                  {searchQuery.trim() && (
+                    <div
+                      onClick={() => performLiveWebSearch(searchQuery)}
+                      className="p-3.5 bg-gradient-to-r from-emerald-500 to-sky-600 text-white hover:opacity-95 cursor-pointer flex items-center justify-between font-bold text-sm shadow-sm"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-lg">🌐</span>
+                        <span>Search the internet for: <strong>"{searchQuery.trim()}"</strong></span>
+                      </div>
+                      <span className="bg-white text-emerald-700 px-3 py-1 rounded-lg text-xs font-black uppercase">
+                        Search Live &rarr;
+                      </span>
+                    </div>
+                  )}
+
                   <div className="p-2 border-b border-slate-100 dark:border-slate-800/60 bg-slate-50 dark:bg-[#18253E]/50 flex items-center justify-between text-xs text-slate-500 px-4 py-2 font-bold uppercase tracking-wider">
-                    <span>{searchQuery ? `Matching Results for "${searchQuery}"` : "Suggested Popular Gadgets"}</span>
-                    <span>{searchResults.length} Products</span>
+                    <span>Popular Pre-Indexed Gadgets &amp; Skincare</span>
                   </div>
 
-                  {searchResults.map((product) => (
+                  {catalogMatches.map((product) => (
                     <div
                       key={product.id}
                       onClick={() => {
                         setSelectedProduct(product);
-                        setSearchQuery("");
+                        if (product.customsDutyRate) setCustomsDutyRate(product.customsDutyRate);
+                        setSearchQuery(product.name);
                         setIsSearchFocused(false);
                       }}
-                      className="px-4 py-3 hover:bg-sky-50 dark:hover:bg-sky-950/40 cursor-pointer border-b border-slate-100 dark:border-slate-800/40 flex items-center justify-between gap-4 transition-colors"
+                      className="px-4 py-3 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 cursor-pointer border-b border-slate-100 dark:border-slate-800/40 flex items-center justify-between gap-4 transition-colors"
                     >
                       <div>
                         <div className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
@@ -809,54 +696,38 @@
 
                       <div className="text-right flex-shrink-0">
                         <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-lg">
-                          Select Deal &rarr;
+                          Select &rarr;
                         </span>
                       </div>
                     </div>
                   ))}
-
-                  {/* On-Demand Custom Estimator Action */}
-                  {searchQuery.trim() && (
-                    <div
-                      onClick={() => handleExecuteSearch()}
-                      className="p-3.5 bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/40 dark:to-indigo-950/40 hover:from-sky-100 hover:to-indigo-100 dark:hover:from-sky-900/60 dark:hover:to-indigo-900/60 cursor-pointer flex items-center justify-between text-xs font-bold text-sky-700 dark:text-sky-300"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="text-base">⚡</span>
-                        <span>Auto-Estimate &amp; Calculate deals for: <u>"{searchQuery.trim()}"</u></span>
-                      </div>
-                      <span className="bg-sky-600 text-white px-2.5 py-1 rounded-lg">Run Solver &rarr;</span>
-                    </div>
-                  )}
                 </div>
               )}
             </div>
 
             {/* Trending Quick Search Chips */}
             <div className="flex flex-wrap items-center gap-2 pt-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mr-1">Trending:</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mr-1">Trending Searches:</span>
               {[
-                { name: "Sony WH-1000XM5", id: "sony-xm5" },
-                { name: "iPhone 16 Pro Max", id: "iphone-16-pro-max" },
-                { name: "iPad Air M2", id: "ipad-air-m2" },
-                { name: "MacBook Air M3", id: "macbook-air-m3" },
-                { name: "Bose QC Ultra", id: "bose-qc-ultra" },
-                { name: "Fujifilm X100VI", id: "fuji-x100vi" },
-                { name: "Steam Deck OLED", id: "steam-deck-oled" },
-                { name: "PS5 Pro Console", id: "ps5-pro" },
-                { name: "DJI Mini 4 Pro", id: "dji-mini-4-pro" },
-                { name: "Kindle Paperwhite", id: "kindle-paperwhite" }
+                { name: "☀️ UV Doux Sunscreen", query: "uv doux silicon sunscreen" },
+                { name: "💧 COSRX Snail Mucin", query: "cosrx snail mucin essence" },
+                { name: "🎧 Sony WH-1000XM5", query: "sony wh-1000xm5" },
+                { name: "📱 iPhone 16 Pro Max", query: "iphone 16 pro max" },
+                { name: "💻 MacBook Air M3", query: "macbook air m3" },
+                { name: "🎧 Bose QC Ultra", query: "bose qc ultra" },
+                { name: "📷 Fujifilm X100VI", query: "fujifilm x100vi" },
+                { name: "🎮 Steam Deck OLED", query: "steam deck oled" }
               ].map(chip => (
                 <button
-                  key={chip.id}
+                  key={chip.name}
                   type="button"
                   onClick={() => {
-                    const match = PRODUCTS_CATALOG.find(p => p.id === chip.id);
-                    if (match) setSelectedProduct(match);
+                    setSearchQuery(chip.query);
+                    performLiveWebSearch(chip.query);
                   }}
                   className={`text-xs px-3 py-1.5 rounded-xl font-semibold transition-all ${
-                    selectedProduct.id === chip.id
-                      ? "bg-sky-600 text-white shadow-sm ring-2 ring-sky-500/30"
+                    searchQuery.toLowerCase().includes(chip.query.toLowerCase())
+                      ? "bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-500/30"
                       : "bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
                   }`}
                 >
@@ -866,6 +737,19 @@
             </div>
           </div>
 
+          {/* Live Web Search Progress Banner */}
+          {isSearchingLiveWeb && (
+            <div className="bg-gradient-to-r from-emerald-500 to-sky-600 text-white rounded-2xl p-4 shadow-lg flex items-center gap-3 animate-pulse-glow">
+              <svg className="animate-spin h-6 w-6 text-white flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+              </svg>
+              <div className="text-sm font-bold">
+                {searchStatusMsg || "Searching the internet for live product deals..."}
+              </div>
+            </div>
+          )}
+
           {/* Active Product Bar */}
           <div className="bg-gradient-to-r from-slate-900 to-[#131D31] text-white rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg border border-slate-800">
             <div>
@@ -873,17 +757,18 @@
                 <span>Active Target Product</span>
                 <span>&bull;</span>
                 <span className="bg-sky-500/20 px-2 py-0.5 rounded text-sky-300">{selectedProduct.category}</span>
-                {selectedProduct.isCustomEstimated && (
-                  <span className="bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded font-bold">Dynamic Estimation</span>
+                {selectedProduct.isLiveWebResult && (
+                  <span className="bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-bold">Live Web Result 🌐</span>
                 )}
               </div>
-              <h2 className="text-lg sm:text-xl font-black mt-1">
+              <h2 className="text-lg sm:text-2xl font-black mt-1">
                 {selectedProduct.name}
               </h2>
               <div className="text-xs text-slate-300 mt-1 flex flex-wrap gap-x-4 gap-y-1">
-                <span>Official India MRP: <strong>₹{selectedProduct.indiaMrp.toLocaleString('en-IN')}</strong></span>
+                <span>Brand: <strong>{selectedProduct.brand || "Verified Brand"}</strong></span>
+                <span>Official India MRP: <strong>₹{selectedProduct.indiaMrp ? selectedProduct.indiaMrp.toLocaleString('en-IN') : "-"}</strong></span>
+                <span>Customs Category: <strong>{selectedProduct.customsHsCategory || "HS 9804"}</strong></span>
                 <span>Unit Weight: <strong>{selectedProduct.weightKg} kg</strong></span>
-                <span>Voltage: <strong>{selectedProduct.voltage}</strong></span>
               </div>
             </div>
 
@@ -1016,7 +901,7 @@
                   Domestic Indian Storefronts Comparison
                 </h2>
                 <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2.5 py-0.5 rounded-full font-semibold">
-                  {processedDomesticDeals.length} Stores Verified
+                  {processedDomesticDeals.length} Verified Platforms
                 </span>
               </div>
 
@@ -1144,7 +1029,7 @@
                   </h2>
                 </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  Calculates true landed cost under HS 9804 (Personal Courier Import): Foreign Price &rarr; INR Forex &rarr; Card Markup &rarr; Shipping &rarr; India Customs (42.08%).
+                  Calculates true landed cost: Foreign Base &rarr; INR Forex &rarr; Card Markup ({forexMarkupRate}%) &rarr; Shipping &rarr; India Customs ({customsDutyRate}% under {selectedProduct.customsHsCategory || "HS 9804"}).
                 </p>
               </div>
 
@@ -1263,23 +1148,23 @@
             {/* Reliability & Risk Checklist Table */}
             <div className="mt-4 bg-slate-50 dark:bg-[#18253E] border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3">
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                <span>🛡️</span> Import Reliability &amp; Risk Checklist for {selectedProduct.name}
+                <span>🛡️</span> Reliability &amp; Warranty Checklist for {selectedProduct.name}
               </h4>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
                 <div className="bg-white dark:bg-[#131D31] p-3 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1">
-                  <div className="font-bold text-slate-800 dark:text-slate-200">1. India Warranty Status</div>
+                  <div className="font-bold text-slate-800 dark:text-slate-200">1. India Warranty &amp; Authenticity</div>
                   <div className="text-slate-600 dark:text-slate-400">{selectedProduct.intlWarrantyInIndia}</div>
                 </div>
 
                 <div className="bg-white dark:bg-[#131D31] p-3 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1">
-                  <div className="font-bold text-slate-800 dark:text-slate-200">2. Voltage &amp; Plug Compatibility</div>
+                  <div className="font-bold text-slate-800 dark:text-slate-200">2. Formulation / Voltage Specs</div>
                   <div className="text-slate-600 dark:text-slate-400">{selectedProduct.voltage}</div>
                 </div>
 
                 <div className="bg-white dark:bg-[#131D31] p-3 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1">
                   <div className="font-bold text-slate-800 dark:text-slate-200">3. Customs Clearance KYC</div>
-                  <div className="text-slate-600 dark:text-slate-400">Aadhaar / Passport upload required by DHL/FedEx upon India arrival.</div>
+                  <div className="text-slate-600 dark:text-slate-400">Aadhaar / Passport KYC required by DHL/FedEx if importing from overseas.</div>
                 </div>
               </div>
             </div>
