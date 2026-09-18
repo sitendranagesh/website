@@ -768,6 +768,15 @@ def api_search_deals(q: str = Query(..., min_length=1)):
     """Real-time Web Search & Deals Intelligence Endpoint."""
     try:
         product = search_live_product_deals(q)
+        if not product.get("isRealProduct", True):
+            return JSONResponse({
+                "status": "not_real_product",
+                "isRealProduct": False,
+                "message": "Sorry, not a real product.",
+                "query": q,
+                "reason": product.get("reason", "Query does not correspond to a commercial product."),
+                "suggestion": product.get("suggestion", "Please search for a real commercial product.")
+            })
         return JSONResponse({
             "status": "success",
             "query": q,

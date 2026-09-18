@@ -11,7 +11,7 @@ import json
 import re
 import html
 import time
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Tuple
 
 # In-memory TTL Cache
 _DEALS_SEARCH_CACHE: Dict[str, Dict[str, Any]] = {}
@@ -316,10 +316,99 @@ def _generate_product_variants(canonical_name: str, category: str, base_inr: flo
         ]
 
 
+_COMMERCIAL_SIGNALS = {
+    # Product categories & specs
+    "sunscreen", "spf", "cream", "lotion", "serum", "gel", "mucin", "essence", "cleanser", "shampoo",
+    "conditioner", "moisturizer", "facewash", "face wash", "oil", "soap", "lipstick", "foundation",
+    "phone", "smartphone", "iphone", "galaxy", "pixel", "oneplus", "xiaomi", "redmi", "realme",
+    "laptop", "macbook", "thinkpad", "zenbook", "spectre", "xps", "ideapad", "notebook",
+    "headphone", "headphones", "earphone", "earphones", "earbuds", "tws", "airpods", "speaker",
+    "soundbar", "audio", "headset", "microphone",
+    "camera", "lens", "dslr", "mirrorless", "gopro", "fujifilm", "canon", "nikon", "panasonic",
+    "watch", "smartwatch", "fitness", "band",
+    "tablet", "ipad", "kindle", "tab",
+    "console", "playstation", "xbox", "nintendo", "switch", "deck", "steam deck", "controller",
+    "tv", "television", "monitor", "display", "projector",
+    "charger", "cable", "powerbank", "adapter", "case", "cover", "mouse", "keyboard",
+    "shoes", "sneakers", "boots", "jacket", "shirt", "tshirt", "pants", "bag", "backpack",
+    "perfume", "cologne", "fragrance", "deodorant",
+    # Modifiers & specs
+    "pro", "max", "plus", "ultra", "mini", "lite", "se", "fe", "gen", "edition", "series",
+    "wireless", "bluetooth", "anc", "noise cancelling", "wifi", "5g", "4g", "lte",
+    "gb", "tb", "ram", "rom", "storage", "core", "ryzen", "intel", "amd", "nvidia", "rtx",
+    "price", "buy", "review", "specs", "specification", "discount", "sale", "online", "cost", "mrp",
+    # Brands & stores
+    "apple", "sony", "samsung", "bose", "sennheiser", "jbl", "boat", "marshall",
+    "cosrx", "brinton", "doux", "cetaphil", "cerave", "neutrogena", "minimalist", "derma",
+    "valve", "asus", "dell", "hp", "lenovo", "acer",
+    "logitech", "razer", "corsair", "steelseries", "anker", "ugreen", "belkin"
+}
+
+_NON_PRODUCT_PATTERNS = [
+    r"^(?:why|how|what|when|where|who|which|whose|whom|is|are|can|could|should|would|do|does|did|will)\b",
+    r"\b(?:recipe|tutorial|meaning|definition|lyrics|quotes|joke|jokes|solve|math|homework|weather)\b",
+    r"\b(?:how to|why do|why does|what does|tell me|who is|where is)\b",
+]
+
+
+def _has_commercial_signal(text: str) -> bool:
+    """Check if text contains commercial product signals as whole words or phrases."""
+    t_lower = text.lower()
+    for sig in _COMMERCIAL_SIGNALS:
+        if " " in sig:
+            if sig in t_lower:
+                return True
+        else:
+            if re.search(r'\b' + re.escape(sig) + r'\b', t_lower):
+                return True
+    return False
+
+
+def _is_real_selling_product(query: str, suggestions: List[str], titles: List[str], snippets: List[str]) -> Tuple[bool, str]:
+    """Verify if the query corresponds to a real, commercially available product."""
+    q_clean = query.strip().lower()
+
+    # 1. Reject very short queries
+    if len(q_clean) < 2:
+        return False, "Query is too short."
+
+    # 2. Reject obvious non-product questions / conversational sentences
+    for pat in _NON_PRODUCT_PATTERNS:
+        if re.search(pat, q_clean):
+            return False, "Query appears to be an informational question or tutorial rather than a commercial product."
+
+    # 3. Check for keyboard mash / gibberish (e.g. 6+ chars without vowels, repeating chars, keyboard patterns)
+    words = re.findall(r'[a-zA-Z]+', q_clean)
+    if words:
+        for w in words:
+            if len(w) >= 6 and not any(v in w for v in "aeiou"):
+                return False, "Query contains meaningless characters or keyboard mash."
+            if re.search(r'(.)\1{3,}', w):
+                return False, "Query contains repeating nonsense characters."
+            if any(k in w for k in ["asdf", "qwerty", "zxcv", "ghjkl"]):
+                return False, "Query contains keyboard mash pattern."
+
+    # 4. Check if the query itself contains known commercial/product signals (word-boundary matched)
+    if _has_commercial_signal(q_clean):
+        return True, "Valid commercial product."
+
+    # 5. Check if web suggestions or titles contain commercial signals
+    combined_web_text = f"{' '.join(suggestions[:5])} {' '.join(titles[:5])} {' '.join(snippets[:5])}".lower()
+    if _has_commercial_signal(combined_web_text):
+        return True, "Valid commercial product."
+
+    # 6. If search returned 0 suggestions and 0 titles, the entity doesn't exist on the web
+    if len(suggestions) == 0 and len(titles) == 0:
+        return False, "No commercial listings, products, or web entities found matching this query."
+
+    return False, "No e-commerce, shopping listings, or product indicators found for this query."
+
+
 def search_live_product_deals(query: str) -> Dict[str, Any]:
     """
     Core search entrypoint. Searches web for the given product query and returns
     a fully structured product model ready for domestic vs global landed-cost comparison.
+    If the product is not a real selling product, returns an explicit invalid product response.
     """
     clean_q = query.strip()
     cache_key = clean_q.lower()
@@ -337,6 +426,23 @@ def search_live_product_deals(query: str) -> Dict[str, Any]:
     
     titles = web_data.get("titles", [])
     snippets = web_data.get("snippets", [])
+
+    # 2. Verify if this is a real commercial selling product
+    is_real, reason = _is_real_selling_product(clean_q, suggestions, titles, snippets)
+    if not is_real:
+        invalid_res = {
+            "isRealProduct": False,
+            "status": "not_real_product",
+            "message": "Sorry, not a real product.",
+            "query": clean_q,
+            "reason": reason,
+            "suggestion": "Please try searching for a real physical product, gadget, or skincare item (e.g. 'UV Doux sunscreen', 'Sony WH-1000XM5', 'iPhone 16 Pro', 'Cosrx snail mucin')."
+        }
+        _DEALS_SEARCH_CACHE[cache_key] = {
+            "timestamp": now,
+            "data": invalid_res
+        }
+        return invalid_res
 
     # 2. Determine Canonical Product Name & Brand
     canonical_name = clean_q.title()

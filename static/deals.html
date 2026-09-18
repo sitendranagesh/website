@@ -448,6 +448,9 @@
       const [customGrams, setCustomGrams] = useState("");
       const [isCustomGrams, setIsCustomGrams] = useState(false);
 
+      // Real Product Search Error State
+      const [searchError, setSearchError] = useState(null);
+
       const searchBoxRef = useRef(null);
 
       // Save pincode
@@ -493,13 +496,25 @@
 
         setIsSearchingLiveWeb(true);
         setIsSearchFocused(false);
+        setSearchError(null);
         setSearchStatusMsg(`Searching live web prices across Indian stores (Amazon.in, Flipkart, 1mg, Nykaa, Croma) & Global storefronts for "${q}"...`);
 
         try {
           const resp = await fetch(`/api/deals/search?q=${encodeURIComponent(q)}`);
           const data = await resp.json();
 
-          if (data.status === "success" && data.product) {
+          if (data.status === "not_real_product" || data.isRealProduct === false) {
+            setSearchError({
+              title: "Sorry, not a real product.",
+              query: q,
+              reason: data.reason || "No commercial retail listings, product specifications, or e-commerce prices exist for this query.",
+              suggestion: data.suggestion || "Please try searching for a real physical product, gadget, or skincare brand."
+            });
+            // Update URL query parameter
+            const newUrl = `${window.location.pathname}?q=${encodeURIComponent(q)}`;
+            window.history.replaceState({ path: newUrl }, '', newUrl);
+          } else if (data.status === "success" && data.product) {
+            setSearchError(null);
             setSelectedProduct(data.product);
             if (data.product.customsDutyRate) {
               setCustomsDutyRate(data.product.customsDutyRate);
@@ -513,10 +528,21 @@
             const newUrl = `${window.location.pathname}?q=${encodeURIComponent(q)}`;
             window.history.replaceState({ path: newUrl }, '', newUrl);
           } else {
-            console.error("Search API returned non-success", data);
+            setSearchError({
+              title: "Sorry, not a real product.",
+              query: q,
+              reason: data.message || "We could not find verified commercial listings for this search query.",
+              suggestion: "Please try searching for a real commercial product or brand."
+            });
           }
         } catch (err) {
           console.error("Live web search fetch failed:", err);
+          setSearchError({
+            title: "Sorry, not a real product.",
+            query: q,
+            reason: "Unable to verify or find commercial listings for this product.",
+            suggestion: "Please check the spelling or search for a real commercial product."
+          });
         } finally {
           setIsSearchingLiveWeb(false);
           setSearchStatusMsg("");
@@ -807,6 +833,7 @@
                         setSelectedProduct(product);
                         if (product.customsDutyRate) setCustomsDutyRate(product.customsDutyRate);
                         setSearchQuery(product.name);
+                        setSearchError(null);
                         setIsSearchFocused(false);
                       }}
                       className="px-4 py-3 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 cursor-pointer border-b border-slate-100 dark:border-slate-800/40 flex items-center justify-between gap-4 transition-colors"
@@ -851,6 +878,7 @@
                   type="button"
                   onClick={() => {
                     setSearchQuery(chip.query);
+                    setSearchError(null);
                     performLiveWebSearch(chip.query);
                   }}
                   className={`text-xs px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer ${
@@ -878,8 +906,63 @@
             </div>
           )}
 
-          {/* Active Target Product Bar */}
-          <div className="bg-gradient-to-r from-slate-900 to-[#131D31] text-white rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg border border-slate-800">
+          {/* Conditional: Not A Real Product Error Message Banner OR Product Deals Dashboard */}
+          {searchError ? (
+            <div className="bg-white dark:bg-[#131D31] border-2 border-amber-400/80 dark:border-amber-600/70 rounded-3xl p-6 sm:p-10 shadow-lg text-center space-y-6 animate-pulse-glow">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-3xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 flex items-center justify-center text-3xl sm:text-4xl shadow-inner">
+                <span>⚠️</span>
+              </div>
+
+              <div className="max-w-xl mx-auto space-y-2.5">
+                <span className="inline-block px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                  Product Verification Result
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                  {searchError.title}
+                </h2>
+                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
+                  We searched the live web, Indian e-commerce platforms, and overseas stores for <strong className="text-slate-900 dark:text-white">"{searchError.query}"</strong>, but could not find any commercially available selling product, verified retail specifications, or e-commerce prices.
+                </p>
+                <div className="text-xs text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 p-3.5 rounded-xl border border-amber-200 dark:border-amber-900/60 font-medium text-left sm:text-center mt-3">
+                  ℹ️ <strong>Reason:</strong> {searchError.reason}
+                </div>
+              </div>
+
+              <div className="pt-3 max-w-2xl mx-auto border-t border-slate-100 dark:border-slate-800 space-y-3">
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  Try Searching For Verified Real Products:
+                </div>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {[
+                    { name: "☀️ UV Doux Sunscreen", query: "uv doux silicon sunscreen" },
+                    { name: "💧 COSRX Snail Mucin", query: "cosrx snail mucin essence" },
+                    { name: "🎧 Sony WH-1000XM5", query: "sony wh-1000xm5" },
+                    { name: "📱 iPhone 16 Pro Max", query: "iphone 16 pro max" },
+                    { name: "💻 MacBook Air M3", query: "macbook air m3" },
+                    { name: "🎧 Bose QC Ultra", query: "bose qc ultra" },
+                    { name: "📷 Fujifilm X100VI", query: "fujifilm x100vi" },
+                    { name: "🎮 Steam Deck OLED", query: "steam deck oled" }
+                  ].map(chip => (
+                    <button
+                      key={chip.name}
+                      type="button"
+                      onClick={() => {
+                        setSearchQuery(chip.query);
+                        setSearchError(null);
+                        performLiveWebSearch(chip.query);
+                      }}
+                      className="text-xs px-3.5 py-2 rounded-xl font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-emerald-600 hover:text-white transition-all shadow-sm cursor-pointer"
+                    >
+                      {chip.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Active Target Product Bar */}
+              <div className="bg-gradient-to-r from-slate-900 to-[#131D31] text-white rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg border border-slate-800">
             <div>
               <div className="flex items-center gap-2 text-xs text-sky-400 font-bold uppercase tracking-wider">
                 <span>Active Target Product</span>
@@ -1518,6 +1601,8 @@
             </div>
 
           </div>
+            </>
+          )}
 
         </div>
       );
