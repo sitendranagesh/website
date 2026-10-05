@@ -2,25 +2,23 @@ import os
 import sqlite3
 from pathlib import Path
 
-DATABASE_URL = os.environ.get("DATABASE_URL")
-SQLITE_PATH = Path(__file__).resolve().parent / "notes_database.db"
-
-if DATABASE_URL:
-    import psycopg2
-    import psycopg2.extras
+# Configurable database file path; defaults to 'notes_database.db' in the database directory.
+DEFAULT_SQLITE_PATH = Path(__file__).resolve().parent / "notes_database.db"
+SQLITE_PATH = Path(os.environ.get("SQLITE_DB_PATH", DEFAULT_SQLITE_PATH))
 
 
-def is_postgres() -> bool:
-    return DATABASE_URL is not None
-
-
-def placeholder() -> str:
-    return "%s" if is_postgres() else "?"
-
-
-def get_connection():
-    if DATABASE_URL:
-        return psycopg2.connect(DATABASE_URL, cursor_factory=psycopg2.extras.RealDictCursor)
-    conn = sqlite3.connect(SQLITE_PATH)
+def get_connection() -> sqlite3.Connection:
+    """
+    Returns an SQLite connection configured with:
+    - Row factory (sqlite3.Row) for dict/column access
+    - WAL journal mode for high-concurrency read/write
+    - Foreign key constraints enabled
+    - 5-second busy timeout to avoid lock contention
+    """
+    SQLITE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(SQLITE_PATH, timeout=10.0, check_same_thread=False)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode = WAL;")
+    conn.execute("PRAGMA foreign_keys = ON;")
+    conn.execute("PRAGMA busy_timeout = 5000;")
     return conn
